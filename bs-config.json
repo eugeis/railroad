@@ -1,0 +1,9 @@
+{
+	"port": 8000,
+	"files": [
+		"./karma_html/coverage/*.{html,htm,css,js}",
+		"./karma_html/summary/index.html",
+		"./karma_html/index.html"
+	],
+	"server": { "baseDir": "./karma_html" }
+}
