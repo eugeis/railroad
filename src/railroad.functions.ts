@@ -40,27 +40,26 @@ export function toBrowserSpace(p: number, tp: number, z: number): number {
 	return (p * z) + tp;
 }
 
-export function calcTranslate(m: SVGPoint, zoom: [number, number], translate: [number, number]): [number, number] {
+export function calcTranslate(m: SVGPoint, oldZoom: [number, number], newZoom: [number, number], translate: [number, number]): [number, number] {
 	return [
-		-(toSVGSpace(m.x, translate[0], zoom[0]) * zoom[1] - m.x),
-		-(toSVGSpace(m.y, translate[1], zoom[0]) * zoom[1] - m.y)
+		-(toSVGSpace(m.x, translate[0], oldZoom[0]) * newZoom[0] - m.x),
+		-(toSVGSpace(m.y, translate[1], oldZoom[1]) * newZoom[1] - m.y)
 	];
 }
 
 /**
- * Given the current zoomlevel and the scrolling-delta, calcZoom calculates
- * the new zoomlevel (n).
+ * Given the current zoom and the scrolling-delta, calcZoom calculates
+ * the new zoom (n).
  *
  * calcZoom(d, z) -> n
  *
  * d is the scrolling delta (normal scrolling: +/- 53, fast scrolling: +/- 250)
- * z is the zoomlevel (1 indicating a 100% zoom, 2 indicating a 200% zoom)
- * n ∈ [zoomlevel * 0.8, zoomlevel * 1.2]
+ * z is the zoom (1 indicating a 100% zoom, 2 indicating a 200% zoom)
+ * n ∈ [zoom * 0.8, zoom * 1.2]
  */
-export function calcZoom(delta: number, zoomlevel: number): number {
-	/**
-	 */
-	return zoomlevel * (1 + (frame(-delta / 265, -1, 1) / 5));
+export function calcZoom(delta: number, zoom: [number, number]): [number,number] {
+	let factor = (1 + (frame(-delta / 265, -1, 1) / 5));
+	return [zoom[0] * factor, zoom[1] * factor];
 }
 
 export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): SVGPoint{

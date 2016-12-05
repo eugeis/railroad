@@ -18,7 +18,7 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, Output, EventEmitter, ElementRef, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { Railroad, Station } from './railroad.service';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { frame, calcTranslate, cursorPoint, calcZoom } from './railroad.functions';
@@ -51,7 +51,14 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
-			<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoomlevel + ')'">
+			<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom[0] + ',' + zoom[1] + ')'">
+				<rect *ngIf="border"
+					[attr.x]="border[0][0]"
+					[attr.y]="border[0][1]"
+					[attr.width]="((border[0][0] > 0) ? border[0][0] : 0 - border[0][0]) + border[1][0]"
+					[attr.height]="((border[0][1] > 0) ? border[0][1] : 0 - border[0][1]) + border[1][1]"
+					style="stroke:black;stroke-width:5;fill:white">
+				</rect>
 				<path class="track"
 					*ngFor="let track of mockup"
 					[attr.d]="track"
@@ -59,15 +66,15 @@ interface EventInterface<T> {
 					[contextMenu]="contextMenu"
 					contextable>s d
 				</path>
-				<g svg-united-states transform="translate(0,0)"></g>
-				<g svg-firefox transform="translate(900,400)"></g>
-				<g svg-firefox transform="translate(1100,400)"></g>
-				<g svg-firefox transform="translate(500,900)"></g>
-				<g svg-firefox transform="translate(900,800)"></g>
-				<g svg-gallardo transform="translate(1100,0)"></g>
-				<g svg-network transform="translate(0,700)"></g>
-				<g svg-germany transform="translate(600,700)"></g>
-				<g svg-gallardo transform="translate(500,1000)"></g>
+				<g svg-united-states transform="translate(-1800,-2100)"></g>
+				<g svg-firefox transform="translate(-2075,-2075)"></g>
+				<g svg-firefox transform="translate(-2075,1925)"></g>
+				<g svg-firefox transform="translate(1925,-2075)"></g>
+				<g svg-firefox transform="translate(1925,1925)"></g>
+				<!--<g svg-network transform="translate(-1400,1500)"></g>-->
+				<!--<g svg-germany transform="translate(-1400,-1400)"></g>-->
+				<!--<g svg-gallardo transform="translate(500,-2000)"></g>-->
+				<!--<g svg-gallardo transform="translate(500,1000)"></g>-->
 			</g>
 		</svg>
 		<context-menu [contextMenu]="contextMenu"></context-menu>
@@ -78,12 +85,11 @@ export class RailroadSVGComponent implements OnInit {
 	@Input() railroad: Railroad;
 	@Input() stations: Station[];
 
-	@Input() zoomlevel: number;
-	@Input() zoomborder: [number, number];
+	@Input() zoom: [number, number] = [1,1];
 	@Input() translate: [number, number];
 	@Input() border: [[number, number], [number, number]];
 
-	@Output() zoomlevelChange: EventEmitter<number> = new EventEmitter<number>();
+	@Output() zoomChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	mockup: any[] = [
@@ -153,35 +159,24 @@ export class RailroadSVGComponent implements OnInit {
 	}
 
 	zooming(mousePos: SVGPoint, delta: number) {
-		let oldZoomlevel = +this.zoomlevel;
+		let oldzoom: [number, number] = this.zoom;
 
-		this.setZoomlevel(calcZoom(delta, oldZoomlevel));
-		this.setTranslate(calcTranslate(mousePos, [oldZoomlevel, this.zoomlevel], this.translate));
-	}
-
-	panning(movement: [number, number]) {
-		/*
-		 * Translate and move are not affected by the zoom
-		 * There needs to be no conversion between browser- / svg-space
-		 */
-		this.setTranslate([this.translate[0] + movement[0], this.translate[1] + movement[1]]);
-	}
-
-	setTranslate(translate: [number, number]) {
-		if (this.border) {
-			this.translate[0] = frame(translate[0], this.border[0][0], this.border[1][0])
-			this.translate[1] = frame(translate[1], this.border[0][1], this.border[1][1])
-		} else {
-			this.translate[0] = translate[0];
-			this.translate[1] = translate[1];
-		}
-
+		this.zoom = calcZoom(delta, oldzoom);
+		this.translate = calcTranslate(mousePos, oldzoom, this.zoom, this.translate);
+		this.zoomChange.emit(this.zoom);
 		this.translateChange.emit(this.translate);
 	}
 
-	setZoomlevel(zoomlevel: number) {
-		this.zoomlevel = zoomlevel;
-		this.zoomlevelChange.emit(this.zoomlevel);
+	/*
+	 * Translate and move are not affected by the zoom
+	 * There needs to be no conversion between browser- / svg-space
+	 */
+	panning(movement: [number, number]) {
+		this.translate = [
+			this.translate[0] + movement[0],
+			this.translate[1] + movement[1]
+		];
+		this.translateChange.emit(this.translate);
 	}
 
 	select(item: string) {

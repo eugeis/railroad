@@ -69,12 +69,12 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 			width: 30px;
 		}
 
-		span.zoomlevel {
+		span.zoom {
 			position:absolute;
 			top:0px;
 		}
 
-		span.zoomlevel:hover {
+		span.zoom:hover {
 			display:none;
 		}
 
@@ -103,20 +103,18 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 				<ee-railroad-svg
 					[railroad]="railroad"
 					[stations]="stations"
-					[zoomborder]="zoomborder"
-					[(zoomlevel)]="zoomlevel"
+					[border]="border"
+					[(zoom)]="zoom"
 					[(translate)]="translate">
 				</ee-railroad-svg>
 			</div>
 			<div class="right side"></div>
 		</div>
 		<div class="footer">
-			<input type="text" [(ngModel)]="zoomlevel">
+			<input type="text" [(ngModel)]="zoom[0]">
+			<input type="text" [(ngModel)]="zoom[1]">
 			<input type="text" [(ngModel)]="translate[0]">
 			<input type="text" [(ngModel)]="translate[1]">
-			<span id="abc"></span>
-			<span id="xyz"></span>
-			<slider [(value)]="zoomlevel" [min]="zoomborder[0]" [max]="zoomborder[1]"></slider>
 		</div>
 	</div>
 	`,
@@ -124,10 +122,10 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 })
 
 export class RailroadComponent implements OnInit {
-	zoomlevel: number = 1;
+	zoom: [number, number] = [1,1];
 	zoomborder: [number, number] = [0.05, 100000];
 	translate: [number, number] = [0, 0];
-	border: [[number, number], [number, number]] = [[0,0], [100,100]];
+	border: [[number, number], [number, number]] = [[-2000,-2000], [2000,2000]];
 
 	railroad: Railroad;
 	stations: Station[];
