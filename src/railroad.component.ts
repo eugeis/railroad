@@ -103,7 +103,6 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 				<ee-railroad-svg
 					[railroad]="railroad"
 					[stations]="stations"
-					[border]="border"
 					[(zoom)]="zoom"
 					[(translate)]="translate">
 				</ee-railroad-svg>
@@ -125,7 +124,6 @@ export class RailroadComponent implements OnInit {
 	zoom: [number, number] = [1,1];
 	zoomborder: [number, number] = [0.05, 100000];
 	translate: [number, number] = [0, 0];
-	border: [[number, number], [number, number]] = [[-2000,-2000], [2000,2000]];
 
 	railroad: Railroad;
 	stations: Station[];

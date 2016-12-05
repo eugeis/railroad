@@ -52,13 +52,6 @@ interface EventInterface<T> {
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
 			<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom[0] + ',' + zoom[1] + ')'">
-				<rect *ngIf="border"
-					[attr.x]="border[0][0]"
-					[attr.y]="border[0][1]"
-					[attr.width]="((border[0][0] > 0) ? border[0][0] : 0 - border[0][0]) + border[1][0]"
-					[attr.height]="((border[0][1] > 0) ? border[0][1] : 0 - border[0][1]) + border[1][1]"
-					style="stroke:black;stroke-width:5;fill:white">
-				</rect>
 				<path class="track"
 					*ngFor="let track of mockup"
 					[attr.d]="track"
@@ -66,15 +59,6 @@ interface EventInterface<T> {
 					[contextMenu]="contextMenu"
 					contextable>s d
 				</path>
-				<g svg-united-states transform="translate(-1800,-2100)"></g>
-				<g svg-firefox transform="translate(-2075,-2075)"></g>
-				<g svg-firefox transform="translate(-2075,1925)"></g>
-				<g svg-firefox transform="translate(1925,-2075)"></g>
-				<g svg-firefox transform="translate(1925,1925)"></g>
-				<!--<g svg-network transform="translate(-1400,1500)"></g>-->
-				<!--<g svg-germany transform="translate(-1400,-1400)"></g>-->
-				<!--<g svg-gallardo transform="translate(500,-2000)"></g>-->
-				<!--<g svg-gallardo transform="translate(500,1000)"></g>-->
 			</g>
 		</svg>
 		<context-menu [contextMenu]="contextMenu"></context-menu>
@@ -87,7 +71,6 @@ export class RailroadSVGComponent implements OnInit {
 
 	@Input() zoom: [number, number] = [1,1];
 	@Input() translate: [number, number];
-	@Input() border: [[number, number], [number, number]];
 
 	@Output() zoomChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
