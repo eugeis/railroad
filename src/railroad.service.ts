@@ -25,75 +25,86 @@ export interface Halt {
 	time: Date
 }
 
-export type Station = string;
+export interface Station {
+	name: string;
+	width: number;
+	x?: number;
+};
 type Track = Halt[];
 export type Railroad = Track[];
 
-const stations: Station[] = [
-	"A", "B", "C"
-];
+const stations: Station[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(function (d){
+	return {
+		name: d,
+		width: 75
+	};
+});
 
 const railroad: Railroad = [
-	[{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 0, 0)
-	},
-	{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 10, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 0, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 5, 0)
-	},
-	{
-		station: stations[2],
-		time: new Date(0, 0, 0, 11, 30, 0)
-	}],
-	[{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 0, 0)
-	},
-	{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 10, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 0, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 5, 0)
-	},
-	{
-		station: stations[2],
-		time: new Date(0, 0, 0, 11, 30, 0)
-	}],
-	[{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 0, 0)
-	},
-	{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 10, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 0, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 5, 0)
-	},
-	{
-		station: stations[2],
-		time: new Date(0, 0, 0, 11, 30, 0)
-	}]
+	[
+		{
+			station: stations[0],
+			time: new Date(0, 0, 0, 10, 0, 0)
+		},
+		{
+			station: stations[0],
+			time: new Date(0, 0, 0, 10, 10, 0)
+		},
+		{
+			station: stations[1],
+			time: new Date(0, 0, 0, 11, 0, 0)
+		},
+		{
+			station: stations[1],
+			time: new Date(0, 0, 0, 11, 5, 0)
+		},
+		{
+			station: stations[2],
+			time: new Date(0, 0, 0, 11, 30, 0)
+		}
+	],[
+		{
+			station: stations[0],
+			time: new Date(0, 0, 0, 10, 0, 0)
+		},
+		{
+			station: stations[0],
+			time: new Date(0, 0, 0, 10, 10, 0)
+		},
+		{
+			station: stations[1],
+			time: new Date(0, 0, 0, 11, 0, 0)
+		},
+		{
+			station: stations[1],
+			time: new Date(0, 0, 0, 11, 5, 0)
+		},
+		{
+			station: stations[2],
+			time: new Date(0, 0, 0, 11, 30, 0)
+		}
+	],[
+		{
+			station: stations[0],
+			time: new Date(0, 0, 0, 10, 0, 0)
+		},
+		{
+			station: stations[0],
+			time: new Date(0, 0, 0, 10, 10, 0)
+		},
+		{
+			station: stations[1],
+			time: new Date(0, 0, 0, 11, 0, 0)
+		},
+		{
+			station: stations[1],
+			time: new Date(0, 0, 0, 11, 5, 0)
+		},
+		{
+			station: stations[2],
+			time: new Date(0, 0, 0, 11, 30, 0)
+		}
+	]
 ];
 
 @Injectable()

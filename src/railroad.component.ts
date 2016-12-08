@@ -18,10 +18,9 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { RailroadService, Railroad, Station } from './railroad.service';
 
 @Component({
 	selector: 'ee-railroad',
@@ -101,8 +100,6 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 			<div class="left side"></div>
 			<div class="window">
 				<ee-railroad-svg
-					[railroad]="railroad"
-					[stations]="stations"
 					[(zoom)]="zoom"
 					[(translate)]="translate">
 				</ee-railroad-svg>
@@ -116,22 +113,10 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 			<input type="text" [(ngModel)]="translate[1]">
 		</div>
 	</div>
-	`,
-	providers: [RailroadService]
+	`
 })
 
-export class RailroadComponent implements OnInit {
+export class RailroadComponent {
 	zoom: [number, number] = [1,1];
-	zoomborder: [number, number] = [0.05, 100000];
-	translate: [number, number] = [0, 0];
-
-	railroad: Railroad;
-	stations: Station[];
-
-	constructor(private rs: RailroadService) { }
-
-	ngOnInit() {
-		this.railroad = this.rs.getRailroad();
-		this.stations = this.rs.getAllStations();
-	}
+	translate: [number, number] = [0,0];
 }
