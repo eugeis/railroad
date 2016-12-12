@@ -100,30 +100,33 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 		<div class="main">
 			<div class="left side"></div>
 			<div class="window">
-				<ee-railroad-svg
-					[railroad]="railroad"
-					[stations]="stations"
-					[(zoom)]="zoom"
-					[(translate)]="translate">
+				<ee-railroad-svg [contextMenu]="contextMenu" [(zoom)]="zoom" [(offset)]="offset">
+					<svg:g svg-germany></svg:g>
 				</ee-railroad-svg>
+				<context-menu [contextMenu]="contextMenu"></context-menu>
 			</div>
 			<div class="right side"></div>
 		</div>
 		<div class="footer">
-			<input type="text" [(ngModel)]="zoom[0]">
-			<input type="text" [(ngModel)]="zoom[1]">
-			<input type="text" [(ngModel)]="translate[0]">
-			<input type="text" [(ngModel)]="translate[1]">
+			<input type="text" [(ngModel)]="zoom">
+			<input type="text" [(ngModel)]="offset[0]">
+			<input type="text" [(ngModel)]="offset[1]">
 		</div>
 	</div>
-	`,
-	providers: [RailroadService]
+	`
 })
 
 export class RailroadComponent implements OnInit {
-	zoom: [number, number] = [1,1];
-	zoomborder: [number, number] = [0.05, 100000];
-	translate: [number, number] = [0, 0];
+	zoom: number = 1;
+	offset: [number, number] = [0, 0];
+
+	contextMenu: ContextMenuStatus = {
+		show: false,
+		items: [],
+		x: 0,
+		y: 0,
+		target: undefined
+	};
 
 	railroad: Railroad;
 	stations: Station[];

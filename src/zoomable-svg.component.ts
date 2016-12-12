@@ -21,7 +21,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { Railroad, Station } from './railroad.service';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { frame, calcTranslate, cursorPoint, calcZoom } from './railroad.functions';
+import { frame, calcTranslate, cursorPoint, getFactor } from './railroad.functions';
 
 var xmlns = "http://www.w3.org/2000/svg";
 
@@ -41,60 +41,24 @@ interface EventInterface<T> {
 		svg.dragging {
 			cursor: move;
 		}
-
-		.track {
-			fill: transparent;
-			stroke: black;
-			stroke-width: 2;
-			pointer-events: stroke;
-		}
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
-			<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom[0] + ',' + zoom[1] + ')'">
-				<path class="track"
-					*ngFor="let track of mockup"
-					[attr.d]="track"
-					[items]="['New line', 'Delete line', 'Hahahaha']"
-					[contextMenu]="contextMenu"
-					contextable>s d
-				</path>
+			<g [attr.transform]="'translate(' + offset[0] + ',' + offset[1] + ')scale(' + zoom + ')'">
+				<ng-content></ng-content>
 			</g>
 		</svg>
-		<context-menu [contextMenu]="contextMenu"></context-menu>
 	`
 })
 
-export class RailroadSVGComponent implements OnInit {
-	@Input() railroad: Railroad;
-	@Input() stations: Station[];
+export class ZoomableSVGComponent implements OnInit {
+	@Input() zoom: number = 1;
+	@Input() offset: [number, number];
 
-	@Input() zoom: [number, number] = [1,1];
-	@Input() translate: [number, number];
+	@Input() contextMenu: ContextMenuStatus;
 
-	@Output() zoomChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
-	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
-
-	mockup: any[] = [
-		/*"M 100 100 h 100 v 100 h -100 Z",
-		"M 400 200 h 100 v 100 h -100 Z",
-		"M 800 600 h 100 v 100 h -100 Z",
-		"M 800 200 h 100 v 100 h -100 Z",
-		"M 300 600 h 100 v 100 h -100 Z",
-		"M10 10 C 20 80, 40 20, 50 10",
-		"M70 10 C 70 20, 120 20, 520 10",
-		"M130 10 C 20 320, 180 220, 170 10",
-		"M180 60 C 570 480, 170 80, 120 60",
-		"M250 60 C 120 280, 780 80, 670 60"*/
-	];
-
-	contextMenu: ContextMenuStatus = {
-		show: false,
-		items: [],
-		x: 0,
-		y: 0,
-		target: undefined
-	};
+	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
+	@Output() offsetChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	dragging: boolean = false;
 
@@ -106,11 +70,7 @@ export class RailroadSVGComponent implements OnInit {
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
 		this.contextMenu.show = false;
-		this.zooming(cursorPoint(this.svg, this.pt, e), e.deltaY);
-	}
-
-	@HostListener('click', ['$event']) onClick() {
-		this.contextMenu.show = false;
+		this.zooming(cursorPoint(this.svg, this.pt, e), getFactor(e.deltaY));
 	}
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
@@ -141,13 +101,13 @@ export class RailroadSVGComponent implements OnInit {
 		this.pt = this.svg.createSVGPoint();
 	}
 
-	zooming(mousePos: SVGPoint, delta: number) {
-		let oldzoom: [number, number] = this.zoom;
+	zooming(mousePos: [number, number], factor: number) {
+		let oldzoom: number = this.zoom;
+		this.zoom *= factor;
+		this.offset = calcTranslate(mousePos, oldzoom, this.zoom, this.offset);
 
-		this.zoom = calcZoom(delta, oldzoom);
-		this.translate = calcTranslate(mousePos, oldzoom, this.zoom, this.translate);
 		this.zoomChange.emit(this.zoom);
-		this.translateChange.emit(this.translate);
+		this.offsetChange.emit(this.offset);
 	}
 
 	/*
@@ -155,11 +115,11 @@ export class RailroadSVGComponent implements OnInit {
 	 * There needs to be no conversion between browser- / svg-space
 	 */
 	panning(movement: [number, number]) {
-		this.translate = [
-			this.translate[0] + movement[0],
-			this.translate[1] + movement[1]
+		this.offset = [
+			this.offset[0] + movement[0],
+			this.offset[1] + movement[1]
 		];
-		this.translateChange.emit(this.translate);
+		this.offsetChange.emit(this.offset);
 	}
 
 	select(item: string) {

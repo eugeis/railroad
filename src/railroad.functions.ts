@@ -40,10 +40,10 @@ export function toBrowserSpace(p: number, tp: number, z: number): number {
 	return (p * z) + tp;
 }
 
-export function calcTranslate(m: SVGPoint, oldZoom: [number, number], newZoom: [number, number], translate: [number, number]): [number, number] {
+export function calcTranslate(m: [number, number], oldZoom: number, newZoom: number, translate: [number, number]): [number, number] {
 	return [
-		-(toSVGSpace(m.x, translate[0], oldZoom[0]) * newZoom[0] - m.x),
-		-(toSVGSpace(m.y, translate[1], oldZoom[1]) * newZoom[1] - m.y)
+		-(toSVGSpace(m[0], translate[0], oldZoom) * newZoom - m[0]),
+		-(toSVGSpace(m[1], translate[1], oldZoom) * newZoom - m[1])
 	];
 }
 
@@ -57,16 +57,21 @@ export function calcTranslate(m: SVGPoint, oldZoom: [number, number], newZoom: [
  * z is the zoom (1 indicating a 100% zoom, 2 indicating a 200% zoom)
  * n ∈ [zoom * 0.8, zoom * 1.2]
  */
-export function calcZoom(delta: number, zoom: [number, number]): [number,number] {
-	let factor = (1 + (frame(-delta / 265, -1, 1) / 5));
-	return [zoom[0] * factor, zoom[1] * factor];
+export function getFactor(delta: number): number {
+	return (1 + (frame(-delta / 265, -1, 1) / 5));
 }
 
-export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): SVGPoint{
+/**
+ * Returns the mouse-position in SVG-space
+ */
+export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): [number, number]{
+	let point: SVGPoint;
 	pt.x = evt.clientX;
 	pt.y = evt.clientY;
-	return pt.matrixTransform(svg.getScreenCTM().inverse());
+	point = pt.matrixTransform(svg.getScreenCTM().inverse());
+	return [point.x, point.y];
 }
+
 
 export function frame(value: number, min: number, max: number) {
 	return Math.max(Math.min(value, max), min);
