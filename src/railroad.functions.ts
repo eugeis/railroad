@@ -40,10 +40,10 @@ export function toBrowserSpace(p: number, tp: number, z: number): number {
 	return (p * z) + tp;
 }
 
-export function calcTranslate(m: [number, number], oldZoom: number, newZoom: number, translate: [number, number]): [number, number] {
+export function calcTranslate(m: [number, number], oldZoom: number, newZoom: number, offset: [number, number]): [number, number] {
 	return [
-		-(toSVGSpace(m[0], translate[0], oldZoom) * newZoom - m[0]),
-		-(toSVGSpace(m[1], translate[1], oldZoom) * newZoom - m[1])
+		toSVGSpace(m[0], -offset[0], oldZoom) * newZoom - m[0],
+		toSVGSpace(m[1], -offset[1], oldZoom) * newZoom - m[1]
 	];
 }
 

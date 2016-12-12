@@ -26,7 +26,7 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 @Component({
 	selector: 'ee-railroad',
 	styles: [`
-		ee-railroad-svg {
+		ee-zoomable-svg {
 			width: 100%;
 			height: 100%;
 			display: block;
@@ -100,9 +100,22 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 		<div class="main">
 			<div class="left side"></div>
 			<div class="window">
-				<ee-railroad-svg [contextMenu]="contextMenu" [(zoom)]="zoom" [(offset)]="offset">
-					<svg:g svg-germany></svg:g>
-				</ee-railroad-svg>
+				<ee-zoomable-svg [(zoom)]="zoom" [(offset)]="offset">
+					<svg:g svg-united-states transform="translate(100,100)"></svg:g>
+					<svg:g svg-united-states transform="translate(970,1300)"></svg:g>
+					<svg:rect x="100" y="100" width="1800" height="1800" style="fill:transparent; stroke: grey;"/>
+					<svg:rect x="200" y="200" width="1600" height="1600" style="fill:transparent; stroke: red;"/>
+					<svg:defs>
+						<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+							<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
+						</svg:pattern>
+						<svg:pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+							<svg:rect width="100" height="100" fill="url(#smallGrid)"/>
+							<svg:path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1"/>
+						</svg:pattern>
+					</svg:defs>
+					<svg:rect x="0" y="0" width="2000" height="2000" fill="url(#grid)" />
+				</ee-zoomable-svg>
 				<context-menu [contextMenu]="contextMenu"></context-menu>
 			</div>
 			<div class="right side"></div>
@@ -118,7 +131,7 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 
 export class RailroadComponent implements OnInit {
 	zoom: number = 1;
-	offset: [number, number] = [0, 0];
+	offset: [number, number] = [100, 100];
 
 	contextMenu: ContextMenuStatus = {
 		show: false,
