@@ -22,7 +22,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListene
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 
-import { frame, calcTranslate, cursorPoint, calcZoom } from './railroad.functions';
+import { pan, zoom, frame, getZoomFactor, cursorPoint } from './railroad.functions';
 import { RailroadService, Railroad, Station } from './railroad.service';
 
 var xmlns = "http://www.w3.org/2000/svg";
@@ -35,8 +35,8 @@ interface EventInterface<T> {
 	selector: 'ee-railroad-svg',
 	styles: [`
 		svg {
-			width: inherit;
-			height: inherit;
+			width: 600px;
+			height: 600px;
 			border: 1px solid #000;
 			position: relative;
 			display: block;
@@ -46,7 +46,7 @@ interface EventInterface<T> {
 			cursor: move;
 		}
 
-		svg.dragging .stationLabel {
+		svg.dragging text, svg.dragging tspan {
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -74,38 +74,23 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}"
-			[attr.viewBox]="translate[0] + ' ' + translate[1] + ' 500 200'"
+			[attr.viewBox]="offset[0] + ' ' + offset[1] + ' ' + svgSize[0] / zoom[0] + ' ' + svgSize[1] / zoom[1]"
 			preserveAspectRatio="none">
-			<g>
-			<!--<g [attr.transform]="'translate(' + translate[0] + ',' + 0 + ')scale(' + zoom[0] + ',1)'">-->
-				<g *ngFor="let station of stations">
-					<line [attr.x1]="station.x" y1="0" [attr.x2]="station.x" y2="1000" style="stroke:rgb(188,188,188);stroke-width:2" class="station" />
-					<rect [attr.x]="station.x - (station.width / 4)" [attr.width]="station.width / 2" y="0" height="32" style="fill:black;" class="stationBackground" />
-					<text [attr.x]="station.x" y="18" class="stationLabel">
-						{{station.name}}
-					</text>
-				</g>
-			</g>
-			<!--<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom[0] + ',' + zoom[1] + ')'">-->
-			<!--<g>
-				<path class="track"
-					*ngFor="let line of lines"
-					[attr.d]="line"
-					[items]="['New line', 'Delete line', 'Hahahaha']"
-					[contextMenu]="contextMenu"
-					contextable>
-				</path>
-			</g>-->
+			<g svg-firefox [attr.transform]="'translate(' + border[0][0] + ', ' + border[0][1] + ')'"></g>
+			<g svg-firefox [attr.transform]="'translate(' + border[0][0] + ', ' + (border[1][1]-150) + ')'"></g>
+			<g svg-firefox [attr.transform]="'translate(' + (border[1][0]-150) + ', ' + border[0][1] + ')'"></g>
+			<g svg-firefox [attr.transform]="'translate(' + (border[1][0]-150) + ', ' + (border[1][1]-150) + ')'"></g>
+			<g svg-germany></g>
 		<context-menu [contextMenu]="contextMenu"></context-menu>
 	`
 })
 
 export class RailroadSVGComponent implements OnInit {
 	@Input() zoom: [number, number] = [1,1];
-	@Input() translate: [number, number] = [0,0];
+	@Input() offset: [number, number] = [0,0];
 
 	@Output() zoomChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
-	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
+	@Output() offsetChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	contextMenu: ContextMenuStatus = {
 		show: false,
@@ -121,11 +106,10 @@ export class RailroadSVGComponent implements OnInit {
 	pt: SVGPoint;
 	svgSize: [number, number];
 
+	border: [[number, number],[number, number]] = [[0,0],[1875,1000]];
+
 	railroad: Railroad;
 	stations: Station[];
-
-	stationWidth: number = 0;
-	minZoom: number = 1;
 
 	lines: string[] = [];
 
@@ -134,16 +118,17 @@ export class RailroadSVGComponent implements OnInit {
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
 		this.contextMenu.show = false;
-		this.zooming(cursorPoint(this.svg, this.pt, e), e.deltaY);
+		this.zooming(cursorPoint(this.svg, this.pt, e), getZoomFactor(e.deltaY));
 	}
 
 	@HostListener('click', ['$event']) onClick() {
 		this.contextMenu.show = false;
+		//this.zooming([200, 200], 2);
 	}
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
-		e.stopPropagation();
-		e.preventDefault();
+		//e.stopPropagation();
+		//e.preventDefault();
 	}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
@@ -166,15 +151,6 @@ export class RailroadSVGComponent implements OnInit {
 
 	@HostListener('window:resize') onResize() {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
-
-		if (this.stationWidth) {
-			this.minZoom = this.svgSize[0] / this.stationWidth;
-
-			if (this.zoom[0] < this.minZoom || this.zoom[1] < this.minZoom) {
-				this.zoom[0] = this.minZoom;
-				this.zoom[1] = this.minZoom;
-			}
-		}
 	}
 
 	ngOnInit() {
@@ -183,7 +159,7 @@ export class RailroadSVGComponent implements OnInit {
 
 		this.railroad = this.rs.getRailroad();
 		this.stations = this.rs.getAllStations();
-		this.stationWidth = this.stations.reduce((sum: number, currentStation: Station) => {
+		this.stations.reduce((sum: number, currentStation: Station) => {
 			currentStation.x = sum;
 			return sum + currentStation.width;
 		}, 0);
@@ -191,47 +167,22 @@ export class RailroadSVGComponent implements OnInit {
 		this.onResize();
 	}
 
-	zooming(mousePos: SVGPoint, delta: number) {
-		let oldzoom: [number, number] = this.zoom;
+	zooming(mousePos: [number, number], factor: number) {
+		this.zoom[0] *= factor;
+		this.zoom[1] *= factor;		
+		this.offset = zoom(mousePos, this.offset, factor);
 
-		this.zoom = calcZoom(delta, oldzoom);
-		this.zoom[0] = Math.max(this.zoom[0], this.minZoom);
-		this.zoom[1] = Math.max(this.zoom[1], this.minZoom);
-
-		this.setTranslate(calcTranslate(mousePos, oldzoom, this.zoom, this.translate));
 		this.zoomChange.emit(this.zoom);
-		this.translateChange.emit(this.translate);
+		this.offsetChange.emit(this.offset);
 	}
 
-	/*
-	 * Translate and move are not affected by the zoom
-	 * There needs to be no conversion between browser- / svg-space
-	 */
 	panning(movement: [number, number]) {
-		this.setTranslate([
-			this.translate[0] + movement[0],
-			this.translate[1] + movement[1]
-		]);
-		this.translateChange.emit(this.translate);
+		this.offset = pan(movement, this.zoom, this.offset, this.svgSize, this.border);
+		this.offsetChange.emit(this.offset);
 	}
 
 	select(item: string) {
 		console.log(item);
-	}
-
-	setTranslate(translate: [number, number]) {
-		if (translate[0] < 0) {
-			translate[0] = 0
-		}
-		if (translate[1] < 0) {
-			translate[1] = 0
-		}
-		if (translate[0] < this.stationWidth * this.zoom[0] + this.svgSize[0]) {
-//			translate[0] = this.stationWidth * this.zoom[0] + this.svgSize[0]
-		}
-
-		this.translate[0] = translate[0];
-		this.translate[1] = translate[1];
 	}
 
 	onDestroy() { }

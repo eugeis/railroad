@@ -101,7 +101,7 @@ import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 			<div class="window">
 				<ee-railroad-svg
 					[(zoom)]="zoom"
-					[(translate)]="translate">
+					[(offset)]="offset">
 				</ee-railroad-svg>
 			</div>
 			<div class="right side"></div>
@@ -109,8 +109,8 @@ import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 		<div class="footer">
 			<input type="text" [(ngModel)]="zoom[0]">
 			<input type="text" [(ngModel)]="zoom[1]">
-			<input type="text" [(ngModel)]="translate[0]">
-			<input type="text" [(ngModel)]="translate[1]">
+			<input type="text" [(ngModel)]="offset[0]">
+			<input type="text" [(ngModel)]="offset[1]">
 		</div>
 	</div>
 	`
@@ -118,5 +118,5 @@ import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 
 export class RailroadComponent {
 	zoom: [number, number] = [1,1];
-	translate: [number, number] = [0,0];
+	offset: [number, number] = [100,100];
 }
