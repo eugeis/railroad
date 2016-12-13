@@ -80,8 +80,11 @@ export class SVGScrollbarComponent implements OnChanges {
 		e.stopPropagation();
 	}
 
+	/**
+	 * y / (svgSize[1] - height) = offset / (border[1][1] * z - svgSize[1])
+	 */
 	ngOnChanges() {
 		this.height = (this.svgSize[1] * this.svgSize[1]) / ((this.zoom * this.zoom) * (this.border[1][1] - this.border[0][1]));
-		this.y = (this.offset[1] / this.zoom) / (this.border[1][1] * this.zoom - this.svgSize[1]) * (this.svgSize[1] - this.height);
+		this.y = this.offset[1] / (this.border[1][1] * this.zoom - this.svgSize[1]) * (this.svgSize[1] - this.height);
 	}
 }
