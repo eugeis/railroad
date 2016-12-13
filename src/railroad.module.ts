@@ -27,7 +27,8 @@ import { CommonModule } from '@angular/common'
 import { ContextMenu } from './contextmenu/contextmenu.component';
 import { ContextDirective } from './contextmenu/contextmenu.directive';
 import { RailroadComponent } from './railroad.component';
-import { ZoomableSVGComponent } from './zoomable-svg.component';
+import { ZoomableSVGComponent } from './svg-zoomable.component';
+import { SVGScrollbarComponent } from './svg-scrollbar.component';
 
 import { SVGUnitedStatesComponent } from './misc/svg-united-states.component';
 import { SVGFirefoxComponent } from './misc/svg-firefox.component';
@@ -43,7 +44,7 @@ import { Slider } from './misc/slider.component';
 	imports: [BrowserModule, FormsModule, CommonModule],
 	declarations: [RailroadComponent, ZoomableSVGComponent, ContextMenu, ContextDirective, Slider,
 	SVGUnitedStatesComponent, SVGFirefoxComponent, SVGGallardoComponent, SVGNetworkComponent,
-	SVGGermanyComponent],
+	SVGGermanyComponent, SVGScrollbarComponent],
 	providers: [RailroadService],
 	exports: [RailroadComponent]
 })

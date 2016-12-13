@@ -27,15 +27,8 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 	selector: 'ee-railroad',
 	styles: [`
 		ee-zoomable-svg {
-			width: 100%;
-			height: 100%;
-			display: block;
-		}
-
-		svg {
-			width: 100%;
-			height: 100%;
-			border: 1px solid #000;
+			display: flex;
+			flex: 1;
 		}
 
 		svg.dragging {
@@ -94,7 +87,7 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 	<div class="railroad">
 		<div class="header">
 			<div class="stations">
-				<div *ngFor="let station of stations">{{station}}</div>
+				<!--<div *ngFor="let station of stations">{{station}}</div>-->
 			</div>
 		</div>
 		<div class="main">
@@ -121,9 +114,9 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 			<div class="right side"></div>
 		</div>
 		<div class="footer">
-			<input type="text" [(ngModel)]="zoom">
+<!--			<input type="text" [(ngModel)]="zoom">
 			<input type="text" [(ngModel)]="offset[0]">
-			<input type="text" [(ngModel)]="offset[1]">
+			<input type="text" [(ngModel)]="offset[1]">-->
 		</div>
 	</div>
 	`

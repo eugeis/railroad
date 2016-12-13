@@ -21,9 +21,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { Railroad, Station } from './railroad.service';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { frame, calcTranslate, cursorPoint, getFactor } from './railroad.functions';
-
-var xmlns = "http://www.w3.org/2000/svg";
+import { frame, getFactor, cursorPoint, calcOffsetOnZoom, calcOffsetOnPan } from './railroad.functions';
 
 interface EventInterface<T> {
 	(e: T): void;
@@ -33,19 +31,30 @@ interface EventInterface<T> {
 	selector: 'ee-zoomable-svg',
 	styles: [`
 		svg {
-			width: 100%;
-			height: 100%;
+			display: flex;
+			flex: 1;
 			border: 1px solid #000;
 		}
 
 		svg.dragging {
 			cursor: move;
 		}
+
+		.scrollbar-group .scrollbar.vertical {
+			fill: black;
+		}
+
+		.scrollbar-group .scrollbar.horizontal {
+			fill: red;
+		}
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
 			<g [attr.transform]="'translate(' + -offset[0] + ',' + -offset[1] + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
+			</g>
+			<g class="scrollbar-group">
+				<g ee-svg-scrollbar [zoom]="zoom" [svgSize]="svgSize" [border]="border" [offset]="offset"></g>
 			</g>
 			<ng-content select=".svg-content-stationary"></ng-content>
 		</svg>
@@ -107,6 +116,11 @@ export class ZoomableSVGComponent implements OnInit {
 
 	@HostListener("window:resize") onResize() {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
+
+		if (this.border) {
+			this.zoom = this.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+		}
 	}
 
 	ngOnInit() {
@@ -121,12 +135,12 @@ export class ZoomableSVGComponent implements OnInit {
 
 		this.zoom *= factor;
 		if (this.border) {
-			this.zoom = this.applyZoomConstraints(this.zoom);
+			this.zoom = this.applyZoomConstraints(this.zoom, this.svgSize, this.border);
 		}
 
-		this.offset = calcTranslate(mousePos, oldzoom, this.zoom, this.offset);
+		this.offset = calcOffsetOnZoom(mousePos, oldzoom, this.zoom, this.offset);
 		if (this.border) {
-			this.offset = this.applyOffsetConstraints(this.offset);
+			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
 
 		this.zoomChange.emit(this.zoom);
@@ -138,26 +152,25 @@ export class ZoomableSVGComponent implements OnInit {
 	 * There needs to be no conversion between browser- / svg-space
 	 */
 	panning(movement: [number, number]) {
-		this.offset[0] += movement[0];
-		this.offset[1] += movement[1];
+		this.offset = calcOffsetOnPan(this.offset, movement);
 
 		if (this.border) {
-			this.offset = this.applyOffsetConstraints(this.offset);
+			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
 
 		this.offsetChange.emit(this.offset);
 	}
 
-	applyZoomConstraints(zoom: number): number {
-		zoom = frame(zoom, this.svgSize[0] / (this.border[1][0] - this.border[0][0]), zoom);
-		zoom = frame(zoom, this.svgSize[1] / (this.border[1][1] - this.border[0][1]), zoom);
+	applyZoomConstraints(zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): number {
+		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
+		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
 		return zoom;
 	}
 
-	applyOffsetConstraints(offset: [number, number]): [number, number] {
+	applyOffsetConstraints(offset: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
 		return [
-			frame(offset[0], this.border[0][0] * this.zoom, this.border[1][0] * this.zoom - this.svgSize[0]),
-			frame(offset[1], this.border[0][1] * this.zoom, this.border[1][1] * this.zoom - this.svgSize[1])
+			frame(offset[0], border[0][0] * zoom, border[1][0] * zoom - svgSize[0]),
+			frame(offset[1], border[0][1] * zoom, border[1][1] * zoom - svgSize[1])
 		];
 	}
 

@@ -20,49 +20,88 @@
  */
 
 /**
- * The applications switches between two spaces:
- * - the SVG-space, which uses the internal dimensionless quantity of the svg
- * - the browser-space, which is the rendered representation of the svg (in px)
+ * To understand the following you need to understand the concept of the
+ * svg's panning and zooming.
  *
- * To switch between both, one has to apply the translation and zoom. Let "t" be
- * the translation of the svg and "z" the zoom. A point (p_svg) in the svg-space
- * will be mapped to the point (p_br) in browser-space:
+ * The component distinguishes between the svg- and the browser-space. These
+ * spaces can be be mapped bidirectional to each other. Svg-space uses the
+ * coordinate system established by the svg (e.g. <rect x="100" y="100" ... >
+ * creates a rectangle at 100/100 - this does *not* mean, that the rectangle,
+ * will be displayed at 100/100 to the user). The user sees everything from the
+ * svg-space projected to the browser-space.
  *
- * p_br = p_svg * z + t
+ * It's very important to note, that when the user navigates through the svg,
+ * the svg's viewport is *not* moving. Rather, the user moves the elements in
+ * the svg.
+ *
+ * Let p_svg be a point in svg_space and p_browser a point in browser-space.
+ * Further, let z be the (numeric) zoomlevel (e.g. 2 indicating a zoom of 200%)
+ * and t be the offset-vector (e.g -150/-100 indicating a shift of 150 to the right
+ * and 100 down):
+ *
+ * p_browser = p_svg * z - t
+ *
+ * If the user zoomes to 200% (z = 2) and moves the graphic by 100/100 (offset =
+ * [-140,-150]), a point at 100/100 will be displayed at 340/350:
+ *
+ * [100,100] * 2 - [-140,-150] = [340,350]
  */
 
-
-export function toSVGSpace(p: number, tp: number, z: number): number {
-	return (p - tp) / z;
-}
-
-export function toBrowserSpace(p: number, tp: number, z: number): number {
-	return (p * z) + tp;
-}
-
-export function calcTranslate(m: [number, number], oldZoom: number, newZoom: number, offset: [number, number]): [number, number] {
+/**
+ * Calculates the new offset after zooming
+ *
+ * The zooming works like the zooming in Google Maps. If you want to zoom into a
+ * city, you place your cursor above it and zoom in (e.g. by using the mouse-wheel).
+ * To generalise, if you place your cursor above a point, you want your mouse
+ * to stay during zooming.
+ *
+ * Because the cursor-position is provided in the browser-space, we need to map
+ * it into the svg space (see explanation above):
+ *
+ *     p_browser = p_svg * z - t
+ * <=> p_svg = (p_browser - t) / z
+ *
+ * let c be the cursor-position when zooming, t_o the current offset, z_o the former
+ * zoomlevel, z_n the new zoomlevel.
+ *
+ *     (c + t_o) / z_o = (c + t_n) / z_n
+ * <=> ((c + t_o) / z_o) * z_n = c + t_n
+ * <=> t_n = ((c + t_o) / z_o) * z_n - c
+ *
+ *     t_n = f(c, z_o, z_n, t_o) = calcOffsetOnZoom(c, z_o, z_n, t_o);
+ */
+export function calcOffsetOnZoom(cursorPos: [number, number], oldZoom: number, newZoom: number, offset: [number, number]): [number, number] {
 	return [
-		toSVGSpace(m[0], -offset[0], oldZoom) * newZoom - m[0],
-		toSVGSpace(m[1], -offset[1], oldZoom) * newZoom - m[1]
+		((cursorPos[0] + offset[0]) / oldZoom) * newZoom - cursorPos[0],
+		((cursorPos[1] + offset[1]) / oldZoom) * newZoom - cursorPos[1]
 	];
 }
 
 /**
- * Given the current zoom and the scrolling-delta, calcZoom calculates
- * the new zoom (n).
+ * Calculates the new offset after panning
  *
- * calcZoom(d, z) -> n
+ * The panning works similar to zooming: The point (e.g a city) the cursor has
+ * been on at pan-start is supposed to be the point the cursor is on at pan-end.
  *
- * d is the scrolling delta (normal scrolling: +/- 53, fast scrolling: +/- 250)
- * z is the zoom (1 indicating a 100% zoom, 2 indicating a 200% zoom)
- * n ∈ [zoom * 0.8, zoom * 1.2]
+ * Because the offset (read: translate in svg) is not affected by the zoomlevel,
+ * a simple addition is sufficient
+ */
+export function calcOffsetOnPan(offset: [number, number], movement: [number, number]): [number, number] {
+	return [offset[0] + movement[0], offset[1] + movement[1]]
+}
+
+/**
+ * Transforms the delta movement by the mousewheel to a number between 0.8 and 1.2
  */
 export function getFactor(delta: number): number {
 	return (1 + (frame(-delta / 265, -1, 1) / 5));
 }
 
 /**
- * Returns the mouse-position in SVG-space
+ * Returns the cursor-position relative to the top-left corner of the svg
+ * (to be precisely: it return the current cursor-position in svg-space, BUT
+ * because we're (only) moving the svg-elements (and not the svg-viewport) this
+ * resolves to the relative cursor position)
  */
 export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): [number, number]{
 	let point: SVGPoint;
@@ -72,7 +111,12 @@ export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): [
 	return [point.x, point.y];
 }
 
-
+/**
+ * frame(v, min, max):
+ * v      (min <= v <= max)
+ * min    (v < min)
+ * max    (v > max)
+ */
 export function frame(value: number, min: number, max: number) {
 	return Math.max(Math.min(value, max), min);
 }
