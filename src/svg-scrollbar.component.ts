@@ -27,11 +27,12 @@ import { applyOffsetConstraint } from './svg-zoomable.functions';
 	styles: [`
 		.scrollbar {
 			cursor: pointer;
-			fill: rgba(166,166,166,0.8)
+			fill: rgba(166,166,166,0.8);
 		}
 
 		.scrollbar.vertical {
 			width: 5px;
+			transition: width 100ms;
 		}
 
 		.scrollbar.vertical:hover, .scrollbar.vertical.dragging {
@@ -40,6 +41,7 @@ import { applyOffsetConstraint } from './svg-zoomable.functions';
 
 		.scrollbar.horizontal {
 			height: 5px;
+			transition: height 100ms;
 		}
 
 		.scrollbar.horizontal:hover, .scrollbar.horizontal.dragging {
