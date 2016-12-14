@@ -104,14 +104,14 @@ export class ZoomableSVGComponent implements OnInit {
 		this.dragging = true;
 	}
 
-	@HostListener('mousemove', ['$event']) onMouseMove(e: MouseEvent) {
+	@HostListener('window:mousemove', ['$event']) onMouseMove(e: MouseEvent) {
 		if (!this.dragging) {
 			return;
 		}
 		this.panning([-e.movementX, -e.movementY]);
 	}
 
-	@HostListener('mouseup', ['$event']) onMouseUp(e: MouseEvent) {
+	@HostListener('window:mouseup', ['$event']) onMouseUp(e: MouseEvent) {
 		this.dragging = false;
 	}
 
