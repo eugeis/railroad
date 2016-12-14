@@ -20,7 +20,7 @@
  */
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter, HostListener } from '@angular/core';
 
-import { applyOffsetConstraint } from './railroad.functions';
+import { applyOffsetConstraint } from './svg-zoomable.functions';
 
 @Component({
 	selector: '[ee-svg-scrollbar]',

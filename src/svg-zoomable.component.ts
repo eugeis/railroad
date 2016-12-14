@@ -21,7 +21,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { Railroad, Station } from './railroad.service';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { frame, getFactor, cursorPoint, calcOffsetOnZoom, calcOffsetOnPan, applyZoomConstraints, applyOffsetConstraints } from './railroad.functions';
+import { frame, getFactor, cursorPoint, calcOffsetOnZoom, calcOffsetOnPan, applyZoomConstraints, applyOffsetConstraints } from './svg-zoomable.functions';
 
 interface EventInterface<T> {
 	(e: T): void;
