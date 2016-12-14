@@ -20,91 +20,13 @@
  */
 import { Injectable } from '@angular/core';
 
-export interface Halt {
-	station: Station,
-	time: Date
-}
-
-export type Station = string;
-type Track = Halt[];
-export type Railroad = Track[];
-
-const stations: Station[] = [
-	"A", "B", "C"
-];
-
-const railroad: Railroad = [
-	[{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 0, 0)
-	},
-	{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 10, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 0, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 5, 0)
-	},
-	{
-		station: stations[2],
-		time: new Date(0, 0, 0, 11, 30, 0)
-	}],
-	[{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 0, 0)
-	},
-	{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 10, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 0, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 5, 0)
-	},
-	{
-		station: stations[2],
-		time: new Date(0, 0, 0, 11, 30, 0)
-	}],
-	[{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 0, 0)
-	},
-	{
-		station: stations[0],
-		time: new Date(0, 0, 0, 10, 10, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 0, 0)
-	},
-	{
-		station: stations[1],
-		time: new Date(0, 0, 0, 11, 5, 0)
-	},
-	{
-		station: stations[2],
-		time: new Date(0, 0, 0, 11, 30, 0)
-	}]
-];
+import { timetable } from '../data/timetable';
 
 @Injectable()
 export class RailroadService {
 	constructor() { }
 
-	getRailroad(): Railroad {
-		return railroad;
-	}
-
-	getAllStations(): Station[] {
-		return stations;
+	test() {
+		return timetable;
 	}
 }

@@ -19,7 +19,6 @@
  * @author Jonas Möller
  */
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
-import { Railroad, Station } from './railroad.service';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { frame, getFactor, cursorPoint, calcOffsetOnZoom, calcOffsetOnPan, applyZoomConstraints, applyOffsetConstraints } from './svg-zoomable.functions';
 
@@ -65,7 +64,7 @@ interface EventInterface<T> {
 export class ZoomableSVGComponent implements OnInit {
 	@Input() zoom: number = 1;
 	@Input() offset: [number, number] = [0,0];
-	@Input() border: [[number, number],[number, number]] = [[0,0],[2000,2000]];
+	@Input() border: [[number, number],[number, number]];
 
 	@Input() contextMenu: ContextMenuStatus = {
 		show: false,

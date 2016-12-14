@@ -21,7 +21,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { RailroadService, Railroad, Station } from './railroad.service';
+import { RailroadService } from './railroad.service';
 
 @Component({
 	selector: 'ee-railroad',
@@ -85,39 +85,21 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 	`],
 	template: `
 	<div class="railroad">
-		<div class="header">
-			<div class="stations">
-				<!--<div *ngFor="let station of stations">{{station}}</div>-->
-			</div>
-		</div>
-		<div class="main">
-			<div class="left side"></div>
-			<div class="window">
-				<ee-zoomable-svg [(zoom)]="zoom" [(offset)]="offset">
-					<svg:g svg-united-states transform="translate(100,100)"></svg:g>
-					<svg:g svg-united-states transform="translate(970,1300)"></svg:g>
-					<svg:rect x="100" y="100" width="1800" height="1800" style="fill:transparent; stroke: grey;"/>
-					<svg:rect x="200" y="200" width="1600" height="1600" style="fill:transparent; stroke: red;"/>
-					<svg:defs>
-						<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-							<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
-						</svg:pattern>
-						<svg:pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
-							<svg:rect width="100" height="100" fill="url(#smallGrid)"/>
-							<svg:path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1"/>
-						</svg:pattern>
-					</svg:defs>
-					<svg:rect x="0" y="0" width="2000" height="2000" fill="url(#grid)" />
-				</ee-zoomable-svg>
-				<context-menu [contextMenu]="contextMenu"></context-menu>
-			</div>
-			<div class="right side"></div>
-		</div>
-		<div class="footer">
-<!--			<input type="text" [(ngModel)]="zoom">
-			<input type="text" [(ngModel)]="offset[0]">
-			<input type="text" [(ngModel)]="offset[1]">-->
-		</div>
+		<ee-zoomable-svg [(zoom)]="zoom" [(offset)]="offset" [border]="border">
+			<svg:defs>
+				<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+					<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
+				</svg:pattern>
+				<svg:pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+					<svg:rect width="100" height="100" fill="url(#smallGrid)"/>
+					<svg:path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1"/>
+				</svg:pattern>
+			</svg:defs>
+			<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
+			<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
+			<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
+		</ee-zoomable-svg>
+		<context-menu [contextMenu]="contextMenu"></context-menu>
 	</div>
 	`
 })
@@ -125,6 +107,7 @@ import { RailroadService, Railroad, Station } from './railroad.service';
 export class RailroadComponent implements OnInit {
 	zoom: number = 1;
 	offset: [number, number] = [100, 100];
+	border: [[number, number], [number, number]] = [[0,0],[10000,10000]];
 
 	contextMenu: ContextMenuStatus = {
 		show: false,
@@ -134,13 +117,9 @@ export class RailroadComponent implements OnInit {
 		target: undefined
 	};
 
-	railroad: Railroad;
-	stations: Station[];
-
 	constructor(private rs: RailroadService) { }
 
 	ngOnInit() {
-		this.railroad = this.rs.getRailroad();
-		this.stations = this.rs.getAllStations();
+		console.log(this.rs.test());
 	}
 }
