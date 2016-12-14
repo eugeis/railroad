@@ -120,3 +120,20 @@ export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): [
 export function frame(value: number, min: number, max: number) {
 	return Math.max(Math.min(value, max), min);
 }
+
+export function applyZoomConstraints(zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): number {
+	zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
+	zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
+	return zoom;
+}
+
+export function applyOffsetConstraints(offset: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
+	return [
+		applyOffsetConstraint(offset[0], zoom, svgSize[0], [border[0][0], border[1][0]]),
+		applyOffsetConstraint(offset[1], zoom, svgSize[1], [border[0][1], border[1][1]])
+	];
+}
+
+export function applyOffsetConstraint(offset: number, zoom: number, svgSize: number, border: [number,number]): number {
+	return frame(offset, border[0] * zoom, border[1] * zoom - svgSize);
+}
