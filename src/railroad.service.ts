@@ -20,13 +20,24 @@
  */
 import { Injectable } from '@angular/core';
 
-import { timetable } from '../data/timetable';
+import { Timetable } from './timetable.interface';
 
 @Injectable()
 export class RailroadService {
 	constructor() { }
 
-	test() {
-		return timetable;
+	getTimetable(): Timetable {
+		return {
+			timestamp: new Date(),
+			partialTrips: {
+				all: []
+			},
+			trips: {
+				all: []
+			},
+			stopOrPasss: {
+				all: []
+			}
+		};
 	}
 }

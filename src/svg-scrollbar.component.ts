@@ -72,7 +72,7 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 	@Input() border: [number, number];
 	@Input() offset: number;
 
-	@Input() horizontal;
+	@Input() horizontal: any;
 
 	@Output() offsetChange: EventEmitter<number> = new EventEmitter<number>();
 

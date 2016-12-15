@@ -22,6 +22,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { RailroadService } from './railroad.service';
+import { Timetable } from './timetable.interface';
 
 @Component({
 	selector: 'ee-railroad',
@@ -117,9 +118,11 @@ export class RailroadComponent implements OnInit {
 		target: undefined
 	};
 
+	timetable: Timetable;
+
 	constructor(private rs: RailroadService) { }
 
 	ngOnInit() {
-		console.log(this.rs.test());
+		this.timetable = this.rs.getTimetable();
 	}
 }
