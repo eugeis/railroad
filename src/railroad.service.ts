@@ -28,16 +28,38 @@ export class RailroadService {
 
 	getTimetable(): Timetable {
 		return {
-			timestamp: new Date(),
-			partialTrips: {
-				all: []
+			"timestamp": new Date(),
+			"partialTrips": {
+				"all": []
 			},
-			trips: {
-				all: []
+			"trips": {
+				"all": []
 			},
-			stopOrPasss: {
-				all: []
-			}
+			"stopOrPasss": {
+				"all": []
+			},
+			"stations": [
+				"AZM",
+				"1010",
+				"BTC",
+				"1009",
+				"1007",
+				"JDM",
+				"MDY",
+				"1006",
+				"ZCLU",
+				"XTC",
+				"HDHZ",
+				"ZCLI",
+				"SZJ",
+				"1004",
+				"BG",
+				"1001",
+				"SYJ",
+				"PLU",
+				"HXXJ",
+				"1011"
+			]
 		};
 	}
 }

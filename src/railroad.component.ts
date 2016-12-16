@@ -83,10 +83,32 @@ import { Timetable } from './timetable.interface';
 			stroke: black;
 			stroke-width: 2;
 		}
+
+		text {
+			text-anchor: center;
+			fill: red;
+		}
+
+		line {
+			stroke: black;
+			stroke-width: 3px;
+		}
 	`],
 	template: `
 	<div class="railroad">
 		<ee-zoomable-svg [(zoom)]="zoom" [(offset)]="offset" [border]="border">
+			<svg:g class="svg-content-y-stationary">
+				<svg:g *ngFor="let station of timetable.stations; let i = index">
+					<svg:rect [attr.x]="i * 60 + 10" y="0" width="40" height="20"></svg:rect>
+					<svg:line y1="0" [attr.y2]="border[1][1]" [attr.x1]="i * 60 + 30" [attr.x2]="i * 60 + 30" />
+					<svg:text [attr.x]="i * 60 + 10" y="10">{{station}}</svg:text>
+				</svg:g>
+			</svg:g>
+
+			<svg:line y1="100" y2="200" x1="210" x2="270" />
+			<svg:line y1="150" y2="230" x1="270" x2="330" />
+
+			<!--
 			<svg:defs>
 				<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
 					<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
@@ -99,6 +121,7 @@ import { Timetable } from './timetable.interface';
 			<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
 			<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
 			<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
+			-->
 		</ee-zoomable-svg>
 		<context-menu [contextMenu]="contextMenu"></context-menu>
 	</div>
@@ -107,8 +130,8 @@ import { Timetable } from './timetable.interface';
 
 export class RailroadComponent implements OnInit {
 	zoom: number = 1;
-	offset: [number, number] = [100, 100];
-	border: [[number, number], [number, number]] = [[0,0],[10000,10000]];
+	offset: [number, number] = [0,0];
+	border: [[number, number], [number, number]];
 
 	contextMenu: ContextMenuStatus = {
 		show: false,
@@ -124,5 +147,6 @@ export class RailroadComponent implements OnInit {
 
 	ngOnInit() {
 		this.timetable = this.rs.getTimetable();
+		this.border = [[0,0],[this.timetable.stations.length * 60, 1000]];
 	}
 }

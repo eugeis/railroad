@@ -56,8 +56,20 @@ interface EventInterface<T> {
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
 			<g class="scrollbar-group">
-				<g ee-svg-scrollbar [horizontal]="true" [zoom]="zoom" [svgSize]="svgSize[0]" [border]="[border[0][0], border[1][0]]" [(offset)]="offset[0]"></g>
-				<g ee-svg-scrollbar [zoom]="zoom" [svgSize]="svgSize[1]" [border]="[border[0][1], border[1][1]]" [(offset)]="offset[1]"></g>
+				<g ee-svg-scrollbar [horizontal]="true"
+					[positionOffset]="svgSize[1] - 10"
+					[zoom]="zoom"
+					[svgSize]="svgSize[0]"
+					[border]="[border[0][0], border[1][0]]"
+					[(offset)]="offset[0]">
+				</g>
+				<g ee-svg-scrollbar
+					[positionOffset]="svgSize[0] - 10"
+					[zoom]="zoom"
+					[svgSize]="svgSize[1]"
+					[border]="[border[0][1], border[1][1]]"
+					[(offset)]="offset[1]">
+				</g>
 			</g>
 			<ng-content select=".svg-content-stationary"></ng-content>
 		</svg>
