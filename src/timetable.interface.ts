@@ -100,7 +100,7 @@ export interface StopOrPass {
 //	stationTopologyId: "A3G8H99GH8"
 	stationTrack: StationTrack
 	stopOrTrackLastChanged: Date
-//	stopType: "STOP"
+	stopType: string
 //	topologyId: "A3G8H9GXH8"
 	turning: boolean
 //	type: "STATIONTRACK"
