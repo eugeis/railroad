@@ -94,6 +94,11 @@ export class ZoomableSVGComponent implements OnInit {
 		this.zooming(cursorPoint(this.svg, this.pt, e), getFactor(e.deltaY));
 	}
 
+	@HostListener('dblclick', ['$event']) onDoubleClick(e: MouseEvent) {
+		this.contextMenu.show = false;
+		this.zooming(cursorPoint(this.svg, this.pt, e), ((e.ctrlKey) ? 0.8 : 1.2));
+	}
+
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
