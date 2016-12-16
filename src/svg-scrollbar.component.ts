@@ -31,34 +31,34 @@ import { applyOffsetConstraint } from './svg-zoomable.functions';
 		}
 
 		.scrollbar.vertical {
-			width: 5px;
+			width: 8px;
 			transition: width 100ms;
 		}
 
 		.scrollbar.vertical:hover, .scrollbar.vertical.dragging {
-			width: 10px;
+			width: 12px;
 		}
 
 		.scrollbar.horizontal {
-			height: 5px;
+			height: 8px;
 			transition: height 100ms;
 		}
 
 		.scrollbar.horizontal:hover, .scrollbar.horizontal.dragging {
-			height: 10px;
+			height: 12px;
 		}
 	`],
 	template: `
 		<svg:g *ngIf="border">
 			<svg:rect *ngIf="horizontal && size != svgSize" class="scrollbar horizontal"
-				y="10"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="position"
+				[attr.y]="positionOffset"
 				[attr.width]="size"
 			/>
 			<svg:rect *ngIf="!horizontal && size != svgSize" class="scrollbar vertical"
-				x="10"
 				[ngClass]="{'dragging': dragging}"
+				[attr.x]="positionOffset"
 				[attr.y]="position"
 				[attr.height]="size"
 			/>
@@ -71,6 +71,7 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 	@Input() zoom: number;
 	@Input() border: [number, number];
 	@Input() offset: number;
+	@Input() positionOffset: number = 5;
 
 	@Input() horizontal: any;
 
