@@ -35,11 +35,9 @@ interface EventInterface<T> {
 	selector: 'ee-railroad-svg',
 	styles: [`
 		svg {
-			width: 600px;
-			height: 600px;
 			border: 1px solid #000;
-			position: relative;
-			display: block;
+			display: flex;
+			flex: 1;
 		}
 
 		svg.dragging {
@@ -54,42 +52,23 @@ interface EventInterface<T> {
 			-ms-user-select: none;
 			user-select: none;
 		}
-
-		.track, svg line {
-			fill: transparent;
-			stroke: black;
-			stroke-width: 2;
-			pointer-events: stroke;
-		}
-		.station {
-			background: black;
-			height: 15px;
-			outline: 1px solid #fff;
-		}
-		.stationLabel {
-			text-anchor: middle;
-			font-size: 18pt;
-			fill: #ffffff;
-		}
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}"
-			[attr.viewBox]="offset[0] + ' ' + offset[1] + ' ' + svgSize[0] / zoom[0] + ' ' + svgSize[1] / zoom[1]"
+			[attr.viewBox]="offset[0] + ' ' + offset[1] + ' ' + svgSize[0] / zoom + ' ' + svgSize[1] / zoom"
 			preserveAspectRatio="none">
-			<g svg-firefox [attr.transform]="'translate(' + border[0][0] + ', ' + border[0][1] + ')'"></g>
-			<g svg-firefox [attr.transform]="'translate(' + border[0][0] + ', ' + (border[1][1]-150) + ')'"></g>
-			<g svg-firefox [attr.transform]="'translate(' + (border[1][0]-150) + ', ' + border[0][1] + ')'"></g>
-			<g svg-firefox [attr.transform]="'translate(' + (border[1][0]-150) + ', ' + (border[1][1]-150) + ')'"></g>
-			<g svg-germany></g>
+			<ng-content></ng-content>
+		</svg>
 		<context-menu [contextMenu]="contextMenu"></context-menu>
 	`
 })
 
 export class RailroadSVGComponent implements OnInit {
-	@Input() zoom: [number, number] = [1,1];
+	@Input() zoom: number = 1;
 	@Input() offset: [number, number] = [0,0];
+	@Input() border: [[number,number],[number,number]];
 
-	@Output() zoomChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
+	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
 	@Output() offsetChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	contextMenu: ContextMenuStatus = {
@@ -106,14 +85,7 @@ export class RailroadSVGComponent implements OnInit {
 	pt: SVGPoint;
 	svgSize: [number, number];
 
-	border: [[number, number],[number, number]] = [[0,0],[1875,1000]];
-
-	railroad: Railroad;
-	stations: Station[];
-
-	lines: string[] = [];
-
-	constructor(private rs: RailroadService, private er: ElementRef) { }
+	constructor(private er: ElementRef) { }
 
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
@@ -123,7 +95,6 @@ export class RailroadSVGComponent implements OnInit {
 
 	@HostListener('click', ['$event']) onClick() {
 		this.contextMenu.show = false;
-		//this.zooming([200, 200], 2);
 	}
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
@@ -156,29 +127,44 @@ export class RailroadSVGComponent implements OnInit {
 	ngOnInit() {
 		this.svg = this.er.nativeElement.querySelector("svg");
 		this.pt = this.svg.createSVGPoint();
-
-		this.railroad = this.rs.getRailroad();
-		this.stations = this.rs.getAllStations();
-		this.stations.reduce((sum: number, currentStation: Station) => {
-			currentStation.x = sum;
-			return sum + currentStation.width;
-		}, 0);
-
 		this.onResize();
 	}
 
 	zooming(mousePos: [number, number], factor: number) {
-		this.zoom[0] *= factor;
-		this.zoom[1] *= factor;		
+		this.zoom *= factor;
+		if (this.border) {
+			this.zoom = this.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+		}
+
 		this.offset = zoom(mousePos, this.offset, factor);
+		if (this.border) {
+			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+		}
 
 		this.zoomChange.emit(this.zoom);
 		this.offsetChange.emit(this.offset);
 	}
 
 	panning(movement: [number, number]) {
-		this.offset = pan(movement, this.zoom, this.offset, this.svgSize, this.border);
+		this.offset = pan(movement, this.zoom, this.offset);
+
+		if (this.border) {
+			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+		}
 		this.offsetChange.emit(this.offset);
+	}
+
+	applyOffsetConstraints(offset, zoom, svgSize, border): [number, number] {
+		return [
+			frame(offset[0], border[0][0], border[1][0] - svgSize[0] / zoom),
+			frame(offset[1], border[0][1], border[1][1] - svgSize[1] / zoom)
+		];
+	}
+
+	applyZoomConstraints(zoom, svgSize, border) {
+		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
+		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
+		return zoom;
 	}
 
 	select(item: string) {

@@ -43,23 +43,8 @@ export function zoom(mousePos: [number, number],
 	];
 }
 
-export function pan(movement: [number, number],
-		zoom: [number, number],
-		offset: [number, number],
-		svgSize: [number, number],
-		border: [[number, number],[number, number]]): [number, number] {
-	return [
-		frame(
-			offset[0] + movement[0] / zoom[0],
-			border[0][0],
-			border[1][0] - svgSize[0] / zoom[0]
-		),
-		frame(
-			offset[1] + movement[1] / zoom[1],
-			border[0][1],
-			border[1][1] - svgSize[1] / zoom[1]
-		)
-	];
+export function pan(movement: [number, number], zoom: number, offset: [number, number]): [number, number] {
+	return [offset[0] + movement[0] / zoom, offset[1] + movement[1] / zoom];
 }
 
 export function getZoomFactor(delta: number) {
