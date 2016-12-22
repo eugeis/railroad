@@ -38,8 +38,8 @@ export function zoom(mousePos: [number, number],
 		offset: [number, number],
 		factor: number): [number, number] {
 	return [
-		(mousePos[0] - offset[0]) - ((mousePos[0] - offset[0]) / factor) + offset[0],
-		(mousePos[1] - offset[1]) - ((mousePos[1] - offset[1]) / factor) + offset[1]
+		mousePos[0] - (mousePos[0] - offset[0]) / factor,
+		mousePos[1] - (mousePos[1] - offset[1]) / factor
 	];
 }
 
