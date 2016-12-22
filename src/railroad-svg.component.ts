@@ -122,6 +122,11 @@ export class RailroadSVGComponent implements OnInit {
 
 	@HostListener('window:resize') onResize() {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
+
+		if (this.border) {
+			this.zoom = this.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+		}
 	}
 
 	ngOnInit() {
@@ -154,14 +159,14 @@ export class RailroadSVGComponent implements OnInit {
 		this.offsetChange.emit(this.offset);
 	}
 
-	applyOffsetConstraints(offset, zoom, svgSize, border): [number, number] {
+	applyOffsetConstraints(offset: [number, number], zoom: number, svgSize: [number, number], border: [[number, number],[number, number]]): [number, number] {
 		return [
 			frame(offset[0], border[0][0], border[1][0] - svgSize[0] / zoom),
 			frame(offset[1], border[0][1], border[1][1] - svgSize[1] / zoom)
 		];
 	}
 
-	applyZoomConstraints(zoom, svgSize, border) {
+	applyZoomConstraints(zoom: number, svgSize: [number, number], border: [[number, number],[number, number]]) {
 		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
 		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
 		return zoom;
