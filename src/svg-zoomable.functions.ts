@@ -70,10 +70,10 @@
  *
  *     t_n = f(c, z_o, z_n, t_o) = calcOffsetOnZoom(c, z_o, z_n, t_o);
  */
-export function calcOffsetOnZoom(cursorPos: [number, number], oldZoom: number, newZoom: number, offset: [number, number]): [number, number] {
+export function calcOffsetOnZoom(cursorPos: [number, number], offset: [number, number], factor: number): [number, number] {
 	return [
-		((cursorPos[0] + offset[0]) / oldZoom) * newZoom - cursorPos[0],
-		((cursorPos[1] + offset[1]) / oldZoom) * newZoom - cursorPos[1]
+		factor * (cursorPos[0] + offset[0]) - cursorPos[0],
+		factor * (cursorPos[1] + offset[1]) - cursorPos[1]
 	];
 }
 

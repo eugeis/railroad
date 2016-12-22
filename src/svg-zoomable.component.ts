@@ -151,14 +151,12 @@ export class ZoomableSVGComponent implements OnInit {
 	}
 
 	zooming(mousePos: [number, number], factor: number) {
-		let oldzoom: number = this.zoom;
-
 		this.zoom *= factor;
 		if (this.border) {
 			this.zoom = applyZoomConstraints(this.zoom, this.svgSize, this.border);
 		}
 
-		this.offset = calcOffsetOnZoom(mousePos, oldzoom, this.zoom, this.offset);
+		this.offset = calcOffsetOnZoom(mousePos, this.offset, factor);
 		if (this.border) {
 			this.offset = applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
