@@ -49,10 +49,10 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
-			<g [attr.transform]="'translate(' + -offset[0] + ',' + -offset[1] + ')scale(' + zoom + ')'">
+			<g [attr.transform]="'translate(' + offset[0] + ',' + offset[1] + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
 			</g>
-			<g [attr.transform]="'translate(' + -offset[0] + ',0)scale(' + zoom + ')'">
+			<g [attr.transform]="'translate(' + offset[0] + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
 			<g *ngIf="border" class="scrollbar-group">
@@ -127,7 +127,7 @@ export class ZoomableSVGComponent implements OnInit {
 		if (!this.dragging) {
 			return;
 		}
-		this.panning([-e.movementX, -e.movementY]);
+		this.panning([e.movementX, e.movementY]);
 	}
 
 	@HostListener('window:mouseup', ['$event']) onMouseUp(e: MouseEvent) {
@@ -146,6 +146,8 @@ export class ZoomableSVGComponent implements OnInit {
 	ngOnInit() {
 		this.svg = this.er.nativeElement.querySelector("svg");
 		this.pt = this.svg.createSVGPoint();
+
+		this.border = undefined;
 
 		this.onResize();
 	}

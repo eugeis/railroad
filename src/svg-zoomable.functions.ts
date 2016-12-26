@@ -64,16 +64,17 @@
  * let c be the cursor-position when zooming, t_o the current offset, z_o the former
  * zoomlevel, z_n the new zoomlevel.
  *
- *     (c + t_o) / z_o = (c + t_n) / z_n
- * <=> ((c + t_o) / z_o) * z_n = c + t_n
- * <=> t_n = ((c + t_o) / z_o) * z_n - c
+ *     (c - t_o) / z_o = (c - t_n) / z_n
+ * <=> ((c - t_o) / z_o) * z_n = c - t_n
+ * <=> t_n = c - ((c - t_o) / z_o) * z_n     // f = z_n / z_o
+ * <=> t_n = c - f * (c - t_o)
  *
  *     t_n = f(c, z_o, z_n, t_o) = calcOffsetOnZoom(c, z_o, z_n, t_o);
  */
 export function calcOffsetOnZoom(cursorPos: [number, number], offset: [number, number], factor: number): [number, number] {
 	return [
-		factor * (cursorPos[0] + offset[0]) - cursorPos[0],
-		factor * (cursorPos[1] + offset[1]) - cursorPos[1]
+		cursorPos[0] - factor * (cursorPos[0] - offset[0]),
+		cursorPos[1] - factor * (cursorPos[1] - offset[1])
 	];
 }
 
