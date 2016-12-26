@@ -20,7 +20,7 @@
  */
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { frame, getFactor, cursorPoint, calcOffsetOnZoom, calcOffsetOnPan, applyZoomConstraints, applyOffsetConstraints } from './svg-zoomable.functions';
+import { frame, getFactor, cursorPoint, calcTranslateOnZoom, calcTranslateOnPan, applyZoomConstraints, applyTranslateConstraints } from './svg-zoomable.functions';
 
 interface EventInterface<T> {
 	(e: T): void;
@@ -49,27 +49,11 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
-			<g [attr.transform]="'translate(' + offset[0] + ',' + offset[1] + ')scale(' + zoom + ')'">
+			<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
 			</g>
-			<g [attr.transform]="'translate(' + offset[0] + ',0)scale(' + zoom + ')'">
+			<g [attr.transform]="'translate(' + translate[0] + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
-			</g>
-			<g *ngIf="border" class="scrollbar-group">
-				<g ee-svg-scrollbar [horizontal]="true"
-					[positionOffset]="svgSize[1] - 10"
-					[zoom]="zoom"
-					[svgSize]="svgSize[0]"
-					[border]="[border[0][0], border[1][0]]"
-					[(offset)]="offset[0]">
-				</g>
-				<g ee-svg-scrollbar
-					[positionOffset]="svgSize[0] - 10"
-					[zoom]="zoom"
-					[svgSize]="svgSize[1]"
-					[border]="[border[0][1], border[1][1]]"
-					[(offset)]="offset[1]">
-				</g>
 			</g>
 			<ng-content select=".svg-content-stationary"></ng-content>
 		</svg>
@@ -78,7 +62,7 @@ interface EventInterface<T> {
 
 export class ZoomableSVGComponent implements OnInit {
 	@Input() zoom: number = 1;
-	@Input() offset: [number, number] = [0,0];
+	@Input() translate: [number, number] = [0,0];
 	@Input() border: [[number, number],[number, number]];
 
 	@Input() contextMenu: ContextMenuStatus = {
@@ -90,7 +74,7 @@ export class ZoomableSVGComponent implements OnInit {
 	};
 
 	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
-	@Output() offsetChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
+	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	dragging: boolean = false;
 
@@ -139,15 +123,13 @@ export class ZoomableSVGComponent implements OnInit {
 
 		if (this.border) {
 			this.zoom = applyZoomConstraints(this.zoom, this.svgSize, this.border);
-			this.offset = applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+			this.translate = applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
 		}
 	}
 
 	ngOnInit() {
 		this.svg = this.er.nativeElement.querySelector("svg");
 		this.pt = this.svg.createSVGPoint();
-
-		this.border = undefined;
 
 		this.onResize();
 	}
@@ -158,13 +140,13 @@ export class ZoomableSVGComponent implements OnInit {
 			this.zoom = applyZoomConstraints(this.zoom, this.svgSize, this.border);
 		}
 
-		this.offset = calcOffsetOnZoom(mousePos, this.offset, factor);
+		this.translate = calcTranslateOnZoom(mousePos, this.translate, factor);
 		if (this.border) {
-			this.offset = applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+			this.translate = applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
 		}
 
 		this.zoomChange.emit(this.zoom);
-		this.offsetChange.emit(this.offset);
+		this.translateChange.emit(this.translate);
 	}
 
 	/*
@@ -172,13 +154,13 @@ export class ZoomableSVGComponent implements OnInit {
 	 * There needs to be no conversion between browser- / svg-space
 	 */
 	panning(movement: [number, number]) {
-		this.offset = calcOffsetOnPan(this.offset, movement);
+		this.translate = calcTranslateOnPan(this.translate, movement);
 
 		if (this.border) {
-			this.offset = applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+			this.translate = applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
 		}
 
-		this.offsetChange.emit(this.offset);
+		this.translateChange.emit(this.translate);
 	}
 
 	select(item: string) {

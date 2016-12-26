@@ -36,19 +36,19 @@
  *
  * Let p_svg be a point in svg_space and p_browser a point in browser-space.
  * Further, let z be the (numeric) zoomlevel (e.g. 2 indicating a zoom of 200%)
- * and t be the offset-vector (e.g -150/-100 indicating a shift of 150 to the right
+ * and t be the translate-vector (e.g -150/-100 indicating a shift of 150 to the right
  * and 100 down):
  *
  * p_browser = p_svg * z - t
  *
- * If the user zoomes to 200% (z = 2) and moves the graphic by 100/100 (offset =
+ * If the user zoomes to 200% (z = 2) and moves the graphic by 100/100 (translate =
  * [-140,-150]), a point at 100/100 will be displayed at 340/350:
  *
  * [100,100] * 2 - [-140,-150] = [340,350]
  */
 
 /**
- * Calculates the new offset after zooming
+ * Calculates the new translate after zooming
  *
  * The zooming works like the zooming in Google Maps. If you want to zoom into a
  * city, you place your cursor above it and zoom in (e.g. by using the mouse-wheel).
@@ -61,7 +61,7 @@
  *     p_browser = p_svg * z - t
  * <=> p_svg = (p_browser - t) / z
  *
- * let c be the cursor-position when zooming, t_o the current offset, z_o the former
+ * let c be the cursor-position when zooming, t_o the current translate, z_o the former
  * zoomlevel, z_n the new zoomlevel.
  *
  *     (c - t_o) / z_o = (c - t_n) / z_n
@@ -69,26 +69,26 @@
  * <=> t_n = c - ((c - t_o) / z_o) * z_n     // f = z_n / z_o
  * <=> t_n = c - f * (c - t_o)
  *
- *     t_n = f(c, z_o, z_n, t_o) = calcOffsetOnZoom(c, z_o, z_n, t_o);
+ *     t_n = f(c, z_o, z_n, t_o) = calcTranslateOnZoom(c, z_o, z_n, t_o);
  */
-export function calcOffsetOnZoom(cursorPos: [number, number], offset: [number, number], factor: number): [number, number] {
+export function calcTranslateOnZoom(cursorPos: [number, number], translate: [number, number], factor: number): [number, number] {
 	return [
-		cursorPos[0] - factor * (cursorPos[0] - offset[0]),
-		cursorPos[1] - factor * (cursorPos[1] - offset[1])
+		cursorPos[0] - factor * (cursorPos[0] - translate[0]),
+		cursorPos[1] - factor * (cursorPos[1] - translate[1])
 	];
 }
 
 /**
- * Calculates the new offset after panning
+ * Calculates the new translate after panning
  *
  * The panning works similar to zooming: The point (e.g a city) the cursor has
  * been on at pan-start is supposed to be the point the cursor is on at pan-end.
  *
- * Because the offset (read: translate in svg) is not affected by the zoomlevel,
+ * Because the translate is not affected by the zoomlevel,
  * a simple addition is sufficient
  */
-export function calcOffsetOnPan(offset: [number, number], movement: [number, number]): [number, number] {
-	return [offset[0] + movement[0], offset[1] + movement[1]]
+export function calcTranslateOnPan(translate: [number, number], movement: [number, number]): [number, number] {
+	return [translate[0] + movement[0], translate[1] + movement[1]]
 }
 
 /**
@@ -128,13 +128,13 @@ export function applyZoomConstraints(zoom: number, svgSize: [number, number], bo
 	return zoom;
 }
 
-export function applyOffsetConstraints(offset: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
+export function applyTranslateConstraints(translate: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
 	return [
-		applyOffsetConstraint(offset[0], zoom, svgSize[0], [border[0][0], border[1][0]]),
-		applyOffsetConstraint(offset[1], zoom, svgSize[1], [border[0][1], border[1][1]])
+		applyTranslateConstraint(translate[0], zoom, svgSize[0], [border[0][0], border[1][0]]),
+		applyTranslateConstraint(translate[1], zoom, svgSize[1], [border[0][1], border[1][1]])
 	];
 }
 
-export function applyOffsetConstraint(offset: number, zoom: number, svgSize: number, border: [number,number]): number {
-	return frame(offset, border[0] * zoom, border[1] * zoom - svgSize);
+export function applyTranslateConstraint(translate: number, zoom: number, svgSize: number, border: [number,number]): number {
+	return frame(translate, svgSize - border[1] * zoom, -border[0] * zoom);
 }
