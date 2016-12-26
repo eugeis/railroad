@@ -55,7 +55,7 @@ interface EventInterface<T> {
 			<g [attr.transform]="'translate(' + -offset[0] + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
-			<g class="scrollbar-group">
+			<g *ngIf="border" class="scrollbar-group">
 				<g ee-svg-scrollbar [horizontal]="true"
 					[positionOffset]="svgSize[1] - 10"
 					[zoom]="zoom"
