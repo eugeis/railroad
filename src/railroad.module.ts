@@ -29,6 +29,7 @@ import { ContextDirective } from './contextmenu/contextmenu.directive';
 import { RailroadComponent } from './railroad.component';
 import { ZUITransformComponent } from './zui-transform.component';
 import { SVGScrollbarComponent } from './svg-scrollbar.component';
+import { ZUIViewboxComponent } from './zui-viewbox.component';
 
 import { SVGUnitedStatesComponent } from './misc/svg-united-states.component';
 import { SVGFirefoxComponent } from './misc/svg-firefox.component';
@@ -38,6 +39,7 @@ import { SVGGermanyComponent } from './misc/svg-germany.component';
 
 import { RailroadService } from './railroad.service';
 import { ZUITransformService } from './zui-transform.service';
+import { ZUIViewboxService } from './zui-viewbox.service';
 
 import { Slider } from './misc/slider.component';
 
@@ -45,8 +47,8 @@ import { Slider } from './misc/slider.component';
 	imports: [BrowserModule, FormsModule, CommonModule],
 	declarations: [RailroadComponent, ZUITransformComponent, ContextMenu, ContextDirective, Slider,
 	SVGUnitedStatesComponent, SVGFirefoxComponent, SVGGallardoComponent, SVGNetworkComponent,
-	SVGGermanyComponent, SVGScrollbarComponent],
-	providers: [RailroadService, ZUITransformService],
+	SVGGermanyComponent, SVGScrollbarComponent, ZUIViewboxComponent],
+	providers: [RailroadService, ZUITransformService, ZUIViewboxService],
 	exports: [RailroadComponent]
 })
 export class RailroadModule { }
