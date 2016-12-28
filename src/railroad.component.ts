@@ -23,6 +23,12 @@ import { Component } from '@angular/core';
 @Component({
 	selector: 'ee-railroad',
 	styles: [`
+		.railroad {
+			display: flex;
+			flex: 1;
+			height: 100%;
+		}
+
 		ee-zui-viewbox, ee-zui-transform {
 			display: flex;
 			flex: 1;
@@ -65,6 +71,4 @@ import { Component } from '@angular/core';
 
 export class RailroadComponent {
 	border: [[number, number], [number, number]] = [[0,0],[2000,2000]];
-
-	constructor() { }
 }
