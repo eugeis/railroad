@@ -31,7 +31,7 @@ interface EventInterface<T> {
 }
 
 @Component({
-	selector: 'ee-railroad-svg',
+	selector: 'ee-zui-viewbox',
 	styles: [`
 		svg {
 			border: 1px solid #000;

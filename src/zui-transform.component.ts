@@ -28,7 +28,7 @@ interface EventInterface<T> {
 }
 
 @Component({
-	selector: 'ee-zoomable-svg',
+	selector: 'ee-zui-transform',
 	styles: [`
 		svg {
 			display: flex;

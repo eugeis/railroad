@@ -23,14 +23,14 @@ import { Component } from '@angular/core';
 @Component({
 	selector: 'ee-railroad',
 	styles: [`
-		ee-railroad-svg, ee-zoomable-svg {
+		ee-zui-viewbox, ee-zui-transform {
 			display: flex;
 			flex: 1;
 		}
 	`],
 	template: `
 	<div class="railroad">
-		<ee-zoomable-svg [border]="border">
+		<ee-zui-transform [border]="border">
 			<svg:defs>
 				<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
 					<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
@@ -43,9 +43,9 @@ import { Component } from '@angular/core';
 			<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
 			<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
 			<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
-		</ee-zoomable-svg>
+		</ee-zui-transform>
 
-		<ee-railroad-svg [border]="border">
+		<ee-zui-viewbox [border]="border">
 			<svg:defs>
 				<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
 					<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
@@ -58,7 +58,7 @@ import { Component } from '@angular/core';
 			<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
 			<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
 			<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
-		</ee-railroad-svg>
+		</ee-zui-viewbox>
 	</div>
 	`
 })
