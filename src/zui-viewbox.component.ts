@@ -21,9 +21,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-
-import { pan, zoom, frame, getZoomFactor, cursorPoint } from './railroad.functions';
-import { RailroadService, Railroad, Station } from './railroad.service';
+import { ZUIViewboxService } from './zui-viewbox.service';
+import { cursorPoint } from './svg.functions';
 
 var xmlns = "http://www.w3.org/2000/svg";
 
@@ -63,7 +62,7 @@ interface EventInterface<T> {
 	`
 })
 
-export class RailroadSVGComponent implements OnInit {
+export class ZUIViewboxComponent implements OnInit {
 	@Input() zoom: number = 1;
 	@Input() offset: [number, number] = [0,0];
 	@Input() border: [[number,number],[number,number]];
@@ -85,12 +84,12 @@ export class RailroadSVGComponent implements OnInit {
 	pt: SVGPoint;
 	svgSize: [number, number];
 
-	constructor(private er: ElementRef) { }
+	constructor(private er: ElementRef, private vb: ZUIViewboxService) { }
 
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
 		this.contextMenu.show = false;
-		this.zooming(cursorPoint(this.svg, this.pt, e), getZoomFactor(e.deltaY));
+		this.zooming(cursorPoint(this.svg, this.pt, e), this.vb.getZoomFactor(e.deltaY));
 	}
 
 	@HostListener('click', ['$event']) onClick() {
@@ -124,8 +123,8 @@ export class RailroadSVGComponent implements OnInit {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
 
 		if (this.border) {
-			this.zoom = this.applyZoomConstraints(this.zoom, this.svgSize, this.border);
-			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+			this.zoom = this.vb.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.offset = this.vb.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
 	}
 
@@ -138,12 +137,12 @@ export class RailroadSVGComponent implements OnInit {
 	zooming(mousePos: [number, number], factor: number) {
 		this.zoom *= factor;
 		if (this.border) {
-			this.zoom = this.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.zoom = this.vb.applyZoomConstraints(this.zoom, this.svgSize, this.border);
 		}
 
-		this.offset = zoom(mousePos, this.offset, factor);
+		this.offset = this.vb.zoom(mousePos, this.offset, factor);
 		if (this.border) {
-			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+			this.offset = this.vb.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
 
 		this.zoomChange.emit(this.zoom);
@@ -151,25 +150,12 @@ export class RailroadSVGComponent implements OnInit {
 	}
 
 	panning(movement: [number, number]) {
-		this.offset = pan(movement, this.zoom, this.offset);
+		this.offset = this.vb.pan(movement, this.zoom, this.offset);
 
 		if (this.border) {
-			this.offset = this.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
+			this.offset = this.vb.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
 		this.offsetChange.emit(this.offset);
-	}
-
-	applyOffsetConstraints(offset: [number, number], zoom: number, svgSize: [number, number], border: [[number, number],[number, number]]): [number, number] {
-		return [
-			frame(offset[0], border[0][0], border[1][0] - svgSize[0] / zoom),
-			frame(offset[1], border[0][1], border[1][1] - svgSize[1] / zoom)
-		];
-	}
-
-	applyZoomConstraints(zoom: number, svgSize: [number, number], border: [[number, number],[number, number]]) {
-		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
-		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
-		return zoom;
 	}
 
 	select(item: string) {

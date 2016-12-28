@@ -33,20 +33,3 @@ export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): [
 export function frame(value: number, min: number, max: number) {
 	return Math.max(Math.min(value, max), min);
 }
-
-export function zoom(mousePos: [number, number],
-		offset: [number, number],
-		factor: number): [number, number] {
-	return [
-		mousePos[0] - (mousePos[0] - offset[0]) / factor,
-		mousePos[1] - (mousePos[1] - offset[1]) / factor
-	];
-}
-
-export function pan(movement: [number, number], zoom: number, offset: [number, number]): [number, number] {
-	return [offset[0] + movement[0] / zoom, offset[1] + movement[1] / zoom];
-}
-
-export function getZoomFactor(delta: number) {
-	return (1 + (frame(-delta / 265, -1, 1) / 5));
-}

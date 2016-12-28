@@ -1,4 +1,5 @@
-import { frame, zoom } from './railroad.functions';
+import { frame } from './svg.functions';
+import { ZUIViewboxService } from './zui-viewbox.service';
 
 describe("Railroad functions", () => {
 	it("should apply borders", () => {
@@ -8,43 +9,59 @@ describe("Railroad functions", () => {
 		expect(frame(5, -10, 10)).toBe(5);
 		expect(frame(5, 5, 10)).toBe(5);
 		expect(frame(5, 10, 20)).toBe(10);
+		expect(frame(-10, -20, -6)).toBe(-10);
+		expect(frame(-10, -9, -6)).toBe(-9);
+		expect(frame(-10, -20, -12)).toBe(-12);
+	});
+});
+
+describe("ZUI-Viewbox Servide", () => {
+	beforeEach(() => {
+		this.testService = new ZUIViewboxService();
 	});
 
-	it("should calculate the translation", () => {
-		let oldZoom: [number, number] = [1,1];
-		let newZoom: [number, number] = [2,2];
-		let translate: [number, number] = [100,100];
+	it("should apply zoom constraints", () => {
+		fail("not implemented");
+		//this.testService.applyZoomConstraints
+	});
 
-		let svg: SVGSVGElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	it("should apply offset constraints", () => {
+		fail("not implemented");
+		//this.testService.applyOffsetConstraints
+	});
 
-		{
-			let svgPoint: SVGPoint = svg.createSVGPoint();
-			svgPoint.x = 100;
-			svgPoint.y = 100;
-		}
+
+	it("should do calculate the zoomfactor", () => {
+		fail("not implemented");
+		//this.testService.getZoomFactor
+	});
+
+	it("should pan correctly", () => {
+		fail("not implemented");
+		//this.testService.pan
 	});
 
 	it("should zoom correctly", () => {
 		{
-			let ret = zoom([200,200], [100, 100], 2);
+			let ret = this.testService.zoom([200,200], [100, 100], 2);
 			expect(ret[0]).toBe(150);
 			expect(ret[1]).toBe(150);
 		}
 
 		{
-			let ret = zoom([400,250], [200, 200], 2);
+			let ret = this.testService.zoom([400,250], [200, 200], 2);
 			expect(ret[0]).toBe(300);
 			expect(ret[1]).toBe(225);
 		}
 
 		{
-			let ret = zoom([200,200], [200, 200], 2);
+			let ret = this.testService.zoom([200,200], [200, 200], 2);
 			expect(ret[0]).toBe(200);
 			expect(ret[1]).toBe(200);
 		}
 
 		{
-			let ret = zoom([400,400], [200, 200], 2);
+			let ret = this.testService.zoom([400,400], [200, 200], 2);
 			expect(ret[0]).toBe(300);
 			expect(ret[1]).toBe(300);
 		}

@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common'
 import { ContextMenu } from './contextmenu/contextmenu.component';
 import { ContextDirective } from './contextmenu/contextmenu.directive';
 import { RailroadComponent } from './railroad.component';
-import { RailroadSVGComponent } from './railroad-svg.component';
+import { ZUIViewboxComponent } from './zui-viewbox.component';
 
 import { SVGUnitedStatesComponent } from './misc/svg-united-states.component';
 import { SVGFirefoxComponent } from './misc/svg-firefox.component';
@@ -36,15 +36,16 @@ import { SVGNetworkComponent } from './misc/svg-network.component';
 import { SVGGermanyComponent } from './misc/svg-germany.component';
 
 import { RailroadService } from './railroad.service';
+import { ZUIViewboxService } from './zui-viewbox.service';
 
 import { Slider } from './misc/slider.component';
 
 @NgModule({
 	imports: [BrowserModule, FormsModule, CommonModule],
-	declarations: [RailroadComponent, RailroadSVGComponent, ContextMenu, ContextDirective, Slider,
+	declarations: [RailroadComponent, ZUIViewboxComponent, ContextMenu, ContextDirective, Slider,
 	SVGUnitedStatesComponent, SVGFirefoxComponent, SVGGallardoComponent, SVGNetworkComponent,
 	SVGGermanyComponent],
-	providers: [RailroadService],
+	providers: [RailroadService,ZUIViewboxService],
 	exports: [RailroadComponent]
 })
 export class RailroadModule { }
