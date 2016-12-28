@@ -20,7 +20,7 @@
  */
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter, HostListener } from '@angular/core';
 
-import { applyOffsetConstraint } from './svg-zoomable.functions';
+import { ZUITransformService } from './zui-transform.service';
 
 @Component({
 	selector: '[ee-svg-scrollbar]',
@@ -95,9 +95,9 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 		}
 
 		let movement = (this.horizontal) ? e.movementX : e.movementY;
-		this.offset = (this.position + movement) * (this.border[1] * this.zoom - this.svgSize) / (this.svgSize - this.size);
-		this.offset = applyOffsetConstraint(this.offset, this.zoom, this.svgSize, this.border);
-		this.offsetChange.emit(this.offset);
+		//this.offset = (this.position + movement) * (this.border[1] * this.zoom - this.svgSize) / (this.svgSize - this.size);
+		//this.offset = applyOffsetConstraint(this.offset, this.zoom, this.svgSize, this.border);
+		//this.offsetChange.emit(this.offset);
 	}
 
 	@HostListener('window:mouseup', ['$event']) onMouseUp(e: MouseEvent) {
@@ -113,9 +113,8 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 	}
 
 	ngOnChanges() {
-		let borderSize = (this.border[1] - this.border[0]) * this.zoom;
-		this.size = (this.svgSize / borderSize) * this.svgSize;
-
-		this.position = this.offset / (this.border[1] * this.zoom - this.svgSize) * (this.svgSize - this.size) || 0;
+		//let borderSize = (this.border[1] - this.border[0]) * this.zoom;
+		//this.size = (this.svgSize / borderSize) * this.svgSize;
+		//this.position = this.offset / (this.border[1] * this.zoom - this.svgSize) * (this.svgSize - this.size) || 0;
 	}
 }

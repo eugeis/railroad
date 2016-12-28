@@ -20,7 +20,8 @@
  */
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { frame, getFactor, cursorPoint, calcTranslateOnZoom, calcTranslateOnPan, applyZoomConstraints, applyTranslateConstraints } from './svg-zoomable.functions';
+import { ZUITransformService } from './zui-transform.service';
+import { frame, cursorPoint } from './svg.functions';
 
 interface EventInterface<T> {
 	(e: T): void;
@@ -60,7 +61,7 @@ interface EventInterface<T> {
 	`
 })
 
-export class ZoomableSVGComponent implements OnInit {
+export class ZUITransformComponent implements OnInit {
 	@Input() zoom: number = 1;
 	@Input() translate: [number, number] = [0,0];
 	@Input() border: [[number, number],[number, number]];
@@ -82,12 +83,12 @@ export class ZoomableSVGComponent implements OnInit {
 	pt: SVGPoint;
 	svgSize: [number, number];
 
-	constructor(private er: ElementRef) { }
+	constructor(private er: ElementRef, private tr: ZUITransformService) { }
 
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
 		this.contextMenu.show = false;
-		this.zooming(cursorPoint(this.svg, this.pt, e), getFactor(e.deltaY));
+		this.zooming(cursorPoint(this.svg, this.pt, e), this.tr.getZoomFactor(e.deltaY));
 	}
 
 	@HostListener('dblclick', ['$event']) onDoubleClick(e: MouseEvent) {
@@ -122,8 +123,8 @@ export class ZoomableSVGComponent implements OnInit {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
 
 		if (this.border) {
-			this.zoom = applyZoomConstraints(this.zoom, this.svgSize, this.border);
-			this.translate = applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
+			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
 		}
 	}
 
@@ -137,12 +138,12 @@ export class ZoomableSVGComponent implements OnInit {
 	zooming(mousePos: [number, number], factor: number) {
 		this.zoom *= factor;
 		if (this.border) {
-			this.zoom = applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.svgSize, this.border);
 		}
 
-		this.translate = calcTranslateOnZoom(mousePos, this.translate, factor);
+		this.translate = this.tr.zoom(mousePos, this.translate, factor);
 		if (this.border) {
-			this.translate = applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
+			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
 		}
 
 		this.zoomChange.emit(this.zoom);
@@ -154,10 +155,10 @@ export class ZoomableSVGComponent implements OnInit {
 	 * There needs to be no conversion between browser- / svg-space
 	 */
 	panning(movement: [number, number]) {
-		this.translate = calcTranslateOnPan(this.translate, movement);
+		this.translate = this.tr.pan(this.translate, movement);
 
 		if (this.border) {
-			this.translate = applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
+			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
 		}
 
 		this.translateChange.emit(this.translate);
