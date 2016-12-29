@@ -37,6 +37,7 @@ import { Component } from '@angular/core';
 	template: `
 	<div class="railroad">
 		<ee-zui-transform [border]="border">
+			<svg:g svg-germany></svg:g>
 			<svg:defs>
 				<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
 					<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
@@ -50,21 +51,6 @@ import { Component } from '@angular/core';
 			<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
 			<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
 		</ee-zui-transform>
-
-		<ee-zui-viewbox [border]="border">
-			<svg:defs>
-				<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-					<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
-				</svg:pattern>
-				<svg:pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
-					<svg:rect width="100" height="100" fill="url(#smallGrid)"/>
-					<svg:path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1"/>
-				</svg:pattern>
-			</svg:defs>
-			<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
-			<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
-			<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
-		</ee-zui-viewbox>
 	</div>
 	`
 })
