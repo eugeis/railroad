@@ -56,7 +56,25 @@ interface EventInterface<T> {
 			<g [attr.transform]="'translate(' + translate[0] + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
-			<ng-content select=".svg-content-stationary"></ng-content>
+			<g>
+				<ng-content select=".svg-content-stationary"></ng-content>
+			</g>
+
+			<g *ngIf="border" class="scrollbars">
+				<g ee-svg-scrollbar
+					[horizontal]="true"
+					[svgSize]="svgSize[0]"
+					[zoom]="zoom"
+					[border]="[border[0][0],border[1][0]]"
+					[(offset)]="translate[0]">
+				</g>
+				<g ee-svg-scrollbar
+					[svgSize]="svgSize[1]"
+					[zoom]="zoom"
+					[border]="[border[0][1],border[1][1]]"
+					[(offset)]="translate[1]">
+				</g>
+			</g>
 		</svg>
 	`
 })
@@ -97,8 +115,8 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
-		e.stopPropagation();
-		e.preventDefault();
+		//e.stopPropagation();
+		//e.preventDefault();
 	}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
