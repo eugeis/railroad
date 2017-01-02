@@ -52,14 +52,14 @@ import { ZUITransformService } from './zui-transform.service';
 		<svg:g *ngIf="border">
 			<svg:rect *ngIf="horizontal && size != svgSize" class="scrollbar horizontal"
 				[ngClass]="{'dragging': dragging}"
-				[attr.x]="position"
+				[attr.x]="position + padding"
 				[attr.y]="positionOffset"
 				[attr.width]="size"
 			/>
 			<svg:rect *ngIf="!horizontal && size != svgSize" class="scrollbar vertical"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="positionOffset"
-				[attr.y]="position"
+				[attr.y]="position + padding"
 				[attr.height]="size"
 			/>
 		</svg:g>
@@ -72,6 +72,7 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 	@Input() border: [number, number];
 	@Input() offset: number;
 	@Input() positionOffset: number = 5;
+	@Input() padding: number = 0;
 
 	@Input() horizontal: any;
 

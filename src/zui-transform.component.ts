@@ -33,7 +33,6 @@ interface EventInterface<T> {
 		svg {
 			display: flex;
 			flex: 1;
-			border: 1px solid #000;
 		}
 
 		svg.dragging {
@@ -50,29 +49,38 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
-			<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom + ')'">
-				<ng-content></ng-content>
+			<g [attr.transform]="'translate(' + padding[3] + ',' + padding[0] + ')'">
+				<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom + ')'">
+					<ng-content></ng-content>
+				</g>
+			</g>
+			<g>
+				<ng-content select=".svg-content-stationary"></ng-content>
 			</g>
 			<g [attr.transform]="'translate(' + translate[0] + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
-			<g>
-				<ng-content select=".svg-content-stationary"></ng-content>
+			<g [attr.transform]="'translate(0,' + translate[1] + ')scale(' + zoom + ')'">
+				<ng-content select=".svg-content-x-stationary"></ng-content>
 			</g>
 
 			<g *ngIf="border" class="scrollbars">
 				<g ee-svg-scrollbar
 					[horizontal]="true"
-					[svgSize]="svgSize[0]"
+					[svgSize]="contentSize[0]"
 					[zoom]="zoom"
 					[border]="[border[0][0],border[1][0]]"
-					[(offset)]="translate[0]">
+					[(offset)]="translate[0]"
+					[padding]="padding[3]"
+					[positionOffset]="padding[0] + contentSize[1] - 10">
 				</g>
 				<g ee-svg-scrollbar
-					[svgSize]="svgSize[1]"
+					[svgSize]="contentSize[1]"
 					[zoom]="zoom"
 					[border]="[border[0][1],border[1][1]]"
-					[(offset)]="translate[1]">
+					[(offset)]="translate[1]"
+					[padding]="padding[0]"
+					[positionOffset]="padding[3] + contentSize[0] - 10">
 				</g>
 			</g>
 		</svg>
@@ -83,6 +91,7 @@ export class ZUITransformComponent implements OnInit {
 	@Input() zoom: number = 1;
 	@Input() translate: [number, number] = [0,0];
 	@Input() border: [[number, number],[number, number]];
+	@Input() padding: [number, number, number, number] = [0,0,0,0];
 
 	@Input() contextMenu: ContextMenuStatus = {
 		show: false,
@@ -94,12 +103,14 @@ export class ZUITransformComponent implements OnInit {
 
 	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
 	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
+	@Output("onResize") svgSizeEmitter: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	dragging: boolean = false;
 
 	svg: any;
 	pt: SVGPoint;
 	svgSize: [number, number];
+	contentSize: [number, number];
 
 	constructor(private er: ElementRef, private tr: ZUITransformService) { }
 
@@ -139,10 +150,15 @@ export class ZUITransformComponent implements OnInit {
 
 	@HostListener("window:resize") onResize() {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
+		this.contentSize = [
+			this.svgSize[0] - this.padding[1] - this.padding[3],
+			this.svgSize[1] - this.padding[0] - this.padding[2]
+		];
+		this.svgSizeEmitter.emit(this.svgSize);
 
 		if (this.border) {
-			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.svgSize, this.border);
-			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
+			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
+			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.contentSize, this.border);
 		}
 	}
 
@@ -156,12 +172,12 @@ export class ZUITransformComponent implements OnInit {
 	zooming(mousePos: [number, number], factor: number) {
 		this.zoom *= factor;
 		if (this.border) {
-			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
 		}
 
 		this.translate = this.tr.zoom(mousePos, this.translate, factor);
 		if (this.border) {
-			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
+			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.contentSize, this.border);
 		}
 
 		this.zoomChange.emit(this.zoom);
@@ -176,7 +192,7 @@ export class ZUITransformComponent implements OnInit {
 		this.translate = this.tr.pan(this.translate, movement);
 
 		if (this.border) {
-			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.svgSize, this.border);
+			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.contentSize, this.border);
 		}
 
 		this.translateChange.emit(this.translate);
