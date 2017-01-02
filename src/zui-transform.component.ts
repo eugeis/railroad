@@ -49,19 +49,16 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg [ngClass]="{'dragging': dragging}">
-			<g [attr.transform]="'translate(' + padding[3] + ',' + padding[0] + ')'">
-				<g [attr.transform]="'translate(' + translate[0] + ',' + translate[1] + ')scale(' + zoom + ')'">
-					<ng-content></ng-content>
-				</g>
+			<g [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
+				<ng-content></ng-content>
 			</g>
-			<g>
+
+			<g class="stationary">
 				<ng-content select=".svg-content-stationary"></ng-content>
 			</g>
-			<g [attr.transform]="'translate(' + translate[0] + ',0)scale(' + zoom + ')'">
+
+			<g class="y-stationary" [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
-			</g>
-			<g [attr.transform]="'translate(0,' + translate[1] + ')scale(' + zoom + ')'">
-				<ng-content select=".svg-content-x-stationary"></ng-content>
 			</g>
 
 			<g *ngIf="border" class="scrollbars">
