@@ -171,10 +171,14 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	zooming(mousePos: [number, number], factor: number) {
+		let oldZoom = this.zoom;
 		this.zoom *= factor;
+
 		if (this.border) {
 			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
+			factor = this.zoom / oldZoom;
 		}
+
 
 		this.translate = this.tr.zoom(mousePos, this.translate, factor);
 		if (this.border) {
