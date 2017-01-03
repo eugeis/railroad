@@ -183,5 +183,16 @@ export class RailroadComponent implements DoCheck {
 	}
 
 	ngDoCheck() {
+		if (this.zoom != this.oldZoom || this.translate[1] != this.oldTranslate) {
+			let contentSize = this.svgSize[1] - this.padding[0] - this.padding[2];
+
+			let lower = -this.translate[1] / (this.border[1][1] * this.zoom);
+			let upper = (-this.translate[1] + contentSize) / (this.border[1][1] * this.zoom);
+
+			console.log(Math.floor(24 * lower), ":", Math.floor(60 * (24 * lower % 1)));
+
+			this.oldZoom = this.zoom;
+			this.oldTranslate = this.translate[1];
+		}
 	}
 }
