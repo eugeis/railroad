@@ -18,8 +18,9 @@
  *
  * @author Jonas Möller
  */
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, DoCheck } from '@angular/core';
 
+import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { RailroadService } from './railroad.service';
 import { Timetable } from './timetable.interface';
 
@@ -53,7 +54,13 @@ import { Timetable } from './timetable.interface';
 	`],
 	template: `
 	<div class="railroad">
-		<ee-zui-transform [(zoom)]="zoom" [padding]="padding" [border]="border" (onResize)="updateSize($event)">
+		<ee-zui-transform
+			[(zoom)]="zoom"
+			[(translate)]="translate"
+			[padding]="padding"
+			[border]="border"
+			[contextMenu]="contextMenu"
+			(onResize)="updateSize($event)">
 			<svg:g class="background">
 				<svg:defs>
 					<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -70,6 +77,20 @@ import { Timetable } from './timetable.interface';
 				<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
 			</svg:g>
 
+			<svg:g class="routes">
+				<svg:g *ngFor="let partialroute of routes">
+					<svg:line *ngFor="let route of partialroute"
+						[attr.x1]="route[0][0]"
+						[attr.y1]="route[0][1]"
+						[attr.x2]="route[1][0]"
+						[attr.y2]="route[1][1]"
+						[contextMenu]="contextMenu"
+						[items]="['Hallo', 'wie', 'gehts', 'dir', '???']"
+						contextable>
+					</svg:line>
+				</svg:g>
+			</svg:g>
+
 			<svg:g class="svg-content-y-stationary">
 				<svg:text *ngFor="let station of timetable.stations; let i = index"
 					[attr.x]="i * 100"
@@ -79,6 +100,10 @@ import { Timetable } from './timetable.interface';
 				</svg:text>
 			</svg:g>
 
+			<svg:g class="svg-content-x-stationary">
+
+			</svg:g>
+
 			<svg:g class="svg-content-stationary">
 				<svg:rect [attr.width]="svgSize[0]" [attr.height]="padding[0]" />
 				<svg:rect [attr.width]="svgSize[0]" [attr.height]="padding[2]" [attr.y]="svgSize[1] - padding[2]" />
@@ -86,18 +111,67 @@ import { Timetable } from './timetable.interface';
 				<svg:rect [attr.width]="padding[3]" [attr.height]="svgSize[1]" />
 			</svg:g>
 		</ee-zui-transform>
+		<context-menu [contextMenu]="contextMenu"></context-menu>
 	</div>
 	`
 })
 
-export class RailroadComponent {
+export class RailroadComponent implements DoCheck {
 	border: [[number, number], [number, number]] = [[0,0],[2000,2000]];
 	padding: [number, number, number, number] = [30,0,0,30];
+	translate: [number, number] = [0,0];
 	zoom: number = 1;
 
 	timetable: Timetable;
-
 	svgSize: [number, number] = [1366,675];
+
+	oldZoom: number = 1;
+	oldTranslate: number = 0;
+
+	contextMenu: ContextMenuStatus = {
+		show: false,
+		items: [],
+		x: 0,
+		y: 0,
+		target: null
+	};
+
+	routes: [[number,number],[number,number]][][] = [[
+		[[0,0],[0,50]],
+		[[0,50],[100,100]],
+		[[100,100],[200,200]],
+		[[200,200],[600,400]],
+		[[600,400],[600,550]],
+		[[600,550],[300,800]],
+		[[300,800],[300,900]],
+		[[300,900],[100,1000]]
+	],[
+		[[500,0],[500,100]],
+		[[500,100],[900,200]],
+		[[900,200],[900,450]],
+		[[900,450],[1600,900]],
+		[[1600,900],[1600,1000]]
+	],[
+		[[1500,0],[1500,250]],
+		[[1500,250],[900,600]],
+		[[900,600],[200,850]],
+		[[200,850],[200,1000]]
+	],[
+		[[1900,0],[1900,50]],
+		[[1900,50],[1800,200]],
+		[[1800,200],[1700,300]],
+		[[1700,300],[1500,450]],
+		[[1500,450],[1300,600]],
+		[[1300,600],[1100,850]],
+		[[1100,850],[700,1000]],
+		[[700,1000],[700,1200]],
+		[[700,1200],[400,1500]],
+		[[400,1500],[400,1650]],
+		[[400,1650],[600,1750]],
+		[[600,1750],[650,1900]],
+		[[650,1900],[800,2000]]
+	]];
+	times: string[] = ["100","200","300","400","500","600","700"];
 
 	constructor(private rs: RailroadService) {
 		this.timetable = rs.getTimetable();
@@ -106,5 +180,8 @@ export class RailroadComponent {
 
 	updateSize(svgSize: [number, number]) {
 		this.svgSize = svgSize;
+	}
+
+	ngDoCheck() {
 	}
 }

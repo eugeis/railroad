@@ -57,6 +57,10 @@ interface EventInterface<T> {
 				<ng-content select=".svg-content-stationary"></ng-content>
 			</g>
 
+			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
+				<ng-content select=".svg-content-x-stationary"></ng-content>
+			</g>
+
 			<g class="y-stationary" [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
@@ -123,8 +127,8 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
-		//e.stopPropagation();
-		//e.preventDefault();
+		e.stopPropagation();
+		e.preventDefault();
 	}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
@@ -147,11 +151,11 @@ export class ZUITransformComponent implements OnInit {
 
 	@HostListener("window:resize") onResize() {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
+		this.svgSizeEmitter.emit(this.svgSize);
 		this.contentSize = [
 			this.svgSize[0] - this.padding[1] - this.padding[3],
 			this.svgSize[1] - this.padding[0] - this.padding[2]
 		];
-		this.svgSizeEmitter.emit(this.svgSize);
 
 		if (this.border) {
 			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
