@@ -18,7 +18,7 @@
  *
  * @author Jonas Möller
  */
-import { Component, HostListener, DoCheck } from '@angular/core';
+import { Component, OnInit, HostListener, DoCheck } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { RailroadService } from './railroad.service';
@@ -44,7 +44,7 @@ import { Timetable } from './timetable.interface';
 
 		line {
 			stroke: black;
-			stroke-width: 2px;
+			stroke-width: 3px;
 		}
 
 		text {
@@ -77,8 +77,8 @@ import { Timetable } from './timetable.interface';
 					</svg:pattern>
 				</svg:defs>
 
-				<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
 				<!--
+				<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
 				<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
 				<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
 				-->
@@ -109,12 +109,23 @@ import { Timetable } from './timetable.interface';
 			</svg:g>
 
 			<svg:g class="svg-content-x-stationary">
-			<svg:text *ngFor="let time of times; let i = index"
-				[attr.x]="2 / zoom"
-				[attr.y]="getTimePosition(time)"
-				[attr.font-size]="16 / zoom">
-					{{time | date:'HH:mm:ss'}}
-				</svg:text>
+				<svg:g class="y-marker" *ngFor="let time of times; let i = index">
+					<svg:text
+					[attr.x]="2 / zoom"
+					[attr.y]="getTimePosition(time)"
+					[attr.font-size]="16 / zoom">
+						{{time | date:'HH:mm:ss'}}
+					</svg:text>
+					<!--
+					<svg:line
+						[attr.x1]="padding[3] / zoom"
+						[attr.y1]="getTimePosition(time)"
+						[attr.x2]="svgSize[0] / zoom"
+						[attr.y2]="getTimePosition(time)"
+						[style.stroke-width]="1 / zoom">
+					</svg:line>
+					-->
+				</svg:g>
 			</svg:g>
 
 			<svg:g *ngIf="svgSize && padding" class="svg-content-stationary">
@@ -129,7 +140,7 @@ import { Timetable } from './timetable.interface';
 	`
 })
 
-export class RailroadComponent implements DoCheck {
+export class RailroadComponent implements OnInit, DoCheck {
 	border: [[number, number], [number, number]] = [[0,0],[2000,2000]];
 	padding: [number, number, number, number] = [30,0,0,75];
 	translate: [number, number] = [0,0];
@@ -139,8 +150,8 @@ export class RailroadComponent implements DoCheck {
 	svgSize: [number, number];
 	contentSize: [number, number];
 
-	oldZoom: number = 1;
-	oldTranslate: number = 0;
+	oldZoom: number;
+	oldTranslate: number;
 
 	contextMenu: ContextMenuStatus = {
 		show: false,
@@ -187,9 +198,11 @@ export class RailroadComponent implements DoCheck {
 	]];
 	times: Date[] = [];
 
-	constructor(private rs: RailroadService) {
-		this.timetable = rs.getTimetable();
-		this.border = [[0,0],[this.timetable.stations.length * 100, 1000]];
+	constructor(private rs: RailroadService) { }
+
+	ngOnInit() {
+		this.timetable = this.rs.getTimetable();
+		this.border = [[0,0],[this.timetable.stations.length * 100, 2000]];
 	}
 
 	updateSize(newSize: [[number, number],[number, number]]) {
@@ -198,29 +211,40 @@ export class RailroadComponent implements DoCheck {
 	}
 
 	ngDoCheck() {
-		if (this.zoom != this.oldZoom || this.translate[1] != this.oldTranslate) {
-			let contentSize = this.svgSize[1] - this.padding[0] - this.padding[2];
-
-			let lower = -this.translate[1] / (this.border[1][1] * this.zoom) * 24;
-			let upper = (-this.translate[1] + contentSize) / (this.border[1][1] * this.zoom) * 24;
-
-			this.times = [];
-
-			for (let i = Math.floor(lower); i <= upper; i++) {
-				this.times.push(new Date(0, 0, 0, i, 0, 0));
-			}
-
-
-			console.log(upper-lower);
-			if (upper - lower < 4) {
-				for (let i = Math.floor(lower); i <= upper; i++) {
-					this.times.push(new Date(0, 0, 0, i, 30, 0));
-				}
-			}
-
-			this.oldZoom = this.zoom;
-			this.oldTranslate = this.translate[1];
+		if (!this.svgSize || !this.translate || !this.padding || !this.border) {
+			return;
 		}
+
+		if (this.zoom == this.oldZoom && this.translate[1] == this.oldTranslate) {
+			return;
+		}
+
+		let contentSize = this.svgSize[1] - this.padding[0] - this.padding[2];
+
+		let lower = -this.translate[1] / (this.border[1][1] * this.zoom) * 24;
+		let upper = (-this.translate[1] + contentSize) / (this.border[1][1] * this.zoom) * 24;
+
+		this.times = [];
+
+		for (let i = Math.floor(lower); i <= upper; i++) {
+			this.times.push(new Date(0, 0, 0, i, 0, 0));
+		}
+
+		if (upper - lower < 4) {
+			for (let i = Math.floor(lower); i <= upper; i++) {
+				this.times.push(new Date(0, 0, 0, i, 30, 0));
+			}
+		}
+
+		if (upper - lower < 2) {
+			for (let i = Math.floor(lower); i <= upper; i++) {
+				this.times.push(new Date(0, 0, 0, i, 15, 0));
+				this.times.push(new Date(0, 0, 0, i, 45, 0));
+			}
+		}
+
+		this.oldZoom = this.zoom;
+		this.oldTranslate = this.translate[1];
 	}
 
 	getTimePosition(time: Date) {
