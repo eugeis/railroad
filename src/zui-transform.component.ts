@@ -179,6 +179,8 @@ export class ZUITransformComponent implements OnInit {
 			factor = this.zoom / oldZoom;
 		}
 
+		mousePos[0] -= this.padding[3];
+		mousePos[1] -= this.padding[0];
 
 		this.translate = this.tr.zoom(mousePos, this.translate, factor);
 		if (this.border) {
