@@ -50,13 +50,13 @@ import { ZUITransformService } from './zui-transform.service';
 	`],
 	template: `
 		<svg:g *ngIf="border">
-			<svg:rect *ngIf="horizontal && size != svgSize" class="scrollbar horizontal"
+			<svg:rect *ngIf="horizontal && size != contentSize" class="scrollbar horizontal"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="position + padding"
 				[attr.y]="positionOffset"
 				[attr.width]="size"
 			/>
-			<svg:rect *ngIf="!horizontal && size != svgSize" class="scrollbar vertical"
+			<svg:rect *ngIf="!horizontal && size != contentSize" class="scrollbar vertical"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="positionOffset"
 				[attr.y]="position + padding"
@@ -67,7 +67,7 @@ import { ZUITransformService } from './zui-transform.service';
 })
 
 export class SVGScrollbarComponent implements OnInit, OnChanges {
-	@Input() svgSize: number;
+	@Input() contentSize: number;
 	@Input() zoom: number;
 	@Input() border: [number, number];
 	@Input() offset: number;
@@ -98,8 +98,8 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 		}
 
 		let movement = (this.horizontal) ? e.movementX : e.movementY;
-		this.offset = -(this.position + movement) * (this.border[1] * this.zoom - this.svgSize) / (this.svgSize - this.size);
-		this.offset = this.tr.applyTranslateConstraint(this.offset, this.zoom, this.svgSize, this.border);
+		this.offset = -(this.position + movement) * (this.border[1] * this.zoom - this.contentSize) / (this.contentSize - this.size);
+		this.offset = this.tr.applyTranslateConstraint(this.offset, this.zoom, this.contentSize, this.border);
 		this.offsetChange.emit(this.offset);
 	}
 
@@ -117,7 +117,7 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 
 	ngOnChanges() {
 		let borderSize = (this.border[1] - this.border[0]) * this.zoom;
-		this.size = (this.svgSize / borderSize) * this.svgSize;
-		this.position = -this.offset / (this.border[1] * this.zoom - this.svgSize) * (this.svgSize - this.size) || 0;
+		this.size = (this.contentSize / borderSize) * this.contentSize;
+		this.position = -this.offset / (this.border[1] * this.zoom - this.contentSize) * (this.contentSize - this.size) || 0;
 	}
 }

@@ -68,7 +68,7 @@ interface EventInterface<T> {
 			<g *ngIf="border" class="scrollbars">
 				<g ee-svg-scrollbar
 					[horizontal]="true"
-					[svgSize]="contentSize[0]"
+					[contentSize]="contentSize[0]"
 					[zoom]="zoom"
 					[border]="[border[0][0],border[1][0]]"
 					[(offset)]="translate[0]"
@@ -76,7 +76,7 @@ interface EventInterface<T> {
 					[positionOffset]="padding[0] + contentSize[1] - 10">
 				</g>
 				<g ee-svg-scrollbar
-					[svgSize]="contentSize[1]"
+					[contentSize]="contentSize[1]"
 					[zoom]="zoom"
 					[border]="[border[0][1],border[1][1]]"
 					[(offset)]="translate[1]"
