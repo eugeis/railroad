@@ -131,6 +131,14 @@ export class ZUITransformComponent implements OnInit {
 		e.preventDefault();
 	}
 
+	@HostListener("window:keydown", ['$event']) onKeyDown(e: KeyboardEvent) {
+		if (e.key === "PageUp") {
+			this.panning([0, 0.8 * this.contentSize[1]]);
+		} else if (e.key === "PageDown"){
+			this.panning([0, -0.8 * this.contentSize[1]]);
+		}
+	}
+
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
 		if (e.button != 0) {
 			return
