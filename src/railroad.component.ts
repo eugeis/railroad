@@ -51,6 +51,11 @@ import { Timetable } from './timetable.interface';
 			user-select: none;
 			fill: black;
 		}
+
+		context-menu {
+			position: absolute;
+			top: 0px;
+		}
 	`],
 	template: `
 	<div class="railroad">
@@ -73,8 +78,10 @@ import { Timetable } from './timetable.interface';
 				</svg:defs>
 
 				<svg:rect x="0" y="0" [attr.width]="border[1][0]" [attr.height]="border[1][1]" fill="url(#grid)" />
+				<!--
 				<svg:rect x="100" y="100" [attr.width]="border[1][0] - 200" [attr.height]="border[1][1] - 200" style="fill:transparent; stroke: grey;"/>
 				<svg:rect x="200" y="200" [attr.width]="border[1][0] - 400" [attr.height]="border[1][1] - 400" style="fill:transparent; stroke: red;"/>
+				-->
 			</svg:g>
 
 			<svg:g class="routes">
@@ -84,6 +91,7 @@ import { Timetable } from './timetable.interface';
 						[attr.y1]="route[0][1]"
 						[attr.x2]="route[1][0]"
 						[attr.y2]="route[1][1]"
+						[style.stroke-width]="2 / zoom"
 						[contextMenu]="contextMenu"
 						[items]="['Hallo', 'wie', 'gehts', 'dir', '???']"
 						contextable>
@@ -101,10 +109,15 @@ import { Timetable } from './timetable.interface';
 			</svg:g>
 
 			<svg:g class="svg-content-x-stationary">
-
+			<svg:text *ngFor="let time of times; let i = index"
+				[attr.x]="2 / zoom"
+				[attr.y]="getTimePosition(time)"
+				[attr.font-size]="16 / zoom">
+					{{time | date:'HH:mm:ss'}}
+				</svg:text>
 			</svg:g>
 
-			<svg:g class="svg-content-stationary">
+			<svg:g *ngIf="svgSize && padding" class="svg-content-stationary">
 				<svg:rect [attr.width]="svgSize[0]" [attr.height]="padding[0]" />
 				<svg:rect [attr.width]="svgSize[0]" [attr.height]="padding[2]" [attr.y]="svgSize[1] - padding[2]" />
 				<svg:rect [attr.width]="padding[1]" [attr.height]="svgSize[1]" [attr.x]="svgSize[0] - padding[1]" />
@@ -118,12 +131,13 @@ import { Timetable } from './timetable.interface';
 
 export class RailroadComponent implements DoCheck {
 	border: [[number, number], [number, number]] = [[0,0],[2000,2000]];
-	padding: [number, number, number, number] = [30,0,0,30];
+	padding: [number, number, number, number] = [30,0,0,75];
 	translate: [number, number] = [0,0];
 	zoom: number = 1;
 
 	timetable: Timetable;
-	svgSize: [number, number] = [1366,675];
+	svgSize: [number, number];
+	contentSize: [number, number];
 
 	oldZoom: number = 1;
 	oldTranslate: number = 0;
@@ -171,28 +185,45 @@ export class RailroadComponent implements DoCheck {
 		[[600,1750],[650,1900]],
 		[[650,1900],[800,2000]]
 	]];
-	times: string[] = ["100","200","300","400","500","600","700"];
+	times: Date[] = [];
 
 	constructor(private rs: RailroadService) {
 		this.timetable = rs.getTimetable();
 		this.border = [[0,0],[this.timetable.stations.length * 100, 1000]];
 	}
 
-	updateSize(svgSize: [number, number]) {
-		this.svgSize = svgSize;
+	updateSize(newSize: [[number, number],[number, number]]) {
+		this.svgSize = newSize[0];
+		this.contentSize = newSize[1];
 	}
 
 	ngDoCheck() {
 		if (this.zoom != this.oldZoom || this.translate[1] != this.oldTranslate) {
 			let contentSize = this.svgSize[1] - this.padding[0] - this.padding[2];
 
-			let lower = -this.translate[1] / (this.border[1][1] * this.zoom);
-			let upper = (-this.translate[1] + contentSize) / (this.border[1][1] * this.zoom);
+			let lower = -this.translate[1] / (this.border[1][1] * this.zoom) * 24;
+			let upper = (-this.translate[1] + contentSize) / (this.border[1][1] * this.zoom) * 24;
 
-			console.log(Math.floor(24 * lower), ":", Math.floor(60 * (24 * lower % 1)));
+			this.times = [];
+
+			for (let i = Math.floor(lower); i <= upper; i++) {
+				this.times.push(new Date(0, 0, 0, i, 0, 0));
+			}
+
+
+			console.log(upper-lower);
+			if (upper - lower < 4) {
+				for (let i = Math.floor(lower); i <= upper; i++) {
+					this.times.push(new Date(0, 0, 0, i, 30, 0));
+				}
+			}
 
 			this.oldZoom = this.zoom;
 			this.oldTranslate = this.translate[1];
 		}
+	}
+
+	getTimePosition(time: Date) {
+		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 )) * (this.border[1][1] - this.border[0][1]);
 	}
 }

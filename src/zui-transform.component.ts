@@ -104,7 +104,7 @@ export class ZUITransformComponent implements OnInit {
 
 	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
 	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
-	@Output("onResize") svgSizeEmitter: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
+	@Output("onResize") resizeEmitter: EventEmitter<[[number,number],[number,number]]> = new EventEmitter<[[number,number],[number,number]]>();
 
 	dragging: boolean = false;
 
@@ -151,11 +151,11 @@ export class ZUITransformComponent implements OnInit {
 
 	@HostListener("window:resize") onResize() {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
-		this.svgSizeEmitter.emit(this.svgSize);
 		this.contentSize = [
 			this.svgSize[0] - this.padding[1] - this.padding[3],
 			this.svgSize[1] - this.padding[0] - this.padding[2]
 		];
+		this.resizeEmitter.emit([this.svgSize, this.contentSize]);
 
 		if (this.border) {
 			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
