@@ -40,14 +40,14 @@ import { SVGGermanyComponent } from './misc/svg-germany.component';
 import { RailroadService } from './railroad.service';
 import { ZUITransformService } from './zui-transform.service';
 import { ZUIViewboxService } from './zui-viewbox.service';
+import { SVGTimeAxisComponent } from './time-axis.component';
 
 import { Slider } from './misc/slider.component';
 
 @NgModule({
 	imports: [BrowserModule, FormsModule, CommonModule],
-	declarations: [RailroadComponent, ZUITransformComponent, ContextMenu, ContextDirective, Slider,
-	SVGUnitedStatesComponent, SVGFirefoxComponent, SVGGallardoComponent, SVGNetworkComponent,
-	SVGGermanyComponent, SVGScrollbarComponent, ZUIViewboxComponent],
+	declarations: [RailroadComponent, ZUITransformComponent, SVGScrollbarComponent,
+		ContextMenu, ContextDirective, SVGTimeAxisComponent],
 	providers: [RailroadService, ZUITransformService, ZUIViewboxService],
 	exports: [RailroadComponent]
 })
