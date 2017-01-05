@@ -80,7 +80,7 @@ export class SVGTimeAxisComponent implements DoCheck {
 		upper = upper + timeOffset;
 
 		let rawStep = (upper - lower) / 4;
-		let step;
+		let step: number;
 		if (rawStep > 3600) {
 			step = 3600;
 		} else if (rawStep > 1800) {
