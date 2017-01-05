@@ -27,6 +27,9 @@ import { Component, Input, DoCheck } from '@angular/core';
 			user-select: none;
 			fill: black;
 		}
+		line {
+			stroke: grey;
+		}
 	`],
 	template: `
 		<svg:g class="time-axis" *ngFor="let time of times; let i = index">
@@ -36,7 +39,6 @@ import { Component, Input, DoCheck } from '@angular/core';
 				[attr.font-size]="16 / zoom">
 				{{time | date:'HH:mm:ss'}}
 			</svg:text>
-			<!--
 			<svg:line
 				[attr.x1]="padding[3] / zoom"
 				[attr.y1]="getTimePosition(time)"
@@ -44,7 +46,6 @@ import { Component, Input, DoCheck } from '@angular/core';
 				[attr.y2]="getTimePosition(time)"
 				[style.stroke-width]="1 / zoom">
 			</svg:line>
-			-->
 		</svg:g>
 	`
 })

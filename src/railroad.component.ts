@@ -44,7 +44,10 @@ import { Timetable } from './timetable.interface';
 
 		line {
 			stroke: black;
-			stroke-width: 3px;
+		}
+
+		line:hover {
+			cursor: pointer;
 		}
 
 		text {
@@ -92,7 +95,7 @@ import { Timetable } from './timetable.interface';
 						[attr.y1]="route[0][1]"
 						[attr.x2]="route[1][0]"
 						[attr.y2]="route[1][1]"
-						[style.stroke-width]="2 / zoom"
+						[style.stroke-width]="3 / zoom"
 						[contextMenu]="contextMenu"
 						[items]="['Hallo', 'wie', 'gehts', 'dir', '???']"
 						contextable>
@@ -101,12 +104,21 @@ import { Timetable } from './timetable.interface';
 			</svg:g>
 
 			<svg:g class="svg-content-y-stationary">
-				<svg:text *ngFor="let station of timetable.stations; let i = index"
-					[attr.x]="i * 100"
-					[attr.y]="24 / zoom"
-					[attr.font-size]="20 / zoom">
-					{{station}}
-				</svg:text>
+				<svg:g *ngFor="let station of timetable.stations; let i = index">
+					<svg:text
+						[attr.x]="i * 100"
+						[attr.y]="24 / zoom"
+						[attr.font-size]="20 / zoom">
+						{{station}}
+					</svg:text>
+					<svg:line
+						[attr.x1]="i * 100"
+						[attr.y1]="padding[0] / zoom"
+						[attr.x2]="i * 100"
+						[attr.y2]="svgSize[1] / zoom"
+						[style.stroke-width]="1 / zoom">
+					</svg:line>
+				</svg:g>
 			</svg:g>
 
 			<svg:g class="svg-content-x-stationary">
@@ -190,7 +202,7 @@ export class RailroadComponent implements OnInit {
 
 	ngOnInit() {
 		this.timetable = this.rs.getTimetable();
-		this.border = [[0,0],[this.timetable.stations.length * 100, 2000]];
+		this.border = [[0,0],[this.timetable.stations.length * 100, 5000]];
 	}
 
 	updateSize(newSize: [[number, number],[number, number]]) {
