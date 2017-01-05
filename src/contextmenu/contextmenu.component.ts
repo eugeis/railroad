@@ -18,7 +18,7 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, Output, EventEmitter, ElementRef, OnInit } from '@angular/core';
+import { Component, HostListener, Input, Output, EventEmitter, ElementRef, OnInit } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu.interface';
 
@@ -64,6 +64,10 @@ export class ContextMenu implements OnInit {
 	@Output("select") selectEmitter: EventEmitter<string> = new EventEmitter<string>();
 
 	constructor(private er: ElementRef) { }
+
+	@HostListener("click", ['$event']) onClick(e: MouseEvent) {
+		e.stopPropagation();
+	}
 
 	ngOnInit() {
 		this.er.nativeElement.querySelector("ul").addEventListener("click", (e: MouseEvent) => {

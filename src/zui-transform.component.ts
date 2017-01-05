@@ -140,6 +140,7 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
+		this.contextMenu.show = false;
 		if (e.button != 0) {
 			return
 		}
