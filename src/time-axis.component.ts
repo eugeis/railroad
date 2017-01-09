@@ -73,8 +73,8 @@ export class SVGTimeAxisComponent implements DoCheck {
 			return;
 		}
 
-		let lower = 24 * 60 * 60 * -this.translate[1] / (this.border[1][1] * this.zoom) || 0;
-		let upper = (-this.translate[1] + this.contentSize[1]) / (this.border[1][1] * this.zoom) * 24 * 60 * 60;
+		let lower = 24 * 60 * 60 * (this.translate[1] + this.zoom * this.border[0][1]) / (this.zoom * (this.border[0][1] - this.border[1][1]));
+		let upper = 24 * 60 * 60 * (this.translate[1] - this.contentSize[1] + this.zoom * this.border[0][1]) / (this.zoom * (this.border[0][1] - this.border[1][1]));
 
 		let timeOffset = new Date().getTimezoneOffset() * 60;
 		lower = lower + timeOffset;
@@ -116,6 +116,6 @@ export class SVGTimeAxisComponent implements DoCheck {
 
 	getTimePosition(time: Date) {
 		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
-			* (this.border[1][1] - this.border[0][1]);
+			* (this.border[1][1] - this.border[0][1]) + this.border[0][1];
 	}
 }

@@ -118,6 +118,6 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 	ngOnChanges() {
 		let borderSize = (this.border[1] - this.border[0]) * this.zoom;
 		this.size = (this.contentSize / borderSize) * this.contentSize;
-		this.position = (-this.offset - this.zoom * this.border[0]) / (this.zoom * (this.border[1] - this.border[0]) - this.contentSize) * (this.contentSize - this.size) || 0;
+		this.position = (this.offset + this.zoom * this.border[0]) / (this.zoom * (this.border[0] - this.border[1]) + this.contentSize) * (this.contentSize - this.size) || 0;
 	}
 }
