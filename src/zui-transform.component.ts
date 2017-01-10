@@ -30,6 +30,11 @@ interface EventInterface<T> {
 @Component({
 	selector: 'ee-zui-transform',
 	styles: [`
+		:host {
+			display: flex;
+			flex: 1;
+		}
+
 		svg {
 			display: flex;
 			flex: 1;
