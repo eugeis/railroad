@@ -108,6 +108,9 @@ export interface StopOrPass {
 //	topologyId: "A3G8H9GXH8"
 //	turning: boolean
 //	type: "STATIONTRACK"
+
+	x: number;
+	y: number;
 }
 
 export interface Trip {

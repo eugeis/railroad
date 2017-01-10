@@ -27,6 +27,8 @@ import { Timetable } from './timetable.interface';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
+var svgNS = "http://www.w3.org/2000/svg";
+
 @Component({
 	selector: 'ee-railroad',
 	styles: [`
@@ -34,11 +36,6 @@ import 'rxjs/add/operator/catch';
 			display: flex;
 			flex: 1;
 			height: 100%;
-		}
-
-		ee-zui-viewbox, ee-zui-transform {
-			display: flex;
-			flex: 1;
 		}
 
 		.svg-content-y-stationary rect, .svg-content-stationary rect {
@@ -63,23 +60,23 @@ import 'rxjs/add/operator/catch';
 			top: 0px;
 		}
 
-		circle {
+		/deep/ circle {
 			fill: black;
 		}
 
-		circle.BEGIN {
+		/deep/ circle.BEGIN {
 			fill: green;
 		}
 
-		circle.PASS {
+		/deep/ circle.PASS {
 			fill: yellow;
 		}
 
-		circle.STOP {
+		/deep/ circle.STOP {
 			fill: red;
 		}
 
-		circle.END {
+		/deep/ circle.END {
 			fill: black;
 		}
 	`],
@@ -114,16 +111,18 @@ import 'rxjs/add/operator/catch';
 				-->
 			</svg:g>
 
-			<svg:g *ngIf="timetable" class="routes">
-				<svg:g class="myverownprivateclass">
-				<!--<svg:circle
-					[attr.cx]="getXPosition(stopOrPass.stationName)"
-					[attr.cy]="getYPosition(stopOrPass.plannedArrivalTime, stopOrPass.plannedDepartureTime)"
-					r="1"
-					[ngClass]="stopOrPass.stopType">
-				</svg:circle>-->
-
+			<svg:g class="routes">
+				<svg:g *ngIf="timetable">
+<!--
+					<svg:circle *ngFor="let stopOrPass of timetable.stopOrPasss.all"
+						[attr.cx]="stopOrPass.x"
+						[attr.cy]="stopOrPass.y"
+						r="1"
+						[ngClass]="stopOrPass.stopType">
+					</svg:circle>
+-->
 				</svg:g>
+
 				<!--<svg:g *ngFor="let partialroute of routes">
 					<svg:line *ngFor="let route of partialroute"
 						[attr.x1]="route[0][0]"
@@ -200,60 +199,6 @@ export class RailroadComponent implements OnInit {
 		target: null
 	};
 
-	routes: [[number,number],[number,number]][][] = [[
-		[[0,0],[0,50]],
-		[[0,50],[100,100]],
-		[[100,100],[200,200]],
-		[[200,200],[600,400]],
-		[[600,400],[600,550]],
-		[[600,550],[300,800]],
-		[[300,800],[300,900]],
-		[[300,900],[100,1000]]
-	],[
-		[[500,0],[500,100]],
-		[[500,100],[900,200]],
-		[[900,200],[900,450]],
-		[[900,450],[1600,900]],
-		[[1600,900],[1600,1000]]
-	],[
-		[[1500,0],[1500,250]],
-		[[1500,250],[900,600]],
-		[[900,600],[200,850]],
-		[[200,850],[200,1000]]
-	],[
-		[[1900,0],[1900,50]],
-		[[1900,50],[1800,200]],
-		[[1800,200],[1700,300]],
-		[[1700,300],[1500,450]],
-		[[1500,450],[1300,600]],
-		[[1300,600],[1100,850]],
-		[[1100,850],[700,1000]],
-		[[700,1000],[700,1200]],
-		[[700,1200],[400,1500]],
-		[[400,1500],[400,1650]],
-		[[400,1650],[600,1750]],
-		[[600,1750],[650,1900]],
-		[[650,1900],[800,2000]]
-	]];
-
-	constructor(private rs: RailroadService) { }
-
-	ngOnInit() {
-		this.rs.getTimetable().subscribe(tt => {
-			this.timetable = tt;
-			this.border = [[0,0],[2000, 5000]];
-		});
-	}
-
-	updateSize(newSize: [[number, number],[number, number]]) {
-		this.svgSize = newSize[0];
-		this.contentSize = newSize[1];
-	}
-
-	getXPosition(station: string) {
-		return this.topology[station];
-	}
-
 	topology = {
 		"SYJ": 0,
 		"1011": 100,
@@ -277,7 +222,49 @@ export class RailroadComponent implements OnInit {
 		"PLU": 1900
 	}
 
-	getYPosition(t: number, a: number) {
+	constructor(private rs: RailroadService) { }
+
+	ngOnInit() {
+		this.rs.getTimetable().subscribe(tt => {
+			this.timetable = tt;
+			this.border = [[0,0],[2000, 5000]];
+
+			let el = document.querySelector(".routes");
+
+			for (let stopOrPass of tt.stopOrPasss.all) {
+				var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+				circle.setAttributeNS(null, "cx", this.getXPosition(stopOrPass.stationName));
+				circle.setAttributeNS(null, "cy", this.getYPosition(<number><any>stopOrPass.plannedArrivalTime, <number><any>stopOrPass.plannedDepartureTime));
+				circle.setAttributeNS(null, "r", "1");
+				circle.setAttributeNS(null, "stroke", "none");
+				circle.setAttribute("class", this.getClassName(stopOrPass.stopType));
+
+				el.appendChild(circle);
+			}
+		});
+	}
+
+	updateSize(newSize: [[number, number],[number, number]]) {
+		this.svgSize = newSize[0];
+		this.contentSize = newSize[1];
+	}
+
+	getClassName(stopType: string) {
+		if (stopType === "BEGIN"
+		|| stopType === "END"
+		|| stopType === "STOP"
+		|| stopType === "PASS") {
+			return stopType;
+		}
+
+		return "";
+	}
+
+	getXPosition(station: string): any {
+		return this.topology[station];
+	}
+
+	getYPosition(t: number, a: number): any{
 		if (t == null) t = a;
 
 		let time = new Date(t);

@@ -58,9 +58,9 @@ export class RailroadService {
 		dat.stopOrPasss.all = dat.stopOrPasss.all.filter(d => {
 			return !!dat.partialTrips.all[d.partialTripId - 9001];
 		});
-		*/
 		console.log(dat);
-
+		*/
+		
 		dat.trips.all.forEach(d => {
 			d.partialTrips = [];
 		});
@@ -93,10 +93,10 @@ export class RailroadService {
 			return a.stopType === "STOP";
 		});
 
-		console.log("begin", begin);
-		console.log("pass", pass);
-		console.log("end", end);
-		console.log("stop", stop);
+		//console.log("begin", begin);
+		//console.log("pass", pass);
+		//console.log("end", end);
+		//console.log("stop", stop);
 
 		return dat;
 	}
