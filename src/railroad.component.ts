@@ -24,6 +24,9 @@ import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { RailroadService } from './railroad.service';
 import { Timetable } from './timetable.interface';
 
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+
 @Component({
 	selector: 'ee-railroad',
 	styles: [`
@@ -59,6 +62,26 @@ import { Timetable } from './timetable.interface';
 			position: absolute;
 			top: 0px;
 		}
+
+		circle {
+			fill: black;
+		}
+
+		circle.BEGIN {
+			fill: green;
+		}
+
+		circle.PASS {
+			fill: yellow;
+		}
+
+		circle.STOP {
+			fill: red;
+		}
+
+		circle.END {
+			fill: black;
+		}
 	`],
 	template: `
 	<div class="railroad">
@@ -68,7 +91,10 @@ import { Timetable } from './timetable.interface';
 			[padding]="padding"
 			[border]="border"
 			[contextMenu]="contextMenu"
-			(onResize)="updateSize($event)">
+			(onResize)="updateSize($event)"
+			[contextMenu]="contextMenu"
+			[items]="['ShowX', 'HideX', 'ShowY', 'HideY']"
+			contextable>
 			<svg:g class="background">
 				<svg:defs>
 					<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -88,8 +114,17 @@ import { Timetable } from './timetable.interface';
 				-->
 			</svg:g>
 
-			<svg:g class="routes">
-				<svg:g *ngFor="let partialroute of routes">
+			<svg:g *ngIf="timetable" class="routes">
+				<svg:g class="myverownprivateclass">
+				<!--<svg:circle
+					[attr.cx]="getXPosition(stopOrPass.stationName)"
+					[attr.cy]="getYPosition(stopOrPass.plannedArrivalTime, stopOrPass.plannedDepartureTime)"
+					r="1"
+					[ngClass]="stopOrPass.stopType">
+				</svg:circle>-->
+
+				</svg:g>
+				<!--<svg:g *ngFor="let partialroute of routes">
 					<svg:line *ngFor="let route of partialroute"
 						[attr.x1]="route[0][0]"
 						[attr.y1]="route[0][1]"
@@ -100,13 +135,13 @@ import { Timetable } from './timetable.interface';
 						[items]="['Hallo', 'wie', 'gehts', 'dir', '???']"
 						contextable>
 					</svg:line>
-				</svg:g>
+				</svg:g>-->
 			</svg:g>
 
-			<svg:g class="svg-content-y-stationary">
+			<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
 				<svg:g *ngFor="let station of timetable.stations; let i = index">
 					<svg:text
-						[attr.x]="i * 100"
+						[attr.x]="getXPosition(station)"
 						[attr.y]="24 / zoom"
 						[attr.font-size]="20 / zoom">
 						{{station}}
@@ -121,7 +156,7 @@ import { Timetable } from './timetable.interface';
 				</svg:g>
 			</svg:g>
 
-			<svg:g class="svg-content-x-stationary">
+			<svg:g *ngIf="showY" class="svg-content-x-stationary">
 				<svg:g svg-time-axis
 					[border]="border"
 					[padding]="padding"
@@ -139,7 +174,7 @@ import { Timetable } from './timetable.interface';
 				<svg:rect [attr.width]="padding[3]" [attr.height]="svgSize[1]" />
 			</svg:g>
 		</ee-zui-transform>
-		<context-menu [contextMenu]="contextMenu"></context-menu>
+		<context-menu [contextMenu]="contextMenu" (select)="onSelect($event)"></context-menu>
 	</div>
 	`
 })
@@ -153,6 +188,9 @@ export class RailroadComponent implements OnInit {
 	timetable: Timetable;
 	svgSize: [number, number];
 	contentSize: [number, number];
+
+	showX: boolean = true;
+	showY: boolean = true;
 
 	contextMenu: ContextMenuStatus = {
 		show: false,
@@ -201,12 +239,64 @@ export class RailroadComponent implements OnInit {
 	constructor(private rs: RailroadService) { }
 
 	ngOnInit() {
-		this.timetable = this.rs.getTimetable();
-		this.border = [[0,0],[this.timetable.stations.length * 100, 5000]];
+		this.rs.getTimetable().subscribe(tt => {
+			this.timetable = tt;
+			this.border = [[0,0],[2000, 5000]];
+		});
 	}
 
 	updateSize(newSize: [[number, number],[number, number]]) {
 		this.svgSize = newSize[0];
 		this.contentSize = newSize[1];
+	}
+
+	getXPosition(station: string) {
+		return this.topology[station];
+	}
+
+	topology = {
+		"SYJ": 0,
+		"1011": 100,
+		"HXXJ": 200,
+		"1010": 300,
+		"AZM": 400,
+		"1009": 500,
+		"BTC": 600,
+		"JDM": 700,
+		"1007": 800,
+		"1006": 900,
+		"MDY": 1000,
+		"XTC": 1100,
+		"ZCLU": 1200,
+		"ZCLI": 1300,
+		"HDHZ": 1400,
+		"1004": 1500,
+		"SZJ": 1600,
+		"1001": 1700,
+		"BG": 1800,
+		"PLU": 1900
+	}
+
+	getYPosition(t: number, a: number) {
+		if (t == null) t = a;
+
+		let time = new Date(t);
+		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
+			* (this.border[1][1] - this.border[0][1]) + this.border[0][1];
+	}
+
+	onSelect(s: string) {
+		if (s === "ShowX") {
+			this.showX = true;
+		}
+		if (s === "HideX") {
+			this.showX = false;
+		}
+		if (s === "ShowY") {
+			this.showY = true;
+		}
+		if (s === "HideY") {
+			this.showY = false;
+		}
 	}
 }

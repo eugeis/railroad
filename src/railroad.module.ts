@@ -23,6 +23,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
+import { HttpModule, JsonpModule } from '@angular/http';
 
 import { ContextMenu } from './contextmenu/contextmenu.component';
 import { ContextDirective } from './contextmenu/contextmenu.directive';
@@ -45,7 +46,7 @@ import { SVGTimeAxisComponent } from './time-axis.component';
 import { Slider } from './misc/slider.component';
 
 @NgModule({
-	imports: [BrowserModule, FormsModule, CommonModule],
+	imports: [BrowserModule, FormsModule, CommonModule, HttpModule, JsonpModule],
 	declarations: [RailroadComponent, ZUITransformComponent, SVGScrollbarComponent,
 		ContextMenu, ContextDirective, SVGTimeAxisComponent],
 	providers: [RailroadService, ZUITransformService, ZUIViewboxService],
