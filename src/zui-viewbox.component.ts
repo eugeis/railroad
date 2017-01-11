@@ -123,7 +123,7 @@ export class ZUIViewboxComponent implements OnInit {
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
 
 		if (this.border) {
-			this.zoom = this.vb.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.zoom = this.vb.limitZoom(this.zoom, this.svgSize, this.border);
 			this.offset = this.vb.applyOffsetConstraints(this.offset, this.zoom, this.svgSize, this.border);
 		}
 	}
@@ -137,7 +137,7 @@ export class ZUIViewboxComponent implements OnInit {
 	zooming(mousePos: [number, number], factor: number) {
 		this.zoom *= factor;
 		if (this.border) {
-			this.zoom = this.vb.applyZoomConstraints(this.zoom, this.svgSize, this.border);
+			this.zoom = this.vb.limitZoom(this.zoom, this.svgSize, this.border);
 		}
 
 		this.offset = this.vb.zoom(mousePos, this.offset, factor);

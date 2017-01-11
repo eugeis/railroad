@@ -172,8 +172,8 @@ export class ZUITransformComponent implements OnInit {
 		this.resizeEmitter.emit([this.svgSize, this.contentSize]);
 
 		if (this.border) {
-			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
-			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.contentSize, this.border);
+			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border);
+			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
 		}
 	}
 
@@ -189,7 +189,7 @@ export class ZUITransformComponent implements OnInit {
 		this.zoom *= factor;
 
 		if (this.border) {
-			this.zoom = this.tr.applyZoomConstraints(this.zoom, this.contentSize, this.border);
+			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border);
 			factor = this.zoom / oldZoom;
 		}
 
@@ -198,7 +198,7 @@ export class ZUITransformComponent implements OnInit {
 
 		this.translate = this.tr.zoom(mousePos, this.translate, factor);
 		if (this.border) {
-			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.contentSize, this.border);
+			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
 		}
 
 		this.zoomChange.emit(this.zoom);
@@ -213,7 +213,7 @@ export class ZUITransformComponent implements OnInit {
 		this.translate = this.tr.pan(this.translate, movement);
 
 		if (this.border) {
-			this.translate = this.tr.applyTranslateConstraints(this.translate, this.zoom, this.contentSize, this.border);
+			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
 		}
 
 		this.translateChange.emit(this.translate);

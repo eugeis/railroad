@@ -7,7 +7,7 @@ describe("ZUI-Viewbox Servide", () => {
 
 	it("should apply zoom constraints", () => {
 		fail("not implemented");
-		//this.testService.applyZoomConstraints
+		//this.testService.limitZoom
 	});
 
 	it("should apply offset constraints", () => {

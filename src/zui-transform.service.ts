@@ -103,20 +103,20 @@ export class ZUITransformService {
 		return (1 + (frame(-delta / 265, -1, 1) / 5));
 	}
 
-	applyZoomConstraints(zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): number {
+	limitZoom(zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): number {
 		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
 		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
 		return zoom;
 	}
 
-	applyTranslateConstraints(translate: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
+	limitTranslate(translate: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
 		return [
-			this.applyTranslateConstraint(translate[0], zoom, svgSize[0], [border[0][0], border[1][0]]),
-			this.applyTranslateConstraint(translate[1], zoom, svgSize[1], [border[0][1], border[1][1]])
+			this._limitTranslate(translate[0], zoom, svgSize[0], [border[0][0], border[1][0]]),
+			this._limitTranslate(translate[1], zoom, svgSize[1], [border[0][1], border[1][1]])
 		];
 	}
 
-	applyTranslateConstraint(translate: number, zoom: number, svgSize: number, border: [number,number]): number {
+	_limitTranslate(translate: number, zoom: number, svgSize: number, border: [number,number]): number {
 		return frame(translate, svgSize - border[1] * zoom, -border[0] * zoom);
 	}
 }

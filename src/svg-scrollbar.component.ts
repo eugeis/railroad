@@ -99,7 +99,7 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 
 		let movement = (this.horizontal) ? e.movementX : e.movementY;
 		this.offset = -((this.position + movement) / (this.contentSize - this.size) * (this.zoom * (this.border[1] - this.border[0]) - this.contentSize) + this.zoom * this.border[0]);
-		this.offset = this.tr.applyTranslateConstraint(this.offset, this.zoom, this.contentSize, this.border);
+		this.offset = this.tr._limitTranslate(this.offset, this.zoom, this.contentSize, this.border);
 		this.offsetChange.emit(this.offset);
 	}
 

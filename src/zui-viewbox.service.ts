@@ -31,7 +31,7 @@ export class ZUIViewboxService {
 		];
 	}
 
-	applyZoomConstraints(zoom: number, svgSize: [number, number], border: [[number, number],[number, number]]) {
+	limitZoom(zoom: number, svgSize: [number, number], border: [[number, number],[number, number]]) {
 		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
 		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
 		return zoom;
