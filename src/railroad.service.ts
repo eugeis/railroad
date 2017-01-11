@@ -76,8 +76,8 @@ export class RailroadService {
 			d.partialTrip = dat.partialTrips.all[d.partialTripId - 9001];
 			d.partialTrip.stopOrPasss.push(d);
 
-			d.plannedDepartureTime = d.plannedDepartureTime && new Date(d.plannedDepartureTime);
-			d.plannedArrivalTime = d.plannedArrivalTime && new Date(d.plannedArrivalTime);
+			d.plannedDepartureTime = d.plannedDepartureTime && new Date(<any>d.plannedDepartureTime);
+			d.plannedArrivalTime = d.plannedArrivalTime && new Date(<any>d.plannedArrivalTime);
 		});
 
 		let begin = dat.stopOrPasss.all.filter(a => {
