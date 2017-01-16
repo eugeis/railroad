@@ -123,7 +123,11 @@ export class ZUITransformComponent implements OnInit {
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
 		this.contextMenu.show = false;
-		this.zooming(cursorPoint(this.svg, this.pt, e), this.tr.getZoomFactor(e.deltaY));
+		if (e.shiftKey) {
+			this.zooming(cursorPoint(this.svg, this.pt, e), this.tr.getZoomFactor(e.deltaY));
+		} else {
+			this.panning([-e.deltaX, -e.deltaY]);
+		}
 	}
 
 	@HostListener('dblclick', ['$event']) onDoubleClick(e: MouseEvent) {
