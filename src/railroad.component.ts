@@ -18,10 +18,11 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, HostListener, DoCheck } from '@angular/core';
+import { Component, OnInit, HostListener, DoCheck, Inject } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { RailroadService } from './railroad.service';
+import { CoordinateInterface } from './coordinate.interface';
 import { Timetable } from './timetable.interface';
 
 import 'rxjs/add/operator/map';
@@ -141,15 +142,15 @@ var svgNS = "http://www.w3.org/2000/svg";
 			<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
 				<svg:g *ngFor="let station of timetable.stations; let i = index">
 					<svg:text
-						[attr.x]="getXPosition(station)"
+						[attr.x]="coord.getX(station)"
 						[attr.y]="24 / zoom"
 						[attr.font-size]="20 / zoom">
 						{{station}}
 					</svg:text>
 					<svg:line
-						[attr.x1]="i * 100"
+						[attr.x1]="coord.getX(station)"
 						[attr.y1]="padding[0] / zoom"
-						[attr.x2]="i * 100"
+						[attr.x2]="coord.getX(station)"
 						[attr.y2]="svgSize[1] / zoom"
 						vector-effect="non-scaling-stroke">
 					</svg:line>
@@ -180,7 +181,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 })
 
 export class RailroadComponent implements OnInit {
-	border: [[number, number], [number, number]] = [[0,0],[2000,2000]];
+	border: [[number, number], [number, number]] = [[0,0],[2100,5000]];
 	padding: [number, number, number, number] = [30,0,0,75];
 	translate: [number, number] = [0,0];
 	zoom: number = 1;
@@ -200,35 +201,11 @@ export class RailroadComponent implements OnInit {
 		target: null
 	};
 
-	topology = {
-		"SYJ": 0,
-		"1011": 100,
-		"HXXJ": 200,
-		"1010": 300,
-		"AZM": 400,
-		"1009": 500,
-		"BTC": 600,
-		"JDM": 700,
-		"1007": 800,
-		"1006": 900,
-		"MDY": 1000,
-		"XTC": 1100,
-		"ZCLU": 1200,
-		"ZCLI": 1300,
-		"HDHZ": 1400,
-		"1004": 1500,
-		"SZJ": 1600,
-		"1001": 1700,
-		"BG": 1800,
-		"PLU": 1900
-	}
-
-	constructor(private rs: RailroadService) { }
+	constructor(private rs: RailroadService, @Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
 
 	ngOnInit() {
 		this.rs.getTimetable().subscribe(tt => {
 			this.timetable = tt;
-			this.border = [[0,0],[2000, 5000]];
 
 			let el = document.querySelector(".routes");
 
@@ -265,13 +242,13 @@ export class RailroadComponent implements OnInit {
 			for (let cur of tt.stopOrPasss.all) {
 				let dot = document.createElementNS("http://www.w3.org/2000/svg", "path");
 				let d = "M "
-					+ this.getXPosition(cur.stationName)
+					+ this.coord.getX(cur.stationName)
 					+ " "
-					+ this.getYPosition(<any>(cur.plannedArrivalTime || cur.plannedDepartureTime))
+					+ this.coord.getY(cur.plannedArrivalTime || cur.plannedDepartureTime, this.border)
 					+ " L "
-					+ this.getXPosition(cur.stationName)
+					+ this.coord.getX(cur.stationName)
 					+ " "
-					+ this.getYPosition(<any>(cur.plannedDepartureTime || cur.plannedArrivalTime));
+					+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
 
 				dot.setAttributeNS(null, "d", d);
 				dot.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
@@ -296,16 +273,6 @@ export class RailroadComponent implements OnInit {
 		}
 
 		return "";
-	}
-
-	getXPosition(station: string): any {
-		return this.topology[station];
-	}
-
-	getYPosition(t: number): any{
-		let time = new Date(t);
-		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
-			* (this.border[1][1] - this.border[0][1]) + this.border[0][1];
 	}
 
 	onSelect(s: string) {

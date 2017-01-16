@@ -30,26 +30,19 @@ import { ContextDirective } from './contextmenu/contextmenu.directive';
 import { RailroadComponent } from './railroad.component';
 import { ZUITransformComponent } from './zui-transform.component';
 import { SVGScrollbarComponent } from './svg-scrollbar.component';
-import { ZUIViewboxComponent } from './zui-viewbox.component';
-
-import { SVGUnitedStatesComponent } from './misc/svg-united-states.component';
-import { SVGFirefoxComponent } from './misc/svg-firefox.component';
-import { SVGGallardoComponent } from './misc/svg-gallardo.component';
-import { SVGNetworkComponent } from './misc/svg-network.component';
-import { SVGGermanyComponent } from './misc/svg-germany.component';
 
 import { RailroadService } from './railroad.service';
 import { ZUITransformService } from './zui-transform.service';
-import { ZUIViewboxService } from './zui-viewbox.service';
-import { SVGTimeAxisComponent } from './time-axis.component';
+import { CoordinateService } from './coordinate.service';
 
-import { Slider } from './misc/slider.component';
+import { SVGTimeAxisComponent } from './time-axis.component';
 
 @NgModule({
 	imports: [BrowserModule, FormsModule, CommonModule, HttpModule, JsonpModule],
 	declarations: [RailroadComponent, ZUITransformComponent, SVGScrollbarComponent,
 		ContextMenu, ContextDirective, SVGTimeAxisComponent],
-	providers: [RailroadService, ZUITransformService, ZUIViewboxService],
+	providers: [RailroadService, ZUITransformService,
+		{provide: 'CoordinateInterface', useClass: CoordinateService}],
 	exports: [RailroadComponent]
 })
 export class RailroadModule { }

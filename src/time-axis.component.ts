@@ -18,7 +18,9 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, DoCheck } from '@angular/core';
+import { Component, Input, DoCheck, Inject } from '@angular/core';
+
+import { CoordinateInterface } from './coordinate.interface';
 
 @Component({
 	selector: '[svg-time-axis]',
@@ -35,15 +37,15 @@ import { Component, Input, DoCheck } from '@angular/core';
 		<svg:g class="time-axis" *ngFor="let time of times; let i = index">
 			<svg:text
 				[attr.x]="2 / zoom"
-				[attr.y]="getTimePosition(time)"
+				[attr.y]="time[1]"
 				[attr.font-size]="16 / zoom">
-				{{time | date:'HH:mm:ss'}}
+				{{time[0] | date:'HH:mm:ss'}}
 			</svg:text>
 			<svg:line
 				[attr.x1]="padding[3] / zoom"
-				[attr.y1]="getTimePosition(time)"
+				[attr.y1]="time[1]"
 				[attr.x2]="svgSize[0] / zoom"
-				[attr.y2]="getTimePosition(time)"
+				[attr.y2]="time[1]"
 				vector-effect="non-scaling-stroke">
 			</svg:line>
 		</svg:g>
@@ -62,7 +64,9 @@ export class SVGTimeAxisComponent implements DoCheck {
 	oldZoom: number;
 	oldTranslate: number;
 
-	times: Date[] = [];
+	times: [Date, number][] = [];
+
+	constructor(@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
 
 	ngDoCheck() {
 		if (!this.svgSize || !this.translate || !this.padding || !this.border) {
@@ -107,15 +111,13 @@ export class SVGTimeAxisComponent implements DoCheck {
 		let realUpper = upper - upper % step + step;
 
 		for (let i = realLower; i < realUpper; i += step) {
-			this.times.push(new Date(i * 1000));
+			this.times.push([
+				new Date(i * 1000),
+				this.coord.getY(new Date(i * 1000), this.border)
+			]);
 		}
 
 		this.oldZoom = this.zoom;
 		this.oldTranslate = this.translate[1];
-	}
-
-	getTimePosition(time: Date) {
-		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
-			* (this.border[1][1] - this.border[0][1]) + this.border[0][1];
 	}
 }
