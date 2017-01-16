@@ -61,24 +61,28 @@ var svgNS = "http://www.w3.org/2000/svg";
 			top: 0px;
 		}
 
-		/deep/ path {
+		.routes /deep/ path {
 			stroke: black;
 			stroke-linecap: round;
 		}
 
-		/deep/ path.BEGIN {
+		.routes /deep/ path:hover {
+			cursor: pointer;
+		}
+
+		.routes /deep/ path.BEGIN {
 			stroke: green;
 		}
 
-		/deep/ path.PASS {
+		.routes /deep/ path.PASS {
 			stroke: yellow;
 		}
 
-		/deep/ path.STOP {
+		.routes /deep/ path.STOP {
 			stroke: red;
 		}
 
-		/deep/ path.END {
+		.routes /deep/ path.END {
 			stroke: black;
 		}
 	`],
@@ -193,6 +197,10 @@ export class RailroadComponent implements OnInit {
 	showX: boolean = true;
 	showY: boolean = true;
 
+	trips: any = {};
+	stopOrPasss: any = {};
+
+
 	contextMenu: ContextMenuStatus = {
 		show: false,
 		items: [],
@@ -214,27 +222,39 @@ export class RailroadComponent implements OnInit {
 					let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 
 					partialTrip.stopOrPasss.sort((a, b) => {
-						return this.getXPosition(a.stationName) - this.getXPosition(b.stationName);
+						return this.coord.getX(a.stationName) - this.coord.getX(b.stationName);
 					});
 
-					let d = partialTrip.stopOrPasss.reduce((prev: string, cur) => {
-						let d = this.getXPosition(cur.stationName)
+					let d = partialTrip.stopOrPasss.reduce((prev: string, cur, i: number) => {
+						let d = this.coord.getX(cur.stationName)
 							+ " "
-							+ this.getYPosition(<any>(cur.plannedArrivalTime || cur.plannedDepartureTime))
+							+ this.coord.getY(cur.plannedArrivalTime || cur.plannedDepartureTime, this.border)
 							+ " L "
-							+ this.getXPosition(cur.stationName)
+							+ this.coord.getX(cur.stationName)
 							+ " "
-							+ this.getYPosition(<any>(cur.plannedDepartureTime || cur.plannedArrivalTime));
+							+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
 
-						return prev + "L " + d + " ";
-					}, "M 0 0");
+						if (i === 0) {
+							return prev + "M " + d + " ";
+						} else {
+							return prev + "L " + d + " ";
+						}
+					}, "");
 
 					path.setAttributeNS(null, "d", d);
 					path.setAttributeNS(null, "stroke", "black");
 					path.setAttributeNS(null, "fill", "none");
-					path.setAttributeNS(null, "stroke-width", "2px");
+					path.setAttributeNS(null, "stroke-width", "3px");
 					path.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
 
+					path.addEventListener("contextmenu", (e: MouseEvent) => {
+						console.log("Contextmenu on path: ");
+						console.log(trip);
+						console.log(this.trips[trip.id]);
+						this.trips[trip.id].style.stroke = "red";
+					});
+
+					this.trips[trip.id] = path;
 					el.appendChild(path);
 				}
 			}
@@ -254,6 +274,12 @@ export class RailroadComponent implements OnInit {
 				dot.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
 				dot.setAttributeNS(null, "stroke-width", "6px");
 				dot.setAttribute("class", this.getClassName(cur.stopType));
+
+				dot.addEventListener("contextmenu", (e: MouseEvent) => {
+					console.log("Contextmenu on dot: ");
+					console.log(cur);
+				});
+
 				el.appendChild(dot);
 			}
 		});

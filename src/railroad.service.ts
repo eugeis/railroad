@@ -49,10 +49,10 @@ export class RailroadService {
 		let dat:Timetable = data.json();
 
 		dat.trips.all = dat.trips.all.filter((t) => {
-			return t.id % 100 == 0;
+			return t.id % 50 == 0;
 		});
 		dat.trips.all.forEach((t) => t.partialTrips = []);
-		dat.partialTrips.all.forEach((t) => t.stopOrPasss = []);
+		dat.partialTrips.all.forEach((pt) => pt.stopOrPasss = []);
 
 		//assign trip
 		dat.partialTrips.all.forEach((pt) => {
@@ -64,7 +64,7 @@ export class RailroadService {
 				pt.trip.partialTrips.push(pt);
 			}
 		});
-		dat.partialTrips.all = dat.partialTrips.all.filter((pt) => { return pt.trip; });
+		dat.partialTrips.all = dat.partialTrips.all.filter((pt) => { return !!pt.trip; });
 
 		//asign partial trip
 		dat.stopOrPasss.all.forEach((sop) => {
@@ -76,7 +76,7 @@ export class RailroadService {
 				sop.partialTrip.stopOrPasss.push(sop);
 			}
 		});
-		dat.stopOrPasss.all = dat.stopOrPasss.all.filter((sop) => { return sop.partialTrip; });
+		dat.stopOrPasss.all = dat.stopOrPasss.all.filter((sop) => { return !!sop.partialTrip; });
 
 		dat.stopOrPasss.all.forEach(d => {
 			d.plannedDepartureTime = d.plannedDepartureTime && new Date(<any>d.plannedDepartureTime);
