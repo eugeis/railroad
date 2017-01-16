@@ -44,7 +44,7 @@ import { Component, Input, DoCheck } from '@angular/core';
 				[attr.y1]="getTimePosition(time)"
 				[attr.x2]="svgSize[0] / zoom"
 				[attr.y2]="getTimePosition(time)"
-				[style.stroke-width]="1 / zoom">
+				vector-effect="non-scaling-stroke">
 			</svg:line>
 		</svg:g>
 	`

@@ -48,34 +48,37 @@ export class RailroadService {
 	private extractData(data :any) {
 		let dat:Timetable = data.json();
 
-		console.log(dat);
+		dat.trips.all = dat.trips.all.filter((t) => {
+			return t.id % 100 == 0;
+		});
+		dat.trips.all.forEach((t) => t.partialTrips = []);
+		dat.partialTrips.all.forEach((t) => t.stopOrPasss = []);
 
-		/*
-		dat.trips.all.splice(1);
-		dat.partialTrips.all = dat.partialTrips.all.filter(d => {
-			return dat.trips.all[d.tripId - 9001];
-		});
-		dat.stopOrPasss.all = dat.stopOrPasss.all.filter(d => {
-			return !!dat.partialTrips.all[d.partialTripId - 9001];
-		});
-		console.log(dat);
-		*/
-		
-		dat.trips.all.forEach(d => {
-			d.partialTrips = [];
-		});
+		//assign trip
+		dat.partialTrips.all.forEach((pt) => {
+			pt.trip = dat.trips.all.find((t) => {
+				return t.id === pt.tripId;
+			});
 
-		dat.partialTrips.all.forEach(d => {
-			d.trip = dat.trips.all[d.tripId - 9001];
-			d.trip.partialTrips.push(d);
-
-			d.stopOrPasss = [];
+			if (pt.trip) {
+				pt.trip.partialTrips.push(pt);
+			}
 		});
+		dat.partialTrips.all = dat.partialTrips.all.filter((pt) => { return pt.trip; });
+
+		//asign partial trip
+		dat.stopOrPasss.all.forEach((sop) => {
+			sop.partialTrip = dat.partialTrips.all.find((pt) => {
+				return pt.id === sop.partialTripId;
+			});
+
+			if (sop.partialTrip) {
+				sop.partialTrip.stopOrPasss.push(sop);
+			}
+		});
+		dat.stopOrPasss.all = dat.stopOrPasss.all.filter((sop) => { return sop.partialTrip; });
 
 		dat.stopOrPasss.all.forEach(d => {
-			d.partialTrip = dat.partialTrips.all[d.partialTripId - 9001];
-			d.partialTrip.stopOrPasss.push(d);
-
 			d.plannedDepartureTime = d.plannedDepartureTime && new Date(<any>d.plannedDepartureTime);
 			d.plannedArrivalTime = d.plannedArrivalTime && new Date(<any>d.plannedArrivalTime);
 		});
@@ -92,11 +95,6 @@ export class RailroadService {
 		let stop = dat.stopOrPasss.all.filter(a => {
 			return a.stopType === "STOP";
 		});
-
-		//console.log("begin", begin);
-		//console.log("pass", pass);
-		//console.log("end", end);
-		//console.log("stop", stop);
 
 		return dat;
 	}

@@ -53,7 +53,7 @@ interface EventInterface<T> {
 		}
 	`],
 	template: `
-		<svg [ngClass]="{'dragging': dragging}">
+		<svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
 			<g [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
 			</g>

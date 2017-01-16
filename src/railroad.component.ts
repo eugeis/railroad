@@ -60,24 +60,25 @@ var svgNS = "http://www.w3.org/2000/svg";
 			top: 0px;
 		}
 
-		/deep/ circle {
-			fill: black;
+		/deep/ path {
+			stroke: black;
+			stroke-linecap: round;
 		}
 
-		/deep/ circle.BEGIN {
-			fill: green;
+		/deep/ path.BEGIN {
+			stroke: green;
 		}
 
-		/deep/ circle.PASS {
-			fill: yellow;
+		/deep/ path.PASS {
+			stroke: yellow;
 		}
 
-		/deep/ circle.STOP {
-			fill: red;
+		/deep/ path.STOP {
+			stroke: red;
 		}
 
-		/deep/ circle.END {
-			fill: black;
+		/deep/ path.END {
+			stroke: black;
 		}
 	`],
 	template: `
@@ -150,7 +151,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 						[attr.y1]="padding[0] / zoom"
 						[attr.x2]="i * 100"
 						[attr.y2]="svgSize[1] / zoom"
-						[style.stroke-width]="1 / zoom">
+						vector-effect="non-scaling-stroke">
 					</svg:line>
 				</svg:g>
 			</svg:g>
@@ -231,15 +232,52 @@ export class RailroadComponent implements OnInit {
 
 			let el = document.querySelector(".routes");
 
-			for (let stopOrPass of tt.stopOrPasss.all) {
-				var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-				circle.setAttributeNS(null, "cx", this.getXPosition(stopOrPass.stationName));
-				circle.setAttributeNS(null, "cy", this.getYPosition(<number><any>stopOrPass.plannedArrivalTime, <number><any>stopOrPass.plannedDepartureTime));
-				circle.setAttributeNS(null, "r", "1");
-				circle.setAttributeNS(null, "stroke", "none");
-				circle.setAttribute("class", this.getClassName(stopOrPass.stopType));
+			for (let trip of tt.trips.all) {
+				for (let partialTrip of trip.partialTrips) {
+					let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 
-				el.appendChild(circle);
+					partialTrip.stopOrPasss.sort((a, b) => {
+						return this.getXPosition(a.stationName) - this.getXPosition(b.stationName);
+					});
+
+					let d = partialTrip.stopOrPasss.reduce((prev: string, cur) => {
+						let d = this.getXPosition(cur.stationName)
+							+ " "
+							+ this.getYPosition(<any>(cur.plannedArrivalTime || cur.plannedDepartureTime))
+							+ " L "
+							+ this.getXPosition(cur.stationName)
+							+ " "
+							+ this.getYPosition(<any>(cur.plannedDepartureTime || cur.plannedArrivalTime));
+
+						return prev + "L " + d + " ";
+					}, "M 0 0");
+
+					path.setAttributeNS(null, "d", d);
+					path.setAttributeNS(null, "stroke", "black");
+					path.setAttributeNS(null, "fill", "none");
+					path.setAttributeNS(null, "stroke-width", "2px");
+					path.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
+
+					el.appendChild(path);
+				}
+			}
+
+			for (let cur of tt.stopOrPasss.all) {
+				let dot = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				let d = "M "
+					+ this.getXPosition(cur.stationName)
+					+ " "
+					+ this.getYPosition(<any>(cur.plannedArrivalTime || cur.plannedDepartureTime))
+					+ " L "
+					+ this.getXPosition(cur.stationName)
+					+ " "
+					+ this.getYPosition(<any>(cur.plannedDepartureTime || cur.plannedArrivalTime));
+
+				dot.setAttributeNS(null, "d", d);
+				dot.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
+				dot.setAttributeNS(null, "stroke-width", "6px");
+				dot.setAttribute("class", this.getClassName(cur.stopType));
+				el.appendChild(dot);
 			}
 		});
 	}
@@ -264,9 +302,7 @@ export class RailroadComponent implements OnInit {
 		return this.topology[station];
 	}
 
-	getYPosition(t: number, a: number): any{
-		if (t == null) t = a;
-
+	getYPosition(t: number): any{
 		let time = new Date(t);
 		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
 			* (this.border[1][1] - this.border[0][1]) + this.border[0][1];
