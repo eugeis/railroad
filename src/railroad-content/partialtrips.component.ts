@@ -20,8 +20,8 @@
  */
 import { Component, Input, OnChanges, ChangeDetectionStrategy, Inject } from '@angular/core';
 
-import { CoordinateInterface } from './coordinate.interface';
-import { PartialTrip, StopOrPass } from './timetable.interface';
+import { CoordinateInterface } from '../zui/coordinate.interface';
+import { PartialTrip, StopOrPass } from '../timetable.interface';
 
 @Component({
 	selector: '[partialTrips]',

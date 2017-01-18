@@ -20,9 +20,9 @@
  */
 import { Component, OnInit, HostListener, DoCheck, Inject, ElementRef, ViewChild, Renderer } from '@angular/core';
 
-import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
+import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
+import { CoordinateInterface } from './zui/coordinate.interface';
 import { RailroadService } from './railroad.service';
-import { CoordinateInterface } from './coordinate.interface';
 import { Timetable, StopOrPass, PartialTrip } from './timetable.interface';
 
 import 'rxjs/add/operator/map';

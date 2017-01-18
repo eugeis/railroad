@@ -20,7 +20,7 @@
  */
 import { Component, Input, DoCheck, Inject } from '@angular/core';
 
-import { CoordinateInterface } from './coordinate.interface';
+import { CoordinateInterface } from './zui/coordinate.interface';
 
 @Component({
 	selector: '[svg-time-axis]',

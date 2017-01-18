@@ -23,23 +23,20 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
-import { HttpModule, JsonpModule } from '@angular/http';
 
-import { ZUIModule } from './zui/zui.module';
+import { ContextMenu } from './contextmenu/contextmenu.component';
+import { ContextDirective } from './contextmenu/contextmenu.directive';
+import { ZUITransformComponent } from './zui-transform.component';
+import { SVGScrollbarComponent } from './svg-scrollbar.component';
 
-import { RailroadComponent } from './railroad.component';
-import { SVGTimeAxisComponent } from './time-axis.component';
-
-import { StopOrPasssComponent } from './railroad-content/stoporpasss.component';
-import { PartialTripsComponent } from './railroad-content/partialtrips.component';
-
-import { RailroadService } from './railroad.service';
+import { ZUITransformService } from './zui-transform.service';
+import { CoordinateService } from './coordinate.service';
 
 @NgModule({
-	imports: [BrowserModule, FormsModule, CommonModule, HttpModule, JsonpModule, ZUIModule],
-	declarations: [RailroadComponent, SVGTimeAxisComponent,
-		StopOrPasssComponent, PartialTripsComponent],
-	providers: [RailroadService],
-	exports: [RailroadComponent]
+	imports: [BrowserModule, FormsModule, CommonModule],
+	declarations: [ZUITransformComponent, SVGScrollbarComponent, ContextMenu,
+		ContextDirective],
+	providers: [ZUITransformService, {provide: 'CoordinateInterface', useClass: CoordinateService}],
+	exports: [ZUITransformComponent, ContextMenu, ContextDirective]
 })
-export class RailroadModule { }
+export class ZUIModule { }
