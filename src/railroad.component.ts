@@ -62,73 +62,73 @@ var svgNS = "http://www.w3.org/2000/svg";
 		}
 	`],
 	template: `
-	<div class="railroad">
-		<ee-zui-transform
-			[(zoom)]="zoom"
-			[(translate)]="translate"
-			[padding]="padding"
-			[border]="border"
-			[contextMenu]="contextMenu"
-			(onResize)="updateSize($event)"
-			[contextMenu]="contextMenu"
-			[contextMenuId]="'Transform-SVG'"
-			[items]="['ShowX', 'HideX', 'ShowY', 'HideY']"
-			contextable>
-			<svg:g class="background">
-				<svg:defs>
-					<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-						<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
-					</svg:pattern>
-					<svg:pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
-						<svg:rect width="100" height="100" fill="url(#smallGrid)"/>
-						<svg:path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1"/>
-					</svg:pattern>
-				</svg:defs>
-			</svg:g>
-
-			<svg:g *ngIf="timetable" class="partialTrips"
-				[pts]="timetable.partialTrips.all"
+		<div class="railroad">
+			<ee-zui-transform
+				[(zoom)]="zoom"
+				[(translate)]="translate"
+				[padding]="padding"
 				[border]="border"
-				partialTrips>
-			</svg:g>
-
-			<svg:g *ngIf="timetable" class="stopOrPasss"
-				[sop]="timetable.stopOrPasss.all"
-				[border]="border"
-				stopOrPasss>
-			</svg:g>
-
-			<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
-				<svg:g *ngFor="let station of timetable.stations; let i = index">
-					<svg:text
-						[attr.x]="coord.getX(station)"
-						[attr.y]="24 / zoom"
-						[attr.font-size]="20 / zoom">
-						{{station}}
-					</svg:text>
-					<svg:line
-						[attr.x1]="coord.getX(station)"
-						[attr.y1]="padding[0] / zoom"
-						[attr.x2]="coord.getX(station)"
-						[attr.y2]="svgSize[1] / zoom"
-						vector-effect="non-scaling-stroke">
-					</svg:line>
+				[contextMenu]="contextMenu"
+				(onResize)="updateSize($event)"
+				[contextMenu]="contextMenu"
+				[contextMenuId]="'Transform-SVG'"
+				[items]="['ShowX', 'HideX', 'ShowY', 'HideY']"
+				contextable>
+				<svg:g class="background">
+					<svg:defs>
+						<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+							<svg:path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.5"/>
+						</svg:pattern>
+						<svg:pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+							<svg:rect width="100" height="100" fill="url(#smallGrid)"/>
+							<svg:path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="1"/>
+						</svg:pattern>
+					</svg:defs>
 				</svg:g>
-			</svg:g>
 
-			<svg:g *ngIf="showY" class="svg-content-x-stationary">
-				<svg:g svg-time-axis
+				<svg:g *ngIf="timetable" class="partialTrips"
+					[pts]="timetable.partialTrips.all"
 					[border]="border"
-					[padding]="padding"
-					[translate]="translate"
-					[zoom]="zoom"
-					[svgSize]="svgSize"
-					[contentSize]="contentSize">
+					partialTrips>
 				</svg:g>
-			</svg:g>
-		</ee-zui-transform>
-		<context-menu [contextMenu]="contextMenu" (select)="onSelect($event)"></context-menu>
-	</div>
+
+				<svg:g *ngIf="timetable" class="stopOrPasss"
+					[sop]="timetable.stopOrPasss.all"
+					[border]="border"
+					stopOrPasss>
+				</svg:g>
+
+				<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
+					<svg:g *ngFor="let station of timetable.stations; let i = index">
+						<svg:text
+							[attr.x]="coord.getX(station)"
+							[attr.y]="24 / zoom"
+							[attr.font-size]="20 / zoom">
+							{{station}}
+						</svg:text>
+						<svg:line
+							[attr.x1]="coord.getX(station)"
+							[attr.y1]="padding[0] / zoom"
+							[attr.x2]="coord.getX(station)"
+							[attr.y2]="svgSize[1] / zoom"
+							vector-effect="non-scaling-stroke">
+						</svg:line>
+					</svg:g>
+				</svg:g>
+
+				<svg:g *ngIf="showY" class="svg-content-x-stationary">
+					<svg:g svg-time-axis
+						[border]="border"
+						[padding]="padding"
+						[translate]="translate"
+						[zoom]="zoom"
+						[svgSize]="svgSize"
+						[contentSize]="contentSize">
+					</svg:g>
+				</svg:g>
+			</ee-zui-transform>
+			<context-menu [contextMenu]="contextMenu" (select)="onSelect($event)"></context-menu>
+		</div>
 	`
 })
 
