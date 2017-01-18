@@ -21,7 +21,7 @@
 import { Component, OnInit, HostListener, DoCheck, Inject, ElementRef, ViewChild, Renderer } from '@angular/core';
 
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
-import { CoordinateInterface } from './zui/coordinate.interface';
+import { AxisServiceInterface } from './zui/axis.interface';
 import { RailroadService } from './railroad.service';
 import { Timetable, StopOrPass, PartialTrip } from './timetable.interface';
 
@@ -149,7 +149,7 @@ export class RailroadComponent implements OnInit {
 
 	constructor(
 		private rs: RailroadService,
-		@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>
+		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>
 	) { }
 
 	ngOnInit() {

@@ -19,7 +19,7 @@
  * @author Jonas Möller
  */
 
-export interface CoordinateInterface<X,Y> {
+export interface AxisServiceInterface<X,Y> {
 	getX(a: X): number;
 	getY(b: Y, border: [[number, number],[number, number]]): number;
 }

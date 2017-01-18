@@ -20,7 +20,7 @@
  */
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Inject } from '@angular/core';
 
-import { CoordinateInterface } from '../zui/coordinate.interface';
+import { AxisServiceInterface } from '../zui/axis.interface';
 import { PartialTrip, StopOrPass } from '../timetable.interface';
 import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
@@ -69,7 +69,7 @@ export class PartialTripsComponent {
 		})
 	}
 
-	constructor (@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
+	constructor (@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
 	getD(cur: PartialTrip) {
 		return cur.stopOrPasss.reduce((prev: string, cur: StopOrPass, i: number) => {

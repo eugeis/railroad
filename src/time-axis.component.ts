@@ -20,7 +20,7 @@
  */
 import { Component, Input, DoCheck, Inject } from '@angular/core';
 
-import { CoordinateInterface } from './zui/coordinate.interface';
+import { AxisServiceInterface } from './zui/axis.interface';
 
 @Component({
 	selector: '[svg-time-axis]',
@@ -66,7 +66,7 @@ export class SVGTimeAxisComponent implements DoCheck {
 
 	times: [Date, number][] = [];
 
-	constructor(@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
+	constructor(@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
 	ngDoCheck() {
 		if (!this.svgSize || !this.translate || !this.padding || !this.border) {

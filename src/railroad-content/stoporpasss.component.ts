@@ -20,7 +20,7 @@
  */
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Inject } from '@angular/core';
 
-import { CoordinateInterface } from '../zui/coordinate.interface';
+import { AxisServiceInterface } from '../zui/axis.interface';
 import { StopOrPass } from '../timetable.interface';
 import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
@@ -86,7 +86,7 @@ export class StopOrPasssComponent {
 		})
 	}
 
-	constructor (@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
+	constructor (@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
 	getD(cur: StopOrPass) {
 		return "M "

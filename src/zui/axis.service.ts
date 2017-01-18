@@ -19,10 +19,10 @@
  * @author Jonas Möller
  */
 import { Injectable } from '@angular/core';
-import { CoordinateInterface } from './coordinate.interface';
+import { AxisServiceInterface } from './axis.interface';
 
 @Injectable()
-export class CoordinateService implements CoordinateInterface<string, Date> {
+export class AxisService implements AxisServiceInterface<string, Date> {
 	constructor() { }
 
 	topology = {
