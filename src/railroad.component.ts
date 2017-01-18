@@ -18,12 +18,12 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, HostListener, DoCheck, Inject } from '@angular/core';
+import { Component, OnInit, HostListener, DoCheck, Inject, ElementRef, ViewChild, Renderer } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { RailroadService } from './railroad.service';
 import { CoordinateInterface } from './coordinate.interface';
-import { Timetable } from './timetable.interface';
+import { Timetable, StopOrPass, PartialTrip } from './timetable.interface';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -62,27 +62,37 @@ var svgNS = "http://www.w3.org/2000/svg";
 		}
 
 		.routes /deep/ path {
-			stroke: black;
-			stroke-linecap: round;
+			stroke-width: 4px;
 		}
 
-		.routes /deep/ path:hover {
+		.stopOrPasss /deep/ path {
+			stroke-linecap: round;
+			stroke-width: 8px;
+		}
+
+		.routes /deep/ path, .stopOrPasss /deep/ path {
+			vector-effect: non-scaling-stroke;
+			stroke: black;
+			fill: none;
+		}
+
+		.routes /deep/ path:hover, .stopOrPasss /deep/ path:hover {
 			cursor: pointer;
 		}
 
-		.routes /deep/ path.BEGIN {
+		.stopOrPasss /deep/ path.BEGIN {
 			stroke: green;
 		}
 
-		.routes /deep/ path.PASS {
+		.stopOrPasss /deep/ path.PASS {
 			stroke: yellow;
 		}
 
-		.routes /deep/ path.STOP {
+		.stopOrPasss /deep/ path.STOP {
 			stroke: red;
 		}
 
-		.routes /deep/ path.END {
+		.stopOrPasss /deep/ path.END {
 			stroke: black;
 		}
 	`],
@@ -118,30 +128,12 @@ var svgNS = "http://www.w3.org/2000/svg";
 				-->
 			</svg:g>
 
-			<svg:g class="routes">
-				<svg:g *ngIf="timetable">
-<!--
-					<svg:circle *ngFor="let stopOrPass of timetable.stopOrPasss.all"
-						[attr.cx]="stopOrPass.x"
-						[attr.cy]="stopOrPass.y"
-						r="1"
-						[ngClass]="stopOrPass.stopType">
-					</svg:circle>
--->
-				</svg:g>
+			<svg:g #routes class="routes">
+				<!-- Generation point of for the partialtrips -->
+			</svg:g>
 
-				<!--<svg:g *ngFor="let partialroute of routes">
-					<svg:line *ngFor="let route of partialroute"
-						[attr.x1]="route[0][0]"
-						[attr.y1]="route[0][1]"
-						[attr.x2]="route[1][0]"
-						[attr.y2]="route[1][1]"
-						[style.stroke-width]="3 / zoom"
-						[contextMenu]="contextMenu"
-						[items]="['Hallo', 'wie', 'gehts', 'dir', '???']"
-						contextable>
-					</svg:line>
-				</svg:g>-->
+			<svg:g #stopOrPasss class="stopOrPasss">
+				<!-- Generation point of for the stopOrPasss -->
 			</svg:g>
 
 			<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
@@ -173,12 +165,12 @@ var svgNS = "http://www.w3.org/2000/svg";
 				</svg:g>
 			</svg:g>
 
-			<svg:g *ngIf="svgSize && padding" class="svg-content-stationary">
+			<!--<svg:g *ngIf="svgSize && padding" class="svg-content-stationary">
 				<svg:rect [attr.width]="svgSize[0]" [attr.height]="padding[0]" />
 				<svg:rect [attr.width]="svgSize[0]" [attr.height]="padding[2]" [attr.y]="svgSize[1] - padding[2]" />
 				<svg:rect [attr.width]="padding[1]" [attr.height]="svgSize[1]" [attr.x]="svgSize[0] - padding[1]" />
 				<svg:rect [attr.width]="padding[3]" [attr.height]="svgSize[1]" />
-			</svg:g>
+			</svg:g>-->
 		</ee-zui-transform>
 		<context-menu [contextMenu]="contextMenu" (select)="onSelect($event)"></context-menu>
 	</div>
@@ -186,6 +178,9 @@ var svgNS = "http://www.w3.org/2000/svg";
 })
 
 export class RailroadComponent implements OnInit {
+	@ViewChild('routes') routesElement: ElementRef;
+	@ViewChild('stopOrPasss') stopOrPasssElement: ElementRef;
+
 	border: [[number, number], [number, number]] = [[0,0],[2100,5000]];
 	padding: [number, number, number, number] = [30,0,0,75];
 	translate: [number, number] = [0,0];
@@ -198,7 +193,7 @@ export class RailroadComponent implements OnInit {
 	showX: boolean = true;
 	showY: boolean = true;
 
-	trips: any = {};
+	partialTrip: any = {};
 	stopOrPasss: any = {};
 
 	contextMenu: ContextMenuStatus = {
@@ -210,78 +205,45 @@ export class RailroadComponent implements OnInit {
 		target: null
 	};
 
-	constructor(private rs: RailroadService, @Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
+	constructor(
+		private rs: RailroadService,
+		@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>
+	) { }
 
 	ngOnInit() {
 		this.rs.getTimetable().subscribe(tt => {
 			this.timetable = tt;
 
-			let el = document.querySelector(".routes");
-
 			for (let trip of tt.trips.all) {
 				for (let partialTrip of trip.partialTrips) {
-					let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-
-					partialTrip.stopOrPasss.sort((a, b) => {
-						return this.coord.getX(a.stationName) - this.coord.getX(b.stationName);
-					});
-
-					let d = partialTrip.stopOrPasss.reduce((prev: string, cur, i: number) => {
-						let d = this.coord.getX(cur.stationName)
-							+ " "
-							+ this.coord.getY(cur.plannedArrivalTime || cur.plannedDepartureTime, this.border)
-							+ " L "
-							+ this.coord.getX(cur.stationName)
-							+ " "
-							+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
-
-						if (i === 0) {
-							return prev + "M " + d + " ";
-						} else {
-							return prev + "L " + d + " ";
-						}
-					}, "");
-
-					path.setAttributeNS(null, "d", d);
-					path.setAttributeNS(null, "stroke", "black");
-					path.setAttributeNS(null, "fill", "none");
-					path.setAttributeNS(null, "stroke-width", "3px");
-					path.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
-
+					let path = this.createPartialTrip(partialTrip, this.routesElement.nativeElement);
+					this.partialTrip[partialTrip.id] = path;
 					path.addEventListener("contextmenu", (e: MouseEvent) => {
-						console.log("Contextmenu on path: ");
-						console.log(trip);
-						console.log(this.trips[trip.id]);
-						this.trips[trip.id].style.stroke = "red";
+						e.stopPropagation();
+						e.preventDefault();
+						this.contextMenu.id = "SVG-Route";
+						this.contextMenu.items = ["Yay"];
+						this.contextMenu.x = e.layerX;
+						this.contextMenu.y = e.layerY;
+						this.contextMenu.show = true;
+						this.contextMenu.target = e.target;
 					});
-
-					this.trips[trip.id] = path;
-					el.appendChild(path);
 				}
 			}
 
 			for (let cur of tt.stopOrPasss.all) {
-				let dot = document.createElementNS("http://www.w3.org/2000/svg", "path");
-				let d = "M "
-					+ this.coord.getX(cur.stationName)
-					+ " "
-					+ this.coord.getY(cur.plannedArrivalTime || cur.plannedDepartureTime, this.border)
-					+ " L "
-					+ this.coord.getX(cur.stationName)
-					+ " "
-					+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
-
-				dot.setAttributeNS(null, "d", d);
-				dot.setAttributeNS(null, "vector-effect", "non-scaling-stroke");
-				dot.setAttributeNS(null, "stroke-width", "6px");
-				dot.setAttribute("class", this.getClassName(cur.stopType));
-
+				let dot = this.createStopOrPassElement(cur, this.stopOrPasssElement.nativeElement);
+				this.stopOrPasss[cur.id] = dot;
 				dot.addEventListener("contextmenu", (e: MouseEvent) => {
-					console.log("Contextmenu on dot: ");
-					console.log(cur);
+					e.stopPropagation();
+					e.preventDefault();
+					this.contextMenu.id = "SVG-Dot";
+					this.contextMenu.items = ["Nay"];
+					this.contextMenu.x = e.layerX;
+					this.contextMenu.y = e.layerY;
+					this.contextMenu.show = true;
+					this.contextMenu.target = e.target;
 				});
-
-				el.appendChild(dot);
 			}
 		});
 	}
@@ -302,18 +264,62 @@ export class RailroadComponent implements OnInit {
 		return "";
 	}
 
-	onSelect(s: string) {
-		if (s === "ShowX") {
+	onSelect(s: any) {
+		console.log(s);
+		if (s.item === "ShowX") {
 			this.showX = true;
 		}
-		if (s === "HideX") {
+		if (s.item === "HideX") {
 			this.showX = false;
 		}
-		if (s === "ShowY") {
+		if (s.item === "ShowY") {
 			this.showY = true;
 		}
-		if (s === "HideY") {
+		if (s.item === "HideY") {
 			this.showY = false;
 		}
+	}
+
+	createStopOrPassElement(cur: StopOrPass, el: Element) {
+		let dot = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		let d = "M "
+			+ this.coord.getX(cur.stationName)
+			+ " "
+			+ this.coord.getY(cur.plannedArrivalTime || cur.plannedDepartureTime, this.border)
+			+ " L "
+			+ this.coord.getX(cur.stationName)
+			+ " "
+			+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
+
+		dot.setAttributeNS(null, "d", d);
+		dot.setAttribute("class", this.getClassName(cur.stopType));
+
+		return el.appendChild(dot);
+	}
+
+	createPartialTrip(partialTrip: PartialTrip, el: Element) {
+		let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+		partialTrip.stopOrPasss.sort((a, b) => {
+			return this.coord.getX(a.stationName) - this.coord.getX(b.stationName);
+		});
+
+		path.setAttributeNS(null, "d", partialTrip.stopOrPasss.reduce((prev: string, cur: StopOrPass, i: number) => {
+			let d = this.coord.getX(cur.stationName)
+				+ " "
+				+ this.coord.getY(cur.plannedArrivalTime || cur.plannedDepartureTime, this.border)
+				+ " L "
+				+ this.coord.getX(cur.stationName)
+				+ " "
+				+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
+
+			if (i === 0) {
+				return prev + "M " + d + " ";
+			} else {
+				return prev + "L " + d + " ";
+			}
+		}, ""));
+
+		return el.appendChild(path);
 	}
 }
