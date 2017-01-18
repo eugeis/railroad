@@ -71,6 +71,7 @@ export class ZUIViewboxComponent implements OnInit {
 	@Output() offsetChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 
 	contextMenu: ContextMenuStatus = {
+		id: "",
 		show: false,
 		items: [],
 		x: 0,
