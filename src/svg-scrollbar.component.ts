@@ -18,7 +18,7 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnChanges, Input, Output, EventEmitter, HostListener } from '@angular/core';
 
 import { ZUITransformService } from './zui-transform.service';
 
@@ -66,7 +66,7 @@ import { ZUITransformService } from './zui-transform.service';
 	`
 })
 
-export class SVGScrollbarComponent implements OnInit, OnChanges {
+export class SVGScrollbarComponent implements OnChanges {
 	@Input() contentSize: number;
 	@Input() zoom: number;
 	@Input() border: [number, number];
@@ -109,10 +109,6 @@ export class SVGScrollbarComponent implements OnInit, OnChanges {
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
 		e.stopPropagation();
-	}
-
-	ngOnInit() {
-
 	}
 
 	ngOnChanges() {
