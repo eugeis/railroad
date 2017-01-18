@@ -31,6 +31,9 @@ import { RailroadComponent } from './railroad.component';
 import { ZUITransformComponent } from './zui-transform.component';
 import { SVGScrollbarComponent } from './svg-scrollbar.component';
 
+import { StopOrPasssComponent } from './stoporpasss.component';
+import { PartialTripsComponent } from './partialtrips.component';
+
 import { RailroadService } from './railroad.service';
 import { ZUITransformService } from './zui-transform.service';
 import { CoordinateService } from './coordinate.service';
@@ -40,7 +43,8 @@ import { SVGTimeAxisComponent } from './time-axis.component';
 @NgModule({
 	imports: [BrowserModule, FormsModule, CommonModule, HttpModule, JsonpModule],
 	declarations: [RailroadComponent, ZUITransformComponent, SVGScrollbarComponent,
-		ContextMenu, ContextDirective, SVGTimeAxisComponent],
+		ContextMenu, ContextDirective, SVGTimeAxisComponent, StopOrPasssComponent,
+		PartialTripsComponent],
 	providers: [RailroadService, ZUITransformService,
 		{provide: 'CoordinateInterface', useClass: CoordinateService}],
 	exports: [RailroadComponent]
