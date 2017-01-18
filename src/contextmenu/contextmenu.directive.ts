@@ -28,9 +28,11 @@ import { ContextMenuStatus } from './contextmenu.interface';
 
 export class ContextDirective {
 	@Input() contextMenu: ContextMenuStatus;
+	@Input() contextMenuId: string;
 	@Input() items: string[];
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
+		this.contextMenu.id = this.contextMenuId;
 		this.contextMenu.items = this.items;
 		this.contextMenu.x = e.layerX;
 		this.contextMenu.y = e.layerY;

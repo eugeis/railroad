@@ -61,7 +61,7 @@ import { ContextMenuStatus } from './contextmenu.interface';
 
 export class ContextMenu implements OnInit {
 	@Input() contextMenu: ContextMenuStatus;
-	@Output("select") selectEmitter: EventEmitter<string> = new EventEmitter<string>();
+	@Output("select") selectEmitter: EventEmitter<any> = new EventEmitter<any>();
 
 	constructor(private er: ElementRef) { }
 
@@ -75,8 +75,11 @@ export class ContextMenu implements OnInit {
 		});
 	}
 
-	select(item: string) {
+	select(item: any) {
 		this.contextMenu.show = false;
-		this.selectEmitter.emit(item);
+		this.selectEmitter.emit({
+			id: this.contextMenu.id,
+			item: item
+		});
 	}
 }

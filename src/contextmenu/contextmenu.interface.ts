@@ -19,6 +19,7 @@
  * @author Jonas Möller
  */
 export interface ContextMenuStatus {
+	id: string;
 	show: boolean,
 	items: string[],
 	x: number,

@@ -96,6 +96,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 			[contextMenu]="contextMenu"
 			(onResize)="updateSize($event)"
 			[contextMenu]="contextMenu"
+			[contextMenuId]="'Transform-SVG'"
 			[items]="['ShowX', 'HideX', 'ShowY', 'HideY']"
 			contextable>
 			<svg:g class="background">
@@ -200,8 +201,8 @@ export class RailroadComponent implements OnInit {
 	trips: any = {};
 	stopOrPasss: any = {};
 
-
 	contextMenu: ContextMenuStatus = {
+		id: "",
 		show: false,
 		items: [],
 		x: 0,

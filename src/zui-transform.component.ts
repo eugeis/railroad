@@ -99,13 +99,7 @@ export class ZUITransformComponent implements OnInit {
 	@Input() border: [[number, number],[number, number]];
 	@Input() padding: [number, number, number, number] = [0,0,0,0];
 
-	@Input() contextMenu: ContextMenuStatus = {
-		show: false,
-		items: [],
-		x: 0,
-		y: 0,
-		target: null
-	};
+	@Input() contextMenu: ContextMenuStatus;
 
 	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
 	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
@@ -118,11 +112,11 @@ export class ZUITransformComponent implements OnInit {
 	svgSize: [number, number];
 	contentSize: [number, number];
 
-	constructor(private er: ElementRef, private tr: ZUITransformService) { }
+	constructor(private tr: ZUITransformService) { }
 
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
-		this.contextMenu.show = false;
+		if (this.contextMenu) this.contextMenu.show = false;
 		if (e.shiftKey) {
 			this.zooming(cursorPoint(this.svg, this.pt, e), this.tr.getZoomFactor(e.deltaY));
 		} else {
@@ -131,7 +125,7 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('dblclick', ['$event']) onDoubleClick(e: MouseEvent) {
-		this.contextMenu.show = false;
+		if (this.contextMenu) this.contextMenu.show = false;
 		this.zooming(cursorPoint(this.svg, this.pt, e), ((e.ctrlKey) ? 0.8 : 1.2));
 	}
 
@@ -149,7 +143,7 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
-		this.contextMenu.show = false;
+		if (this.contextMenu) this.contextMenu.show = false;
 		if (e.button != 0) {
 			return
 		}
