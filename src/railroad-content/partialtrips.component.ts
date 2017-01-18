@@ -18,10 +18,11 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, OnChanges, ChangeDetectionStrategy, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Inject } from '@angular/core';
 
 import { CoordinateInterface } from '../zui/coordinate.interface';
 import { PartialTrip, StopOrPass } from '../timetable.interface';
+import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
 @Component({
 	selector: '[partialTrips]',
@@ -38,10 +39,11 @@ import { PartialTrip, StopOrPass } from '../timetable.interface';
 
 		path:hover {
 			cursor: pointer;
+			stroke: blue;
 		}
 	`],
 	template: `
-		<svg:path *ngFor="let pt of pts" [attr.d]="getD(pt)" />
+		<svg:path *ngFor="let pt of pts" [attr.d]="getD(pt)" (contextmenu)="handleCtx($event)" />
 	`,
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -49,6 +51,23 @@ import { PartialTrip, StopOrPass } from '../timetable.interface';
 export class PartialTripsComponent {
 	@Input() pts: PartialTrip[];
 	@Input() border: [[number, number], [number, number]];
+
+	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
+
+	handleCtx(e: MouseEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+		this.contextMenuEmitter.emit({
+			show: true,
+			items: [
+				["Show trip-details", "show_trip_details"],
+				["Mark trip", "mark_trip"]
+			],
+			x: e.layerX,
+			y: e.layerY,
+			target: e.target
+		})
+	}
 
 	constructor (@Inject('CoordinateInterface') private coord: CoordinateInterface<string, Date>) { }
 

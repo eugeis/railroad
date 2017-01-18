@@ -18,7 +18,7 @@
  *
  * @author Jonas Möller
  */
-import { Component, HostListener, Input, Output, EventEmitter, ElementRef, OnInit } from '@angular/core';
+import { Component, HostListener, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu.interface';
 
@@ -53,32 +53,23 @@ import { ContextMenuStatus } from './contextmenu.interface';
 		}
 	`],
 	template: `
-		<ul [hidden]="!contextMenu.show" [style.left]="contextMenu.x  + 'px'" [style.top]="contextMenu.y + 'px'">
-			<li *ngFor="let item of contextMenu.items" (click)="select(item)">{{item}}</li>
+		<ul *ngIf="contextMenu.show" [style.left]="contextMenu.x  + 'px'" [style.top]="contextMenu.y + 'px'">
+			<li *ngFor="let item of contextMenu.items" (click)="select(item[1])">{{item[0]}}</li>
 		</ul>
-	`
+	`,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ContextMenu implements OnInit {
+export class ContextMenu {
 	@Input() contextMenu: ContextMenuStatus;
 	@Output("select") selectEmitter: EventEmitter<any> = new EventEmitter<any>();
-
-	constructor(private er: ElementRef) { }
 
 	@HostListener("click", ['$event']) onClick(e: MouseEvent) {
 		e.stopPropagation();
 	}
 
-	ngOnInit() {
-		this.er.nativeElement.querySelector("ul").addEventListener("click", (e: MouseEvent) => {
-			e.stopPropagation();
-		});
-	}
-
 	select(item: any) {
-		this.contextMenu.show = false;
 		this.selectEmitter.emit({
-			id: this.contextMenu.id,
 			item: item
 		});
 	}

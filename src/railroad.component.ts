@@ -68,12 +68,8 @@ var svgNS = "http://www.w3.org/2000/svg";
 				[(translate)]="translate"
 				[padding]="padding"
 				[border]="border"
-				[contextMenu]="contextMenu"
 				(onResize)="updateSize($event)"
-				[contextMenu]="contextMenu"
-				[contextMenuId]="'Transform-SVG'"
-				[items]="['ShowX', 'HideX', 'ShowY', 'HideY']"
-				contextable>
+				(onContextMenu)="updateCtx($event)">
 				<svg:g class="background">
 					<svg:defs>
 						<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -89,12 +85,14 @@ var svgNS = "http://www.w3.org/2000/svg";
 				<svg:g *ngIf="timetable" class="partialTrips"
 					[pts]="timetable.partialTrips.all"
 					[border]="border"
+					(onContextMenu)="updateCtx($event)"
 					partialTrips>
 				</svg:g>
 
 				<svg:g *ngIf="timetable" class="stopOrPasss"
 					[sop]="timetable.stopOrPasss.all"
 					[border]="border"
+					(onContextMenu)="updateCtx($event)"
 					stopOrPasss>
 				</svg:g>
 
@@ -147,14 +145,7 @@ export class RailroadComponent implements OnInit {
 
 	partialTrip: any = {};
 
-	contextMenu: ContextMenuStatus = {
-		id: "",
-		show: false,
-		items: [],
-		x: 0,
-		y: 0,
-		target: null
-	};
+	contextMenu: ContextMenuStatus = { show: false };
 
 	constructor(
 		private rs: RailroadService,
@@ -178,19 +169,11 @@ export class RailroadComponent implements OnInit {
 		this.contentSize = newSize[1];
 	}
 
+	updateCtx(contextMenu: ContextMenuStatus) {
+		this.contextMenu = contextMenu;
+	}
+
 	onSelect(s: any) {
-		console.log(s);
-		if (s.item === "ShowX") {
-			this.showX = true;
-		}
-		if (s.item === "HideX") {
-			this.showX = false;
-		}
-		if (s.item === "ShowY") {
-			this.showY = true;
-		}
-		if (s.item === "HideY") {
-			this.showY = false;
-		}
+		this.contextMenu = {show: false};
 	}
 }

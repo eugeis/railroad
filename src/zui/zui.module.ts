@@ -25,7 +25,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
 
 import { ContextMenu } from './contextmenu/contextmenu.component';
-import { ContextDirective } from './contextmenu/contextmenu.directive';
 import { ZUITransformComponent } from './zui-transform.component';
 import { SVGScrollbarComponent } from './svg-scrollbar.component';
 
@@ -34,9 +33,8 @@ import { CoordinateService } from './coordinate.service';
 
 @NgModule({
 	imports: [BrowserModule, FormsModule, CommonModule],
-	declarations: [ZUITransformComponent, SVGScrollbarComponent, ContextMenu,
-		ContextDirective],
+	declarations: [ZUITransformComponent, SVGScrollbarComponent, ContextMenu],
 	providers: [ZUITransformService, {provide: 'CoordinateInterface', useClass: CoordinateService}],
-	exports: [ZUITransformComponent, ContextMenu, ContextDirective]
+	exports: [ZUITransformComponent, ContextMenu]
 })
 export class ZUIModule { }

@@ -54,10 +54,6 @@ interface EventInterface<T> {
 	`],
 	template: `
 		<svg #svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
-			<g [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
-				<ng-content></ng-content>
-			</g>
-
 			<g class="stationary">
 				<ng-content select=".svg-content-stationary"></ng-content>
 			</g>
@@ -68,6 +64,10 @@ interface EventInterface<T> {
 
 			<g class="y-stationary" [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
+			</g>
+
+			<g [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
+				<ng-content></ng-content>
 			</g>
 
 			<g *ngIf="border" class="scrollbars">
@@ -100,11 +100,10 @@ export class ZUITransformComponent implements OnInit {
 	@Input() border: [[number, number],[number, number]];
 	@Input() padding: [number, number, number, number] = [0,0,0,0];
 
-	@Input() contextMenu: ContextMenuStatus;
-
 	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
 	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
 	@Output("onResize") resizeEmitter: EventEmitter<[[number,number],[number,number]]> = new EventEmitter<[[number,number],[number,number]]>();
+	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 
 	dragging: boolean = false;
 
@@ -117,7 +116,7 @@ export class ZUITransformComponent implements OnInit {
 
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
-		if (this.contextMenu) this.contextMenu.show = false;
+		this.hideContextMenu();
 		if (e.shiftKey) {
 			this.zooming(cursorPoint(this.svg, this.pt, e), this.tr.getZoomFactor(e.deltaY));
 		} else {
@@ -126,11 +125,11 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('dblclick', ['$event']) onDoubleClick(e: MouseEvent) {
-		if (this.contextMenu) this.contextMenu.show = false;
 		this.zooming(cursorPoint(this.svg, this.pt, e), ((e.ctrlKey) ? 0.8 : 1.2));
 	}
 
 	@HostListener('contextmenu', ['$event']) onContextMenu(e: MouseEvent) {
+		this.showContextMenu(e);
 		e.stopPropagation();
 		e.preventDefault();
 	}
@@ -144,7 +143,7 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
-		if (this.contextMenu) this.contextMenu.show = false;
+		this.hideContextMenu();
 		if (e.button != 0) {
 			return
 		}
@@ -163,6 +162,7 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	@HostListener("window:resize") onResize() {
+		this.hideContextMenu();
 		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
 		this.contentSize = [
 			this.svgSize[0] - this.padding[1] - this.padding[3],
@@ -218,9 +218,21 @@ export class ZUITransformComponent implements OnInit {
 		this.translateChange.emit(this.translate);
 	}
 
-	select(item: string) {
-		console.log(item);
+	showContextMenu(e: MouseEvent): void {
+		this.contextMenuEmitter.emit({
+			show: true,
+			items: [
+				["Back", "back"],
+				["Forward", "forward"],
+				["Save as...", "save_as"],
+				["Print ...", "print"]
+			],
+			x: e.layerX,
+			y: e.layerY
+		});
 	}
 
-	onDestroy() { }
+	hideContextMenu(): void {
+		this.contextMenuEmitter.emit({show: false});
+	}
 }
