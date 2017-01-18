@@ -52,7 +52,7 @@ export class CoordinateService implements CoordinateInterface<string, Date> {
 		return this.topology[station];
 	}
 
-	getY(time: Date, border): number{
+	getY(time: Date, border: [[number, number],[number, number]]): number{
 		if (!time) return 0;
 
 		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
