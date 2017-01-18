@@ -50,6 +50,8 @@ import { frame } from './svg.functions';
  * [100,100] * 2 - [-140,-150] = [340,350]
  */
 
+import { Coordinate, Border } from './types.model';
+
 @Injectable()
 export class ZUITransformService {
 	/**
@@ -76,11 +78,11 @@ export class ZUITransformService {
 	 *
 	 *     t_n = f(c, z_o, z_n, t_o) = zoom(c, z_o, z_n, t_o);
 	 */
-	zoom(cursorPos: [number, number], translate: [number, number], factor: number): [number, number] {
-		return [
-			cursorPos[0] - factor * (cursorPos[0] - translate[0]),
-			cursorPos[1] - factor * (cursorPos[1] - translate[1])
-		];
+	zoom(cursorPos: Coordinate, translate: Coordinate, factor: number): Coordinate {
+		return new Coordinate(
+			cursorPos.x - factor * (cursorPos.x - translate.x),
+			cursorPos.y - factor * (cursorPos.y - translate.y)
+		);
 	}
 
 	/**
@@ -92,8 +94,8 @@ export class ZUITransformService {
 	 * Because the translate is not affected by the zoomlevel,
 	 * a simple addition is sufficient
 	 */
-	pan(translate: [number, number], movement: [number, number]): [number, number] {
-		return [translate[0] + movement[0], translate[1] + movement[1]]
+	pan(translate: Coordinate, movement: Coordinate): Coordinate {
+		return new Coordinate(translate.x + movement.x, translate.y + movement.y)
 	}
 
 	/**
@@ -103,17 +105,17 @@ export class ZUITransformService {
 		return (1 + (frame(-delta / 265, -1, 1) / 5));
 	}
 
-	limitZoom(zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): number {
-		zoom = frame(zoom, svgSize[0] / (border[1][0] - border[0][0]), zoom);
-		zoom = frame(zoom, svgSize[1] / (border[1][1] - border[0][1]), zoom);
+	limitZoom(zoom: number, svgSize: Coordinate, border: Border): number {
+		zoom = frame(zoom, svgSize.x / (border.max.x - border.min.x), zoom);
+		zoom = frame(zoom, svgSize.y / (border.max.y - border.min.y), zoom);
 		return zoom;
 	}
 
-	limitTranslate(translate: [number, number], zoom: number, svgSize: [number, number], border: [[number,number],[number,number]]): [number, number] {
-		return [
-			this._limitTranslate(translate[0], zoom, svgSize[0], [border[0][0], border[1][0]]),
-			this._limitTranslate(translate[1], zoom, svgSize[1], [border[0][1], border[1][1]])
-		];
+	limitTranslate(translate: Coordinate, zoom: number, svgSize: Coordinate, border: Border): Coordinate {
+		return new Coordinate(
+			this._limitTranslate(translate.x, zoom, svgSize.x, [border.min.x, border.max.x]),
+			this._limitTranslate(translate.y, zoom, svgSize.y, [border.min.y, border.max.y])
+		);
 	}
 
 	_limitTranslate(translate: number, zoom: number, svgSize: number, border: [number,number]): number {

@@ -18,9 +18,10 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnChanges, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnChanges, Input, Output, EventEmitter, HostListener, ChangeDetectionStrategy } from '@angular/core';
 
 import { ZUITransformService } from './zui-transform.service';
+import { Border, Coordinate, Padding } from './types.model';
 
 @Component({
 	selector: '[ee-svg-scrollbar]',
@@ -50,33 +51,34 @@ import { ZUITransformService } from './zui-transform.service';
 	`],
 	template: `
 		<svg:g *ngIf="border">
-			<svg:rect *ngIf="horizontal && size != contentSize" class="scrollbar horizontal"
+			<svg:rect *ngIf="horizontal && size != contentSize.x" class="scrollbar horizontal"
 				[ngClass]="{'dragging': dragging}"
-				[attr.x]="position + padding"
+				[attr.x]="position + padding.left"
 				[attr.y]="positionOffset"
 				[attr.width]="size"
 			/>
-			<svg:rect *ngIf="!horizontal && size != contentSize" class="scrollbar vertical"
+			<svg:rect *ngIf="!horizontal && size != contentSize.y" class="scrollbar vertical"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="positionOffset"
-				[attr.y]="position + padding"
+				[attr.y]="position + padding.up"
 				[attr.height]="size"
 			/>
 		</svg:g>
-	`
+	`,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class SVGScrollbarComponent implements OnChanges {
-	@Input() contentSize: number;
 	@Input() zoom: number;
-	@Input() border: [number, number];
-	@Input() offset: number;
+	@Input() border: Border;
+	@Input() translate: Coordinate;
+	@Input() contentSize: Coordinate;
+	@Input() padding: Padding = new Padding(0,0,0,0);
 	@Input() positionOffset: number = 5;
-	@Input() padding: number = 0;
 
 	@Input() horizontal: any;
 
-	@Output() offsetChange: EventEmitter<number> = new EventEmitter<number>();
+	@Output("onScroll") translateChange: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
 
 	dragging: boolean = false;
 	size: number = 0;
@@ -97,10 +99,19 @@ export class SVGScrollbarComponent implements OnChanges {
 			return;
 		}
 
-		let movement = (this.horizontal) ? e.movementX : e.movementY;
-		this.offset = -((this.position + movement) / (this.contentSize - this.size) * (this.zoom * (this.border[1] - this.border[0]) - this.contentSize) + this.zoom * this.border[0]);
-		this.offset = this.tr._limitTranslate(this.offset, this.zoom, this.contentSize, this.border);
-		this.offsetChange.emit(this.offset);
+		if (this.horizontal) {
+			let movement = e.movementX;
+			let translate = -((this.position + movement) / (this.contentSize.x - this.size) * (this.zoom * (this.border.max.x - this.border.min.x) - this.contentSize.x) + this.zoom * this.border.min.x);
+			translate = this.tr._limitTranslate(translate, this.zoom, this.contentSize.x, [this.border.min.x, this.border.max.x]);
+			this.translate = new Coordinate(translate, this.translate.y);
+			this.translateChange.emit(this.translate);
+		} else {
+			let movement = e.movementY;
+			let translate = -((this.position + movement) / (this.contentSize.y - this.size) * (this.zoom * (this.border.max.y - this.border.min.y) - this.contentSize.y) + this.zoom * this.border.min.y);
+			translate = this.tr._limitTranslate(translate, this.zoom, this.contentSize.y, [this.border.min.y, this.border.max.y]);
+			this.translate = new Coordinate(this.translate.x, translate);
+			this.translateChange.emit(this.translate);
+		}
 	}
 
 	@HostListener('window:mouseup', ['$event']) onMouseUp(e: MouseEvent) {
@@ -112,8 +123,20 @@ export class SVGScrollbarComponent implements OnChanges {
 	}
 
 	ngOnChanges() {
-		let borderSize = (this.border[1] - this.border[0]) * this.zoom;
-		this.size = (this.contentSize / borderSize) * this.contentSize;
-		this.position = (this.offset + this.zoom * this.border[0]) / (this.zoom * (this.border[0] - this.border[1]) + this.contentSize) * (this.contentSize - this.size) || 0;
+		if (this.horizontal) {
+			let borderSize = (this.border.max.x - this.border.min.x) * this.zoom;
+			this.size = (this.contentSize.x / borderSize) * this.contentSize.x;
+			this.position = (this.translate.x + this.zoom * this.border.min.x)
+			this.position = this.position / (this.zoom * (this.border.min.x - this.border.max.x) + this.contentSize.x);
+			this.position = this.position * (this.contentSize.x - this.size);
+			this.position = this.position || 0;
+		} else {
+			let borderSize = (this.border.max.y - this.border.min.y) * this.zoom;
+			this.size = (this.contentSize.y / borderSize) * this.contentSize.y;
+			this.position = (this.translate.y + this.zoom * this.border.min.y)
+			this.position = this.position / (this.zoom * (this.border.min.y - this.border.max.y) + this.contentSize.y);
+			this.position = this.position * (this.contentSize.y - this.size);
+			this.position = this.position || 0;
+		}
 	}
 }

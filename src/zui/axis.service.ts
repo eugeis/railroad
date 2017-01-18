@@ -19,7 +19,9 @@
  * @author Jonas Möller
  */
 import { Injectable } from '@angular/core';
+
 import { AxisServiceInterface } from './axis.interface';
+import { Border } from './types.model';
 
 @Injectable()
 export class AxisService implements AxisServiceInterface<string, Date> {
@@ -52,10 +54,10 @@ export class AxisService implements AxisServiceInterface<string, Date> {
 		return this.topology[station];
 	}
 
-	getY(time: Date, border: [[number, number],[number, number]]): number{
+	getY(time: Date, border: Border): number{
 		if (!time) return 0;
-
+		
 		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
-			* (border[1][1] - border[0][1]) + border[0][1];
+			* (border.max.y - border.min.y) + border.min.y;
 	}
 }

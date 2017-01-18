@@ -18,9 +18,10 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, DoCheck, Inject } from '@angular/core';
+import { Component, Input, OnChanges, Inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { AxisServiceInterface } from './zui/axis.interface';
+import { Coordinate, Border, Padding } from './zui/types.model';
 
 @Component({
 	selector: '[svg-time-axis]',
@@ -42,43 +43,37 @@ import { AxisServiceInterface } from './zui/axis.interface';
 				{{time[0] | date:'HH:mm:ss'}}
 			</svg:text>
 			<svg:line
-				[attr.x1]="padding[3] / zoom"
+				[attr.x1]="padding.left / zoom"
 				[attr.y1]="time[1]"
-				[attr.x2]="svgSize[0] / zoom"
+				[attr.x2]="svgSize.x / zoom"
 				[attr.y2]="time[1]"
 				vector-effect="non-scaling-stroke">
 			</svg:line>
 		</svg:g>
-	`
+	`,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class SVGTimeAxisComponent implements DoCheck {
-	@Input() border: [[number, number], [number, number]];
-	@Input() padding: [number, number, number, number];
-	@Input() translate: [number, number];
+export class SVGTimeAxisComponent implements OnChanges {
+	@Input() border: Border;
+	@Input() padding: Padding;
+	@Input() translate: Coordinate;
 	@Input() zoom: number = 1;
 
-	@Input() svgSize: [number, number];
-	@Input() contentSize: [number, number];
-
-	oldZoom: number;
-	oldTranslate: number;
+	@Input() svgSize: Coordinate;
+	@Input() contentSize: Coordinate;
 
 	times: [Date, number][] = [];
 
 	constructor(@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
-	ngDoCheck() {
+	ngOnChanges() {
 		if (!this.svgSize || !this.translate || !this.padding || !this.border) {
 			return;
 		}
 
-		if (this.zoom == this.oldZoom && this.translate[1] == this.oldTranslate) {
-			return;
-		}
-
-		let lower = 24 * 60 * 60 * (this.translate[1] + this.zoom * this.border[0][1]) / (this.zoom * (this.border[0][1] - this.border[1][1]));
-		let upper = 24 * 60 * 60 * (this.translate[1] - this.contentSize[1] + this.zoom * this.border[0][1]) / (this.zoom * (this.border[0][1] - this.border[1][1]));
+		let lower = 24 * 60 * 60 * (this.translate.y + this.zoom * this.border.min.y) / (this.zoom * (this.border.min.y - this.border.max.y));
+		let upper = 24 * 60 * 60 * (this.translate.y - this.contentSize.y + this.zoom * this.border.min.y) / (this.zoom * (this.border.min.y - this.border.max.y));
 
 		let timeOffset = new Date().getTimezoneOffset() * 60;
 		lower = lower + timeOffset;
@@ -116,8 +111,5 @@ export class SVGTimeAxisComponent implements DoCheck {
 				this.coord.getY(new Date(i * 1000), this.border)
 			]);
 		}
-
-		this.oldZoom = this.zoom;
-		this.oldTranslate = this.translate[1];
 	}
 }

@@ -19,15 +19,17 @@
  * @author Jonas Möller
  */
 
+import { Coordinate } from './types.model';
+
 /**
  * Returns the cursor-position relative to the top-left corner of the svg in SVG-space
  */
-export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): [number, number]{
+export function cursorPoint(svg: SVGLocatable, pt: SVGPoint, evt: MouseEvent): Coordinate {
 	let point: SVGPoint;
 	pt.x = evt.clientX;
 	pt.y = evt.clientY;
 	point = pt.matrixTransform(svg.getScreenCTM().inverse());
-	return [point.x, point.y];
+	return new Coordinate(point.x, point.y);
 }
 
 /**

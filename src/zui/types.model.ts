@@ -19,9 +19,36 @@
  * @author Jonas Möller
  */
 
-import { Border } from './types.model';
+export class Coordinate {
+	readonly x: number;
+	readonly y: number;
 
-export interface AxisServiceInterface<X,Y> {
-	getX(a: X): number;
-	getY(b: Y, border: Border): number;
+	constructor(x: number, y: number) {
+		this.x = x;
+		this.y = y;
+	}
+}
+
+export class Border {
+	readonly min: Coordinate;
+	readonly max: Coordinate;
+
+	constructor(min: Coordinate, max: Coordinate) {
+		this.min = min;
+		this.max = max;
+	}
+}
+
+export class Padding {
+	readonly left: number;
+	readonly up: number;
+	readonly right: number;
+	readonly down: number;
+
+	constructor(up: number, right: number, down: number, left: number) {
+		this.left = left;
+		this.up = up;
+		this.right = right;
+		this.down = down;
+	}
 }

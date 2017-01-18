@@ -23,6 +23,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Inject
 import { AxisServiceInterface } from '../zui/axis.interface';
 import { StopOrPass } from '../timetable.interface';
 import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
+import { Border } from '../zui/types.model';
 
 @Component({
 	selector: '[stopOrPasss]',
@@ -67,7 +68,7 @@ import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
 export class StopOrPasssComponent {
 	@Input() sop: StopOrPass[];
-	@Input() border: [[number, number], [number, number]];
+	@Input() border: Border;
 
 	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 

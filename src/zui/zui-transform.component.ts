@@ -18,10 +18,11 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { ZUITransformService } from './zui-transform.service';
 import { frame, cursorPoint } from './svg.functions';
+import { Coordinate, Border, Padding } from './types.model';
 
 interface EventInterface<T> {
 	(e: T): void;
@@ -58,59 +59,62 @@ interface EventInterface<T> {
 				<ng-content select=".svg-content-stationary"></ng-content>
 			</g>
 
-			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
+			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate.y + padding.up) + ')scale(' + zoom + ')'">
 				<ng-content select=".svg-content-x-stationary"></ng-content>
 			</g>
 
-			<g class="y-stationary" [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',0)scale(' + zoom + ')'">
+			<g class="y-stationary" [attr.transform]="'translate(' + (translate.x + padding.left) + ',0)scale(' + zoom + ')'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
 
-			<g [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
+			<g [attr.transform]="'translate(' + (translate.x + padding.left) + ',' + (translate.y + padding.up) + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
 			</g>
 
 			<g *ngIf="border" class="scrollbars">
 				<g ee-svg-scrollbar
 					[horizontal]="true"
-					[contentSize]="contentSize[0]"
+					[contentSize]="contentSize"
 					[zoom]="zoom"
-					[border]="[border[0][0],border[1][0]]"
-					[(offset)]="translate[0]"
-					[padding]="padding[3]"
-					[positionOffset]="padding[0] + contentSize[1] - 10">
+					[border]="border"
+					[translate]="translate"
+					[padding]="padding"
+					[positionOffset]="padding.up + contentSize.y - 10"
+					(onScroll)="handleScroll($event)">
 				</g>
 				<g ee-svg-scrollbar
-					[contentSize]="contentSize[1]"
+					[contentSize]="contentSize"
 					[zoom]="zoom"
-					[border]="[border[0][1],border[1][1]]"
-					[(offset)]="translate[1]"
-					[padding]="padding[0]"
-					[positionOffset]="padding[3] + contentSize[0] - 10">
+					[border]="border"
+					[translate]="translate"
+					[padding]="padding"
+					[positionOffset]="padding.left + contentSize.x - 10"
+					(onScroll)="handleScroll($event)">
 				</g>
 			</g>
 		</svg>
-	`
+	`,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class ZUITransformComponent implements OnInit {
 	@ViewChild("svg") svgRef: ElementRef;
 	@Input() zoom: number = 1;
-	@Input() translate: [number, number] = [0,0];
-	@Input() border: [[number, number],[number, number]];
-	@Input() padding: [number, number, number, number] = [0,0,0,0];
+	@Input() translate: Coordinate = new Coordinate(0,0);
+	@Input() padding: Padding = new Padding(0,0,0,0);
+	@Input() border: Border;
 
 	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
-	@Output() translateChange: EventEmitter<[number,number]> = new EventEmitter<[number,number]>();
-	@Output("onResize") resizeEmitter: EventEmitter<[[number,number],[number,number]]> = new EventEmitter<[[number,number],[number,number]]>();
+	@Output() translateChange: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
+	@Output("onResize") resizeEmitter: EventEmitter<[Coordinate, Coordinate]> = new EventEmitter<[Coordinate, Coordinate]>();
 	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 
 	dragging: boolean = false;
 
 	svg: any;
 	pt: SVGPoint;
-	svgSize: [number, number];
-	contentSize: [number, number];
+	svgSize: Coordinate;
+	contentSize: Coordinate;
 
 	constructor(private tr: ZUITransformService) { }
 
@@ -120,7 +124,7 @@ export class ZUITransformComponent implements OnInit {
 		if (e.shiftKey) {
 			this.zooming(cursorPoint(this.svg, this.pt, e), this.tr.getZoomFactor(e.deltaY));
 		} else {
-			this.panning([-e.deltaX, -e.deltaY]);
+			this.panning(new Coordinate(-e.deltaX, -e.deltaY));
 		}
 	}
 
@@ -136,9 +140,9 @@ export class ZUITransformComponent implements OnInit {
 
 	@HostListener("window:keydown", ['$event']) onKeyDown(e: KeyboardEvent) {
 		if (e.key === "PageUp") {
-			this.panning([0, 0.8 * this.contentSize[1]]);
+			this.panning(new Coordinate(0, 0.8 * this.contentSize.y));
 		} else if (e.key === "PageDown"){
-			this.panning([0, -0.8 * this.contentSize[1]]);
+			this.panning(new Coordinate(0, -0.8 * this.contentSize.y));
 		}
 	}
 
@@ -154,7 +158,7 @@ export class ZUITransformComponent implements OnInit {
 		if (!this.dragging) {
 			return;
 		}
-		this.panning([e.movementX, e.movementY]);
+		this.panning(new Coordinate(e.movementX, e.movementY));
 	}
 
 	@HostListener('window:mouseup', ['$event']) onMouseUp(e: MouseEvent) {
@@ -163,11 +167,11 @@ export class ZUITransformComponent implements OnInit {
 
 	@HostListener("window:resize") onResize() {
 		this.hideContextMenu();
-		this.svgSize = [this.svg.clientWidth, this.svg.clientHeight];
-		this.contentSize = [
-			this.svgSize[0] - this.padding[1] - this.padding[3],
-			this.svgSize[1] - this.padding[0] - this.padding[2]
-		];
+		this.svgSize = new Coordinate(this.svg.clientWidth, this.svg.clientHeight);
+		this.contentSize = new Coordinate(
+			this.svgSize.x - this.padding.right - this.padding.left,
+			this.svgSize.y - this.padding.up - this.padding.down
+		);
 		this.resizeEmitter.emit([this.svgSize, this.contentSize]);
 
 		if (this.border) {
@@ -183,7 +187,7 @@ export class ZUITransformComponent implements OnInit {
 		this.onResize();
 	}
 
-	zooming(mousePos: [number, number], factor: number) {
+	zooming(mousePos: Coordinate, factor: number) {
 		let oldZoom = this.zoom;
 		this.zoom *= factor;
 
@@ -192,8 +196,10 @@ export class ZUITransformComponent implements OnInit {
 			factor = this.zoom / oldZoom;
 		}
 
-		mousePos[0] -= this.padding[3];
-		mousePos[1] -= this.padding[0];
+		mousePos = new Coordinate(
+			mousePos.x - this.padding.left,
+			mousePos.y - this.padding.up
+		);
 
 		this.translate = this.tr.zoom(mousePos, this.translate, factor);
 		if (this.border) {
@@ -208,7 +214,7 @@ export class ZUITransformComponent implements OnInit {
 	 * Translate and move are not affected by the zoom
 	 * There needs to be no conversion between browser- / svg-space
 	 */
-	panning(movement: [number, number]) {
+	panning(movement: Coordinate) {
 		this.translate = this.tr.pan(this.translate, movement);
 
 		if (this.border) {
@@ -234,5 +240,10 @@ export class ZUITransformComponent implements OnInit {
 
 	hideContextMenu(): void {
 		this.contextMenuEmitter.emit({show: false});
+	}
+
+	handleScroll(translate: Coordinate) {
+		this.translate = translate;
+		this.translateChange.emit(translate);
 	}
 }

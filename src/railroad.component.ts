@@ -22,6 +22,7 @@ import { Component, OnInit, HostListener, DoCheck, Inject, ElementRef, ViewChild
 
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
 import { AxisServiceInterface } from './zui/axis.interface';
+import { Coordinate, Border, Padding } from './zui/types.model';
 import { RailroadService } from './railroad.service';
 import { Timetable, StopOrPass, PartialTrip } from './timetable.interface';
 
@@ -106,9 +107,9 @@ var svgNS = "http://www.w3.org/2000/svg";
 						</svg:text>
 						<svg:line
 							[attr.x1]="coord.getX(station)"
-							[attr.y1]="padding[0] / zoom"
+							[attr.y1]="padding.up / zoom"
 							[attr.x2]="coord.getX(station)"
-							[attr.y2]="svgSize[1] / zoom"
+							[attr.y2]="svgSize.y / zoom"
 							vector-effect="non-scaling-stroke">
 						</svg:line>
 					</svg:g>
@@ -131,14 +132,14 @@ var svgNS = "http://www.w3.org/2000/svg";
 })
 
 export class RailroadComponent implements OnInit {
-	border: [[number, number], [number, number]] = [[0,0],[2100,5000]];
-	padding: [number, number, number, number] = [30,0,0,75];
-	translate: [number, number] = [0,0];
+	border: Border = new Border(new Coordinate(0,0), new Coordinate(2100,5000));
+	padding: Padding = new Padding(30,0,0,75);
+	translate: Coordinate = new Coordinate(0,0);
 	zoom: number = 1;
 
 	timetable: Timetable;
-	svgSize: [number, number];
-	contentSize: [number, number];
+	svgSize: Coordinate;
+	contentSize: Coordinate;
 
 	showX: boolean = true;
 	showY: boolean = true;
@@ -164,7 +165,7 @@ export class RailroadComponent implements OnInit {
 		});
 	}
 
-	updateSize(newSize: [[number, number],[number, number]]) {
+	updateSize(newSize: [Coordinate,Coordinate]) {
 		this.svgSize = newSize[0];
 		this.contentSize = newSize[1];
 	}
