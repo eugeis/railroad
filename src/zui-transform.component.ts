@@ -18,7 +18,7 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 import { ZUITransformService } from './zui-transform.service';
 import { frame, cursorPoint } from './svg.functions';
@@ -53,7 +53,7 @@ interface EventInterface<T> {
 		}
 	`],
 	template: `
-		<svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
+		<svg #svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
 			<g [attr.transform]="'translate(' + (translate[0] + padding[3]) + ',' + (translate[1] + padding[0]) + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
 			</g>
@@ -94,6 +94,7 @@ interface EventInterface<T> {
 })
 
 export class ZUITransformComponent implements OnInit {
+	@ViewChild("svg") svgRef: ElementRef;
 	@Input() zoom: number = 1;
 	@Input() translate: [number, number] = [0,0];
 	@Input() border: [[number, number],[number, number]];
@@ -176,7 +177,7 @@ export class ZUITransformComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.svg = this.er.nativeElement.querySelector("svg");
+		this.svg = this.svgRef.nativeElement;
 		this.pt = this.svg.createSVGPoint();
 
 		this.onResize();
