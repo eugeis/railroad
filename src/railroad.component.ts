@@ -176,5 +176,46 @@ export class RailroadComponent implements OnInit {
 
 	onSelect(s: any) {
 		this.contextMenu = {show: false};
+
+/*
+		let newPartialTrip: PartialTrip = {
+			trip: {
+				id: 22000,
+				partialTrips: []
+			},
+			id: 22000,
+			stopOrPasss: [],
+			tripId: 22000
+		};
+		newPartialTrip.trip.partialTrips.push(newPartialTrip);
+
+		let sops: StopOrPass[] = s.targetData.stopOrPasss.map((d: StopOrPass, i: number) => {
+			let arr = d.plannedArrivalTime || d.plannedDepartureTime;
+			let dep = d.plannedDepartureTime || d.plannedArrivalTime;
+
+			let newArrival = new Date(arr);
+			let newDeparture = new Date(dep);
+
+			newArrival.setHours(newArrival.getHours() + 3);
+			newDeparture.setHours(newDeparture.getHours() + 3);
+
+			return {
+				id: i + 22000,
+				partialTrip: newPartialTrip,
+				partialTripId: newPartialTrip.id,
+				plannedArrivalTime: newArrival,
+				plannedDepartureTime: newDeparture,
+				stationName: d.stationName,
+				stopType: d.stopType,
+				x: 0,
+				y: 0
+			};
+		});
+
+		newPartialTrip.stopOrPasss = sops;
+		this.timetable.stopOrPasss.all = this.timetable.stopOrPasss.all.concat(sops);
+		this.timetable.partialTrips.all = this.timetable.partialTrips.all.concat([newPartialTrip]);
+		this.timetable.trips.all = this.timetable.trips.all.concat([newPartialTrip.trip]);
+*/
 	}
 }
