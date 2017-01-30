@@ -37,6 +37,7 @@ import { Coordinate, Border, Padding } from './zui/types.model';
 
 import { Timetable } from './timetable.interface';
 import { RailroadService } from './railroad.service';
+import { ZoomGridService } from './zoomgrid.service';
 
 //Relevant for ./railroad.service
 import 'rxjs/add/operator/map';
@@ -84,6 +85,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 				[padding]="padding"
 				[border]="border"
 				[contextMenu]="contextMenu"
+				(onZoomChange)="updateZoom($event)"
 				(onContextMenu)="updateCtx($event)"
 				(onContextSelect)="handleCtx($event)"
 				(onResize)="updateSize($event)">
@@ -163,6 +165,7 @@ export class RailroadComponent implements OnInit {
 	constructor(
 		private rs: RailroadService,
 		private tr: ZUITransformService,
+		private zg: ZoomGridService,
 		private er: ElementRef,
 		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>,
 		@Inject('ContextHandlerInterface') private ctxHandler: ContextHandlerInterface
@@ -178,6 +181,21 @@ export class RailroadComponent implements OnInit {
 				});
 			});
 		});
+
+		this.zg.notifyOn([1,2]).subscribe((resp: [number, number, number]) => {
+			console.log(resp);
+			if (resp[0] < 1) {
+				this.showX = true;
+				this.showY = true;
+			} else
+			if (resp[0] < 2) {
+				this.showX = true;
+				this.showY = false;
+			} else {
+				this.showX = false;
+				this.showY = false;
+			}
+		});
 	}
 
 	updateCtx(contextMenu: ContextMenuStatus) {
@@ -187,6 +205,11 @@ export class RailroadComponent implements OnInit {
 	updateSize(sizes: [Coordinate, Coordinate]) {
 		this.svgSize = sizes[0];
 		this.contentSize = sizes[1];
+	}
+
+	updateZoom(zoom: number) {
+		this.zoom = zoom;
+		this.zg.zoomChange(zoom);
 	}
 
 	handleCtx(e: any) {
