@@ -18,7 +18,15 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnChanges, Input, Output, EventEmitter, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import {
+	Component,
+	OnChanges,
+	Input,
+	Output,
+	EventEmitter,
+	HostListener,
+	ChangeDetectionStrategy
+} from '@angular/core';
 
 import { ZUITransformService } from './zui-transform.service';
 import { Border, Coordinate, Padding } from './types.model';

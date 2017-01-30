@@ -18,12 +18,21 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Inject } from '@angular/core';
+import {
+	Component,
+	Input,
+	Output,
+	EventEmitter,
+	ChangeDetectionStrategy,
+	Inject
+} from '@angular/core';
+
+import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
 import { AxisServiceInterface } from '../zui/axis.interface';
-import { StopOrPass } from '../timetable.interface';
-import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 import { Border } from '../zui/types.model';
+
+import { StopOrPass } from '../timetable.interface';
 
 @Component({
 	selector: '[stopOrPasss]',
@@ -72,6 +81,8 @@ export class StopOrPasssComponent {
 
 	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 
+	constructor (@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
+
 	handleCtx(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -84,10 +95,8 @@ export class StopOrPasssComponent {
 			x: e.layerX,
 			y: e.layerY,
 			target: e.target
-		})
+		});
 	}
-
-	constructor (@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
 	getD(cur: StopOrPass) {
 		return "M "
@@ -97,7 +106,7 @@ export class StopOrPasssComponent {
 			+ " L "
 			+ this.coord.getX(cur.stationName)
 			+ " "
-			+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border)
+			+ this.coord.getY(cur.plannedDepartureTime || cur.plannedArrivalTime, this.border);
 	}
 
 	getClassName(cur: StopOrPass) {

@@ -19,16 +19,13 @@
  * @author Jonas Möller
  */
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
 
 import { ContextMenu } from './contextmenu.component';
 
 @NgModule({
-	imports: [BrowserModule, FormsModule, CommonModule],
+	imports: [CommonModule],
 	declarations: [ContextMenu],
-	providers: [],
 	exports: [ContextMenu]
 })
 export class ContextMenuModule { }

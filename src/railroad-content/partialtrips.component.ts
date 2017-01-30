@@ -18,12 +18,21 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Inject } from '@angular/core';
+import {
+	Component,
+	Input,
+	Output,
+	EventEmitter,
+	ChangeDetectionStrategy,
+	Inject
+} from '@angular/core';
+
+import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
 import { AxisServiceInterface } from '../zui/axis.interface';
-import { PartialTrip, StopOrPass } from '../timetable.interface';
-import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 import { Border } from '../zui/types.model';
+
+import { PartialTrip, StopOrPass } from '../timetable.interface';
 
 @Component({
 	selector: '[partialTrips]',
@@ -55,6 +64,8 @@ export class PartialTripsComponent {
 
 	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 
+	constructor (@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
+
 	handleCtx(e: MouseEvent) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -69,8 +80,6 @@ export class PartialTripsComponent {
 			target: e.target
 		})
 	}
-
-	constructor (@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
 	getD(cur: PartialTrip) {
 		return cur.stopOrPasss.reduce((prev: string, cur: StopOrPass, i: number) => {

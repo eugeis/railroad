@@ -18,11 +18,22 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import {
+	Component,
+	OnInit,
+	Input,
+	Output,
+	EventEmitter,
+	ElementRef,
+	HostListener,
+	ChangeDetectionStrategy
+} from '@angular/core';
+
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
+
 import { ZUITransformService } from './zui-transform.service';
-import { frame, cursorPoint } from './svg.functions';
 import { Coordinate, Border, Padding } from './types.model';
+import { cursorPoint } from './svg.functions';
 
 interface EventInterface<T> {
 	(e: T): void;

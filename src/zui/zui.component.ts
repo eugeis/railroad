@@ -18,11 +18,23 @@
  *
  * @author Jonas Möller
  */
-import { Component, Inject, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import {
+	Component,
+	Inject,
+	OnInit,
+	Input,
+	Output,
+	EventEmitter,
+	HostListener,
+	ViewChild,
+	ElementRef,
+	ChangeDetectionStrategy
+} from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
-import { Coordinate, Border, Padding } from './types.model';
+
 import { ZUITransformService } from './zui-transform.service';
+import { Coordinate, Border, Padding } from './types.model';
 
 @Component({
 	selector: 'ee-zui',

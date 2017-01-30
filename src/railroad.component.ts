@@ -18,17 +18,27 @@
  *
  * @author Jonas Möller
  */
-import { Component, OnInit, HostListener, DoCheck, Inject, ElementRef, ViewChild, Renderer } from '@angular/core';
+import {
+	Component,
+	OnInit,
+	HostListener,
+	Inject,
+	ElementRef,
+	ViewChild
+} from '@angular/core';
 
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
 import { ContextHandlerInterface } from './zui/contextmenu/contexthandler.interface';
-import { AxisServiceInterface } from './zui/axis.interface';
-import { Coordinate, Border, Padding } from './zui/types.model';
-import { RailroadService } from './railroad.service';
-import { Timetable, StopOrPass, PartialTrip } from './timetable.interface';
+
 import { ZUITransformService } from './zui/zui-transform.service';
 import { ZUIComponent } from './zui/zui.component';
+import { AxisServiceInterface } from './zui/axis.interface';
+import { Coordinate, Border, Padding } from './zui/types.model';
 
+import { Timetable } from './timetable.interface';
+import { RailroadService } from './railroad.service';
+
+//Relevant for ./railroad.service
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 

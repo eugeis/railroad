@@ -20,8 +20,6 @@
  */
 import { NgModule } from '@angular/core';
 
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
 
 import { ContextMenuModule } from './contextmenu/contextmenu.module';
@@ -29,13 +27,12 @@ import { ContextMenu } from './contextmenu/contextmenu.component';
 
 import { ZUIComponent } from './zui.component';
 import { ZUITransformComponent } from './zui-transform.component';
-import { SVGScrollbarComponent } from './svg-scrollbar.component';
-
 import { ZUITransformService } from './zui-transform.service';
+import { SVGScrollbarComponent } from './svg-scrollbar.component';
 import { AxisService } from './axis.service';
 
 @NgModule({
-	imports: [BrowserModule, FormsModule, CommonModule, ContextMenuModule],
+	imports: [CommonModule, ContextMenuModule],
 	declarations: [ZUIComponent, ZUITransformComponent, SVGScrollbarComponent],
 	providers: [ZUITransformService, {provide: 'AxisServiceInterface', useClass: AxisService}],
 	exports: [ZUIComponent, ContextMenu]

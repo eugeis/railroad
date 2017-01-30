@@ -20,6 +20,7 @@
  */
 
 import { Injectable } from '@angular/core';
+
 import { frame } from './svg.functions';
 
 /**

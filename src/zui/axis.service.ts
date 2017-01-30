@@ -25,8 +25,6 @@ import { Border } from './types.model';
 
 @Injectable()
 export class AxisService implements AxisServiceInterface<string, Date> {
-	constructor() { }
-
 	topology = {
 		"SYJ": 0 + 100,
 		"1011": 100 + 100,
@@ -56,7 +54,7 @@ export class AxisService implements AxisServiceInterface<string, Date> {
 
 	getY(time: Date, border: Border): number{
 		if (!time) return 0;
-		
+
 		return ((time.getHours() / 24) + (time.getMinutes() / 24 / 60 ) + (time.getSeconds() / 24 / 60 / 60))
 			* (border.max.y - border.min.y) + border.min.y;
 	}

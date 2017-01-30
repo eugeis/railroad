@@ -19,12 +19,11 @@
  * @author Jonas Möller
  */
 import { Injectable } from '@angular/core';
+
 import { ContextHandlerInterface } from './zui/contextmenu/contexthandler.interface';
 
 @Injectable()
 export class ContextHandlerService implements ContextHandlerInterface {
-	constructor() {  }
-
 	handle(e: any) {
 		console.log(e);
 	}

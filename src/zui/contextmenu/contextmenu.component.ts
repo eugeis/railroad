@@ -18,7 +18,14 @@
  *
  * @author Jonas Möller
  */
-import { Component, HostListener, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import {
+	Component,
+	HostListener,
+	Input,
+	Output,
+	EventEmitter,
+	ChangeDetectionStrategy
+} from '@angular/core';
 
 import { ContextMenuStatus } from './contextmenu.interface';
 

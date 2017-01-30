@@ -18,7 +18,13 @@
  *
  * @author Jonas Möller
  */
-import { Component, Input, OnChanges, Inject, ChangeDetectionStrategy } from '@angular/core';
+import {
+	Component,
+	Input,
+	OnChanges,
+	Inject,
+	ChangeDetectionStrategy
+} from '@angular/core';
 
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';

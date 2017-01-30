@@ -19,26 +19,21 @@
  * @author Jonas Möller
  */
 import { NgModule } from '@angular/core';
-
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
 import { HttpModule, JsonpModule } from '@angular/http';
 
 import { ZUIModule } from './zui/zui.module';
 
-import { RailroadComponent } from './railroad.component';
-import { SVGTimeAxisComponent } from './time-axis.component';
-
 import { StopOrPasssComponent } from './railroad-content/stoporpasss.component';
 import { PartialTripsComponent } from './railroad-content/partialtrips.component';
 
 import { ContextHandlerService } from './contexthandler.service';
-
+import { SVGTimeAxisComponent } from './time-axis.component';
+import { RailroadComponent } from './railroad.component';
 import { RailroadService } from './railroad.service';
 
 @NgModule({
-	imports: [BrowserModule, FormsModule, CommonModule, HttpModule, JsonpModule, ZUIModule],
+	imports: [CommonModule, HttpModule, JsonpModule, ZUIModule],
 	declarations: [RailroadComponent, SVGTimeAxisComponent,
 		StopOrPasssComponent, PartialTripsComponent],
 	providers: [RailroadService, {provide: 'ContextHandlerInterface', useClass: ContextHandlerService}],
