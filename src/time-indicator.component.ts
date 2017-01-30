@@ -23,7 +23,9 @@ import {
 	OnInit,
 	OnDestroy,
 	Input,
-	Inject
+	Inject,
+	ChangeDetectionStrategy,
+	ChangeDetectorRef
 } from '@angular/core';
 
 import { Subscription } from 'rxjs';
@@ -49,7 +51,8 @@ import { Border } from './zui/types.model';
 			[attr.y2]="y"
 			vector-effect="non-scaling-stroke">
 		</svg:line>
-	`
+	`,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class SVGTimeIndicator implements OnInit, OnDestroy {
@@ -62,6 +65,7 @@ export class SVGTimeIndicator implements OnInit, OnDestroy {
 	subscription: Subscription;
 
 	constructor(
+		private cd: ChangeDetectorRef,
 		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>,
 	) { }
 
@@ -70,7 +74,8 @@ export class SVGTimeIndicator implements OnInit, OnDestroy {
 		this.x2 = this.border.max.x;
 
 		this.subscription = TimerObservable.create(0, 1000).subscribe(() => {
-			this.y = this.coord.getY(new Date(), this.border)
+			this.y = this.coord.getY(new Date(), this.border);
+			this.cd.markForCheck();
 		});
 	}
 
