@@ -54,24 +54,24 @@ interface EventInterface<T> {
 		}
 	`],
 	template: `
-		<svg #svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
+		<svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
 			<g class="stationary">
-				<ng-content select=".svg-content-stationary"></ng-content>
+				<ng-content select="stationary"></ng-content>
 			</g>
 
 			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate.y + padding.up) + ')scale(' + zoom + ')'">
-				<ng-content select=".svg-content-x-stationary"></ng-content>
+				<ng-content select=".x-stationary"></ng-content>
 			</g>
 
 			<g class="y-stationary" [attr.transform]="'translate(' + (translate.x + padding.left) + ',0)scale(' + zoom + ')'">
-				<ng-content select=".svg-content-y-stationary"></ng-content>
+				<ng-content select=".y-stationary"></ng-content>
 			</g>
 
 			<g [attr.transform]="'translate(' + (translate.x + padding.left) + ',' + (translate.y + padding.up) + ')scale(' + zoom + ')'">
 				<ng-content></ng-content>
 			</g>
 
-			<g *ngIf="border" class="scrollbars">
+			<g *ngIf="border && contentSize" class="scrollbars">
 				<g ee-svg-scrollbar
 					[horizontal]="true"
 					[contentSize]="contentSize"
@@ -98,25 +98,22 @@ interface EventInterface<T> {
 })
 
 export class ZUITransformComponent implements OnInit {
-	@ViewChild("svg") svgRef: ElementRef;
-	@Input() zoom: number = 1;
-	@Input() translate: Coordinate = new Coordinate(0,0);
-	@Input() padding: Padding = new Padding(0,0,0,0);
+	@Input() zoom: number;
+	@Input() translate: Coordinate;
+	@Input() padding: Padding;
 	@Input() border: Border;
+	@Input() contentSize: Coordinate;
 
-	@Output() zoomChange: EventEmitter<number> = new EventEmitter<number>();
-	@Output() translateChange: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
-	@Output("onResize") resizeEmitter: EventEmitter<[Coordinate, Coordinate]> = new EventEmitter<[Coordinate, Coordinate]>();
+	@Output("onZoom") zoomEmitter: EventEmitter<number> = new EventEmitter<number>();
+	@Output("onTranslate") translateEmitter: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
 	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 
 	dragging: boolean = false;
 
 	svg: any;
 	pt: SVGPoint;
-	svgSize: Coordinate;
-	contentSize: Coordinate;
 
-	constructor(private tr: ZUITransformService) { }
+	constructor(private tr: ZUITransformService, private er: ElementRef) { }
 
 	@HostListener('mousewheel', ['$event'])
 	onMouseWheel(e: WheelEvent) {
@@ -165,26 +162,9 @@ export class ZUITransformComponent implements OnInit {
 		this.dragging = false;
 	}
 
-	@HostListener("window:resize") onResize() {
-		this.hideContextMenu();
-		this.svgSize = new Coordinate(this.svg.clientWidth, this.svg.clientHeight);
-		this.contentSize = new Coordinate(
-			this.svgSize.x - this.padding.right - this.padding.left,
-			this.svgSize.y - this.padding.up - this.padding.down
-		);
-		this.resizeEmitter.emit([this.svgSize, this.contentSize]);
-
-		if (this.border) {
-			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border);
-			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
-		}
-	}
-
 	ngOnInit() {
-		this.svg = this.svgRef.nativeElement;
+		this.svg = this.er.nativeElement.querySelector("svg");
 		this.pt = this.svg.createSVGPoint();
-
-		this.onResize();
 	}
 
 	zooming(mousePos: Coordinate, factor: number) {
@@ -206,8 +186,8 @@ export class ZUITransformComponent implements OnInit {
 			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
 		}
 
-		this.zoomChange.emit(this.zoom);
-		this.translateChange.emit(this.translate);
+		this.zoomEmitter.emit(this.zoom);
+		this.translateEmitter.emit(this.translate);
 	}
 
 	/*
@@ -221,7 +201,7 @@ export class ZUITransformComponent implements OnInit {
 			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
 		}
 
-		this.translateChange.emit(this.translate);
+		this.translateEmitter.emit(this.translate);
 	}
 
 	showContextMenu(e: MouseEvent): void {
@@ -244,6 +224,6 @@ export class ZUITransformComponent implements OnInit {
 
 	handleScroll(translate: Coordinate) {
 		this.translate = translate;
-		this.translateChange.emit(translate);
+		this.translateEmitter.emit(translate);
 	}
 }

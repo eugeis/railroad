@@ -49,7 +49,7 @@ export class RailroadService {
 		let dat:Timetable = data.json();
 
 		dat.trips.all = dat.trips.all.filter((t) => {
-			return t.id % 50 == 0;
+			return t.id % 25 == 0;
 		});
 		dat.trips.all.forEach((t) => t.partialTrips = []);
 		dat.partialTrips.all.forEach((pt) => pt.stopOrPasss = []);
@@ -95,6 +95,8 @@ export class RailroadService {
 		let stop = dat.stopOrPasss.all.filter(a => {
 			return a.stopType === "STOP";
 		});
+
+		console.log(dat);
 
 		return dat;
 	}

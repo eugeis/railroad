@@ -21,10 +21,13 @@
 import { Component, OnInit, HostListener, DoCheck, Inject, ElementRef, ViewChild, Renderer } from '@angular/core';
 
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
+import { ContextHandlerInterface } from './zui/contextmenu/contexthandler.interface';
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';
 import { RailroadService } from './railroad.service';
 import { Timetable, StopOrPass, PartialTrip } from './timetable.interface';
+import { ZUITransformService } from './zui/zui-transform.service';
+import { ZUIComponent } from './zui/zui.component';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -64,13 +67,15 @@ var svgNS = "http://www.w3.org/2000/svg";
 	`],
 	template: `
 		<div class="railroad">
-			<ee-zui-transform
+			<ee-zui #zuiElement
 				[(zoom)]="zoom"
 				[(translate)]="translate"
 				[padding]="padding"
 				[border]="border"
-				(onResize)="updateSize($event)"
-				(onContextMenu)="updateCtx($event)">
+				[contextMenu]="contextMenu"
+				(onContextMenu)="updateCtx($event)"
+				(onContextSelect)="handleCtx($event)"
+				(onResize)="updateSize($event)">
 				<svg:g class="background">
 					<svg:defs>
 						<svg:pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -125,13 +130,13 @@ var svgNS = "http://www.w3.org/2000/svg";
 						[contentSize]="contentSize">
 					</svg:g>
 				</svg:g>
-			</ee-zui-transform>
-			<context-menu [contextMenu]="contextMenu" (select)="onSelect($event)"></context-menu>
+			</ee-zui>
 		</div>
 	`
 })
 
 export class RailroadComponent implements OnInit {
+	@ViewChild("zuiElement") zuiRef: ZUIComponent;
 	border: Border = new Border(new Coordinate(0,0), new Coordinate(2100,5000));
 	padding: Padding = new Padding(30,0,0,75);
 	translate: Coordinate = new Coordinate(0,0);
@@ -148,9 +153,16 @@ export class RailroadComponent implements OnInit {
 
 	contextMenu: ContextMenuStatus = { show: false };
 
+	@HostListener("window:resize") onResize() {
+		this.zuiRef.updateSize();
+	}
+
 	constructor(
 		private rs: RailroadService,
-		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>
+		private tr: ZUITransformService,
+		private er: ElementRef,
+		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>,
+		@Inject('ContextHandlerInterface') private ctxHandler: ContextHandlerInterface
 	) { }
 
 	ngOnInit() {
@@ -165,57 +177,17 @@ export class RailroadComponent implements OnInit {
 		});
 	}
 
-	updateSize(newSize: [Coordinate,Coordinate]) {
-		this.svgSize = newSize[0];
-		this.contentSize = newSize[1];
-	}
-
 	updateCtx(contextMenu: ContextMenuStatus) {
 		this.contextMenu = contextMenu;
 	}
 
-	onSelect(s: any) {
+	updateSize(sizes: [Coordinate, Coordinate]) {
+		this.svgSize = sizes[0];
+		this.contentSize = sizes[1];
+	}
+
+	handleCtx(e: any) {
 		this.contextMenu = {show: false};
-
-/*
-		let newPartialTrip: PartialTrip = {
-			trip: {
-				id: 22000,
-				partialTrips: []
-			},
-			id: 22000,
-			stopOrPasss: [],
-			tripId: 22000
-		};
-		newPartialTrip.trip.partialTrips.push(newPartialTrip);
-
-		let sops: StopOrPass[] = s.targetData.stopOrPasss.map((d: StopOrPass, i: number) => {
-			let arr = d.plannedArrivalTime || d.plannedDepartureTime;
-			let dep = d.plannedDepartureTime || d.plannedArrivalTime;
-
-			let newArrival = new Date(arr);
-			let newDeparture = new Date(dep);
-
-			newArrival.setHours(newArrival.getHours() + 3);
-			newDeparture.setHours(newDeparture.getHours() + 3);
-
-			return {
-				id: i + 22000,
-				partialTrip: newPartialTrip,
-				partialTripId: newPartialTrip.id,
-				plannedArrivalTime: newArrival,
-				plannedDepartureTime: newDeparture,
-				stationName: d.stationName,
-				stopType: d.stopType,
-				x: 0,
-				y: 0
-			};
-		});
-
-		newPartialTrip.stopOrPasss = sops;
-		this.timetable.stopOrPasss.all = this.timetable.stopOrPasss.all.concat(sops);
-		this.timetable.partialTrips.all = this.timetable.partialTrips.all.concat([newPartialTrip]);
-		this.timetable.trips.all = this.timetable.trips.all.concat([newPartialTrip.trip]);
-*/
+		this.ctxHandler.handle(e);
 	}
 }

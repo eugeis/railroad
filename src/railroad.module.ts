@@ -33,13 +33,15 @@ import { SVGTimeAxisComponent } from './time-axis.component';
 import { StopOrPasssComponent } from './railroad-content/stoporpasss.component';
 import { PartialTripsComponent } from './railroad-content/partialtrips.component';
 
+import { ContextHandlerService } from './contexthandler.service';
+
 import { RailroadService } from './railroad.service';
 
 @NgModule({
 	imports: [BrowserModule, FormsModule, CommonModule, HttpModule, JsonpModule, ZUIModule],
 	declarations: [RailroadComponent, SVGTimeAxisComponent,
 		StopOrPasssComponent, PartialTripsComponent],
-	providers: [RailroadService],
+	providers: [RailroadService, {provide: 'ContextHandlerInterface', useClass: ContextHandlerService}],
 	exports: [RailroadComponent]
 })
 export class RailroadModule { }

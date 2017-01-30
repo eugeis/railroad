@@ -19,25 +19,16 @@
  * @author Jonas Möller
  */
 import { NgModule } from '@angular/core';
-
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'
 
-import { ContextMenuModule } from './contextmenu/contextmenu.module';
-import { ContextMenu } from './contextmenu/contextmenu.component';
-
-import { ZUIComponent } from './zui.component';
-import { ZUITransformComponent } from './zui-transform.component';
-import { SVGScrollbarComponent } from './svg-scrollbar.component';
-
-import { ZUITransformService } from './zui-transform.service';
-import { AxisService } from './axis.service';
+import { ContextMenu } from './contextmenu.component';
 
 @NgModule({
-	imports: [BrowserModule, FormsModule, CommonModule, ContextMenuModule],
-	declarations: [ZUIComponent, ZUITransformComponent, SVGScrollbarComponent],
-	providers: [ZUITransformService, {provide: 'AxisServiceInterface', useClass: AxisService}],
-	exports: [ZUIComponent, ContextMenu]
+	imports: [BrowserModule, FormsModule, CommonModule],
+	declarations: [ContextMenu],
+	providers: [],
+	exports: [ContextMenu]
 })
-export class ZUIModule { }
+export class ContextMenuModule { }
