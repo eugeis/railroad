@@ -20,8 +20,8 @@
  */
 import { Injectable } from '@angular/core';
 
-import { AxisServiceInterface } from './axis.interface';
-import { Border } from './types.model';
+import { AxisServiceInterface } from './zui/axis.interface';
+import { Border } from './zui/types.model';
 
 @Injectable()
 export class AxisService implements AxisServiceInterface<string, Date> {

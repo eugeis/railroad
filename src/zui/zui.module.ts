@@ -29,12 +29,11 @@ import { ZUIComponent } from './zui.component';
 import { ZUITransformComponent } from './zui-transform.component';
 import { ZUITransformService } from './zui-transform.service';
 import { SVGScrollbarComponent } from './svg-scrollbar.component';
-import { AxisService } from './axis.service';
 
 @NgModule({
 	imports: [CommonModule, ContextMenuModule],
 	declarations: [ZUIComponent, ZUITransformComponent, SVGScrollbarComponent],
-	providers: [ZUITransformService, {provide: 'AxisServiceInterface', useClass: AxisService}],
+	providers: [ZUITransformService],
 	exports: [ZUIComponent, ContextMenu]
 })
 export class ZUIModule { }

@@ -31,12 +31,15 @@ import { ContextHandlerService } from './contexthandler.service';
 import { SVGTimeAxisComponent } from './time-axis.component';
 import { RailroadComponent } from './railroad.component';
 import { RailroadService } from './railroad.service';
+import { AxisService } from './axis.service';
 
 @NgModule({
 	imports: [CommonModule, HttpModule, JsonpModule, ZUIModule],
 	declarations: [RailroadComponent, SVGTimeAxisComponent,
 		StopOrPasssComponent, PartialTripsComponent],
-	providers: [RailroadService, {provide: 'ContextHandlerInterface', useClass: ContextHandlerService}],
+	providers: [RailroadService,
+		{provide: 'ContextHandlerInterface', useClass: ContextHandlerService},
+		{provide: 'AxisServiceInterface', useClass: AxisService}],
 	exports: [RailroadComponent]
 })
 export class RailroadModule { }
