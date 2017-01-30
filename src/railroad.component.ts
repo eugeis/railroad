@@ -112,6 +112,9 @@ var svgNS = "http://www.w3.org/2000/svg";
 					stopOrPasss>
 				</svg:g>
 
+				<svg:g svg-time-indicator [border]="border">
+				</svg:g>
+
 				<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
 					<svg:g *ngFor="let station of timetable.stations; let i = index">
 						<svg:text
