@@ -51,6 +51,7 @@ import { Coordinate, Border, Padding } from './types.model';
 			[padding]="padding"
 			[border]="border"
 			[contentSize]="contentSize"
+			[maxZoom]="maxZoom"
 			(onZoom)="updateZoom($event)"
 			(onTranslate)="updateTranslate($event)"
 			(onContextMenu)="updateCtx($event)">
@@ -69,6 +70,7 @@ export class ZUIComponent implements OnInit {
 	@Input() padding: Padding = new Padding(0,0,0,0);
 	@Input() border: Border;
 	@Input() contextMenu: ContextMenuStatus;
+	@Input() maxZoom: number;
 
 	@Output("zoomChange") zoomEmitter: EventEmitter<number> = new EventEmitter<number>();
 	@Output("translateChange") translateEmitter: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();

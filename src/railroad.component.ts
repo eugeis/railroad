@@ -80,6 +80,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 			<ee-zui #zuiElement
 				[(zoom)]="zoom"
 				[(translate)]="translate"
+				[maxZoom]="1000"
 				[padding]="padding"
 				[border]="border"
 				[contextMenu]="contextMenu"

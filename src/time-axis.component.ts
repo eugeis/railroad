@@ -85,7 +85,7 @@ export class SVGTimeAxisComponent implements OnChanges {
 		lower = lower + timeOffset;
 		upper = upper + timeOffset;
 
-		let rawStep = (upper - lower) / 6;
+		let rawStep = (upper - lower + 1) / 4;
 		let step: number;
 		if (rawStep > 3600) {
 			step = 3600;

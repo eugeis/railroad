@@ -106,9 +106,9 @@ export class ZUITransformService {
 		return (1 + (frame(-delta / 265, -1, 1) / 5));
 	}
 
-	limitZoom(zoom: number, svgSize: Coordinate, border: Border): number {
-		zoom = frame(zoom, svgSize.x / (border.max.x - border.min.x), zoom);
-		zoom = frame(zoom, svgSize.y / (border.max.y - border.min.y), zoom);
+	limitZoom(zoom: number, svgSize: Coordinate, border: Border, maxZoom?: number): number {
+		zoom = frame(zoom, svgSize.x / (border.max.x - border.min.x), maxZoom || zoom);
+		zoom = frame(zoom, svgSize.y / (border.max.y - border.min.y), maxZoom || zoom);
 		return zoom;
 	}
 

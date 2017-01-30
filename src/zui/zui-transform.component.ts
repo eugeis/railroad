@@ -114,6 +114,7 @@ export class ZUITransformComponent implements OnInit {
 	@Input() padding: Padding;
 	@Input() border: Border;
 	@Input() contentSize: Coordinate;
+	@Input() maxZoom: number;
 
 	@Output("onZoom") zoomEmitter: EventEmitter<number> = new EventEmitter<number>();
 	@Output("onTranslate") translateEmitter: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
@@ -183,7 +184,7 @@ export class ZUITransformComponent implements OnInit {
 		this.zoom *= factor;
 
 		if (this.border) {
-			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border);
+			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border, this.maxZoom);
 			factor = this.zoom / oldZoom;
 		}
 
