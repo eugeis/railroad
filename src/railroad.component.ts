@@ -30,7 +30,7 @@ import {
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
 import { ContextHandlerInterface } from './zui/contextmenu/contexthandler.interface';
 
-import { ZUITransformService } from './zui/zui-transform.service';
+import { ZUITransformService } from './zui/zui.service';
 import { ZUIComponent } from './zui/zui.component';
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';
@@ -79,7 +79,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 	template: `
 		<div class="railroad">
 			<ee-zui #zuiElement
-				[(zoom)]="zoom"
+				[zoom]="zoom"
 				[(translate)]="translate"
 				[maxZoom]="1000"
 				[padding]="padding"

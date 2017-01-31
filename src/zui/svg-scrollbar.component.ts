@@ -28,7 +28,7 @@ import {
 	ChangeDetectionStrategy
 } from '@angular/core';
 
-import { ZUITransformService } from './zui-transform.service';
+import { ZUITransformService } from './zui.service';
 import { Border, Coordinate, Padding } from './types.model';
 
 @Component({
