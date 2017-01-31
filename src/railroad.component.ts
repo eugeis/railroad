@@ -136,7 +136,8 @@ var svgNS = "http://www.w3.org/2000/svg";
 					</svg:g>
 				</svg:g>
 
-				<svg:rect *ngIf="show" x="500" y="400" width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
+				<svg:rect *ngIf="show1" x="500" y="400" width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
+				<svg:rect *ngIf="show2" x="300" y="550" width="200" height="240" style="fill:rgb(255,0,0);stroke-width:3;stroke:rgb(0,0,0)" />
 			</ee-zui>
 		</div>
 	`
@@ -155,7 +156,8 @@ export class RailroadComponent implements OnInit {
 
 	showX: boolean = true;
 	showY: boolean = true;
-	show: boolean = false;
+	show1: boolean = false;
+	show2: boolean = false;
 
 	partialTrip: any = {};
 
@@ -185,9 +187,12 @@ export class RailroadComponent implements OnInit {
 			});
 		});
 
-		this.zg.notifyOn([1,2]).subscribe((resp: GridResponse) => {
-			console.log(resp);
-			this.show = (resp.zoom >= 2);
+		this.zg.notifyOn([1,4]).subscribe((resp: GridResponse) => {
+			this.show1 = (1 <= resp.zoom && resp.zoom <= 4);
+		});
+
+		this.zg.notifyOn([1,5]).subscribe((resp: GridResponse) => {
+			this.show2 = (1 <= resp.zoom && resp.zoom <= 5)
 		});
 	}
 
