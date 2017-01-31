@@ -37,7 +37,7 @@ import { Coordinate, Border, Padding } from './zui/types.model';
 
 import { Timetable } from './timetable.interface';
 import { RailroadService } from './railroad.service';
-import { ZoomGridService } from './zoomgrid.service';
+import { ZoomGridService, GridResponse } from './zoomgrid.service';
 
 //Relevant for ./railroad.service
 import 'rxjs/add/operator/map';
@@ -135,6 +135,8 @@ var svgNS = "http://www.w3.org/2000/svg";
 						[contentSize]="contentSize">
 					</svg:g>
 				</svg:g>
+
+				<svg:rect *ngIf="show" x="500" y="400" width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
 			</ee-zui>
 		</div>
 	`
@@ -153,6 +155,7 @@ export class RailroadComponent implements OnInit {
 
 	showX: boolean = true;
 	showY: boolean = true;
+	show: boolean = false;
 
 	partialTrip: any = {};
 
@@ -182,19 +185,9 @@ export class RailroadComponent implements OnInit {
 			});
 		});
 
-		this.zg.notifyOn([1,2]).subscribe((resp: [number, number, number]) => {
+		this.zg.notifyOn([1,2]).subscribe((resp: GridResponse) => {
 			console.log(resp);
-			if (resp[0] < 1) {
-				this.showX = true;
-				this.showY = true;
-			} else
-			if (resp[0] < 2) {
-				this.showX = true;
-				this.showY = false;
-			} else {
-				this.showX = false;
-				this.showY = false;
-			}
+			this.show = (resp.zoom >= 2);
 		});
 	}
 
