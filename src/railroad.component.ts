@@ -23,8 +23,7 @@ import {
 	OnInit,
 	HostListener,
 	Inject,
-	ElementRef,
-	ViewChild
+	ElementRef
 } from '@angular/core';
 
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
@@ -78,7 +77,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 	`],
 	template: `
 		<div class="railroad">
-			<ee-zui #zuiElement
+			<ee-zui
 				[(zoom)]="zoom"
 				[(translate)]="translate"
 				[maxZoom]="1000"
@@ -143,7 +142,6 @@ var svgNS = "http://www.w3.org/2000/svg";
 })
 
 export class RailroadComponent implements OnInit {
-	@ViewChild("zuiElement") zuiRef: ZUIComponent;
 	border: Border = new Border(new Coordinate(0,0), new Coordinate(2100,5000));
 	padding: Padding = new Padding(30,0,0,75);
 	translate: Coordinate = new Coordinate(0,0);
@@ -161,10 +159,6 @@ export class RailroadComponent implements OnInit {
 	partialTrip: any = {};
 
 	contextMenu: ContextMenuStatus = { show: false };
-
-	@HostListener("window:resize") onResize() {
-		this.zuiRef.updateSize();
-	}
 
 	constructor(
 		private rs: RailroadService,

@@ -142,6 +142,22 @@ export class ZUIComponent implements OnInit, OnDestroy {
 		["mouseup", this.onMouseUp.bind(this)]
 	];
 
+	@HostListener("window:resize") onResize() {
+		this.svgSize = new Coordinate(this.svg.clientWidth, this.svg.clientHeight);
+		this.contentSize = new Coordinate(
+			this.svgSize.x - this.padding.right - this.padding.left,
+			this.svgSize.y - this.padding.up - this.padding.down
+		);
+		this.resizeEmitter.emit([this.svgSize, this.contentSize]);
+
+		if (this.border) {
+			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border);
+			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
+			this.zoomEmitter.emit(this.zoom);
+			this.translateEmitter.emit(this.translate);
+		}
+	}
+
 	constructor(
 		private tr: ZUITransformService,
 		private er: ElementRef,
@@ -163,32 +179,13 @@ export class ZUIComponent implements OnInit, OnDestroy {
 			this.zg.zoomChange(zoom);
 		});
 
-		this.updateSize();
+		this.onResize();
 	}
 
 	ngOnDestroy() {
 		this.eventFunctions.forEach((d: [string, Function]) => {
 			this.svg.removeEventListener(d[0], d[1]);
 		});
-	}
-
-	/**
-	 * Resizing
-	 */
-	updateSize() {
-		this.svgSize = new Coordinate(this.svg.clientWidth, this.svg.clientHeight);
-		this.contentSize = new Coordinate(
-			this.svgSize.x - this.padding.right - this.padding.left,
-			this.svgSize.y - this.padding.up - this.padding.down
-		);
-		this.resizeEmitter.emit([this.svgSize, this.contentSize]);
-
-		if (this.border) {
-			this.zoom = this.tr.limitZoom(this.zoom, this.contentSize, this.border);
-			this.translate = this.tr.limitTranslate(this.translate, this.zoom, this.contentSize, this.border);
-			this.zoomEmitter.emit(this.zoom);
-			this.translateEmitter.emit(this.translate);
-		}
 	}
 
 	/**
