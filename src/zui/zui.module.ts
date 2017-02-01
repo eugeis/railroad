@@ -28,11 +28,12 @@ import { ContextMenu } from './contextmenu/contextmenu.component';
 import { ZUIComponent } from './zui.component';
 import { ZUITransformService } from './zui.service';
 import { SVGScrollbarComponent } from './svg-scrollbar.component';
+import { ZoomGridService } from './zoomgrid.service';
 
 @NgModule({
 	imports: [CommonModule, ContextMenuModule],
 	declarations: [ZUIComponent, SVGScrollbarComponent],
-	providers: [ZUITransformService],
+	providers: [ZUITransformService, ZoomGridService],
 	exports: [ZUIComponent, ContextMenu]
 })
 export class ZUIModule { }

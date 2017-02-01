@@ -32,6 +32,7 @@ import {
 
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 
+import { ZoomGridService } from './zoomgrid.service';
 import { ZUITransformService } from './zui.service';
 import { Coordinate, Border, Padding } from './types.model';
 import { cursorPoint } from './svg.functions';
@@ -119,7 +120,7 @@ export class ZUIComponent implements OnInit, OnDestroy {
 	@Input() maxZoom: number;
 
 	@Output("translateChange") translateEmitter: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
-	@Output("onZoomChange") zoomEmitter: EventEmitter<number> = new EventEmitter<number>();
+	@Output("zoomChange") zoomEmitter: EventEmitter<number> = new EventEmitter<number>();
 	@Output("onResize") resizeEmitter: EventEmitter<[Coordinate, Coordinate]> = new EventEmitter<[Coordinate, Coordinate]>();
 	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 	@Output("onContextSelect") contextSelectEmitter: EventEmitter<any> = new EventEmitter<any>();
@@ -141,7 +142,11 @@ export class ZUIComponent implements OnInit, OnDestroy {
 		["mouseup", this.onMouseUp.bind(this)]
 	];
 
-	constructor(public tr: ZUITransformService, protected er: ElementRef) { }
+	constructor(
+		private tr: ZUITransformService,
+		private er: ElementRef,
+		private zg: ZoomGridService
+	) { }
 
 	/**
 	 * Initialization and Deletion
@@ -152,6 +157,10 @@ export class ZUIComponent implements OnInit, OnDestroy {
 
 		this.eventFunctions.forEach((d: [string, Function]) => {
 			this.svg.addEventListener(d[0], d[1]);
+		});
+
+		this.zoomEmitter.subscribe((zoom: number) => {
+			this.zg.zoomChange(zoom);
 		});
 
 		this.updateSize();

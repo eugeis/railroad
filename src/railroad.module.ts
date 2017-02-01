@@ -33,13 +33,12 @@ import { SVGTimeIndicator } from './time-indicator.component';
 import { RailroadComponent } from './railroad.component';
 import { RailroadService } from './railroad.service';
 import { AxisService } from './axis.service';
-import { ZoomGridService } from './zoomgrid.service';
 
 @NgModule({
 	imports: [CommonModule, HttpModule, JsonpModule, ZUIModule],
 	declarations: [RailroadComponent, SVGTimeAxisComponent, SVGTimeIndicator,
 		StopOrPasssComponent, PartialTripsComponent],
-	providers: [RailroadService, ZoomGridService,
+	providers: [RailroadService,
 		{provide: 'ContextHandlerInterface', useClass: ContextHandlerService},
 		{provide: 'AxisServiceInterface', useClass: AxisService}],
 	exports: [RailroadComponent]

@@ -37,7 +37,7 @@ import { Coordinate, Border, Padding } from './zui/types.model';
 
 import { Timetable } from './timetable.interface';
 import { RailroadService } from './railroad.service';
-import { ZoomGridService, GridResponse } from './zoomgrid.service';
+import { ZoomGridService, GridResponse } from './zui/zoomgrid.service';
 
 //Relevant for ./railroad.service
 import 'rxjs/add/operator/map';
@@ -79,13 +79,12 @@ var svgNS = "http://www.w3.org/2000/svg";
 	template: `
 		<div class="railroad">
 			<ee-zui #zuiElement
-				[zoom]="zoom"
+				[(zoom)]="zoom"
 				[(translate)]="translate"
 				[maxZoom]="1000"
 				[padding]="padding"
 				[border]="border"
 				[contextMenu]="contextMenu"
-				(onZoomChange)="updateZoom($event)"
 				(onContextMenu)="updateCtx($event)"
 				(onContextSelect)="handleCtx($event)"
 				(onResize)="updateSize($event)">
@@ -203,11 +202,6 @@ export class RailroadComponent implements OnInit {
 	updateSize(sizes: [Coordinate, Coordinate]) {
 		this.svgSize = sizes[0];
 		this.contentSize = sizes[1];
-	}
-
-	updateZoom(zoom: number) {
-		this.zoom = zoom;
-		this.zg.zoomChange(zoom);
 	}
 
 	handleCtx(e: any) {
