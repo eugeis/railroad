@@ -27,6 +27,7 @@ import {
 	EventEmitter,
 	ElementRef,
 	HostListener,
+	ChangeDetectorRef,
 	ChangeDetectionStrategy
 } from '@angular/core';
 
@@ -161,6 +162,7 @@ export class ZUIComponent implements OnInit, OnDestroy {
 	constructor(
 		private tr: ZUITransformService,
 		private er: ElementRef,
+		private cd: ChangeDetectorRef,
 		private zg: ZoomGridService
 	) { }
 
@@ -176,7 +178,15 @@ export class ZUIComponent implements OnInit, OnDestroy {
 		});
 
 		this.zoomEmitter.subscribe((zoom: number) => {
-			this.zg.zoomChange(zoom);
+			this.cd.markForCheck();
+		});
+
+		this.translateEmitter.subscribe((zoom: number) => {
+			this.cd.markForCheck();
+		});
+
+		this.resizeEmitter.subscribe((zoom: number) => {
+			this.cd.markForCheck();
 		});
 
 		this.onResize();
