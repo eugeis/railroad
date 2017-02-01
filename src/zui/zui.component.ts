@@ -121,8 +121,8 @@ export class ZUIComponent implements OnInit, OnDestroy {
 
 	@Output("translateChange") translateEmitter: EventEmitter<Coordinate> = new EventEmitter<Coordinate>();
 	@Output("zoomChange") zoomEmitter: EventEmitter<number> = new EventEmitter<number>();
+	@Output("contextMenuChange") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 	@Output("onResize") resizeEmitter: EventEmitter<[Coordinate, Coordinate]> = new EventEmitter<[Coordinate, Coordinate]>();
-	@Output("onContextMenu") contextMenuEmitter: EventEmitter<ContextMenuStatus> = new EventEmitter<ContextMenuStatus>();
 	@Output("onContextSelect") contextSelectEmitter: EventEmitter<any> = new EventEmitter<any>();
 
 	dragging: boolean = false;

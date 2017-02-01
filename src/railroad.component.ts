@@ -80,11 +80,10 @@ var svgNS = "http://www.w3.org/2000/svg";
 			<ee-zui
 				[(zoom)]="zoom"
 				[(translate)]="translate"
+				[(contextMenu)]="contextMenu"
 				[maxZoom]="1000"
 				[padding]="padding"
 				[border]="border"
-				[contextMenu]="contextMenu"
-				(onContextMenu)="updateCtx($event)"
 				(onContextSelect)="handleCtx($event)"
 				(onResize)="updateSize($event)">
 
