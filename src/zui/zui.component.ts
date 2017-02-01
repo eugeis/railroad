@@ -106,7 +106,7 @@ interface EventInterface<T> {
 				</g>
 			</g>
 		</svg>
-		<context-menu [contextMenu]="contextMenu" (select)="handleSelect($event)"></context-menu>
+		<context-menu *ngIf="contextMenu" [contextMenu]="contextMenu" (select)="handleSelect($event)"></context-menu>
 	`,
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
