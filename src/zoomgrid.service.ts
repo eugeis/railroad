@@ -98,7 +98,7 @@ export class ZoomGridService {
 		const boundary = this.levelIndex;
 		const level = this.gridLevel[boundary];
 		if (zoom < level) {
-			this.gridSubjects[level].forEach((subject) => {
+			this.gridSubjects[level].forEach((subject: GridSubject) => {
 				subject.next(new GridResponse(level, dir, zoom, this.oldZoom))
 			});
 			this.levelIndex--;
@@ -114,7 +114,7 @@ export class ZoomGridService {
 		const boundary = this.levelIndex + 1;
 		const level = this.gridLevel[boundary];
 		if (zoom > level) {
-			this.gridSubjects[level].forEach((subject) => {
+			this.gridSubjects[level].forEach((subject: GridSubject) => {
 				subject.next(new GridResponse(level, dir, zoom, this.oldZoom))
 			});
 			this.levelIndex++;
