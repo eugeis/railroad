@@ -70,7 +70,7 @@ interface EventInterface<T> {
 	template: `
 		<svg xmlns="http://www.w3.org/2000/svg" [ngClass]="{'dragging': dragging}" baseProfile="tiny">
 			<g class="stationary">
-				<ng-content select="stationary"></ng-content>
+				<ng-content select=".svg-content.stationary"></ng-content>
 			</g>
 
 			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate.y + padding.up) + ')scale(' + zoom + ')'">
