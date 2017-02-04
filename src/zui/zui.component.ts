@@ -178,6 +178,7 @@ export class ZUIComponent implements OnInit, OnDestroy {
 		});
 
 		this.zoomEmitter.subscribe((zoom: number) => {
+			this.zg.zoomChange(zoom);
 			this.cd.markForCheck();
 		});
 
