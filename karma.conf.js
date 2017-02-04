@@ -45,10 +45,11 @@ module.exports = function (config) {
 		},
 
 		preprocessors: {
-			'src/**/!(*spec|*mock).js': ['coverage']
+			'src/**/!(*spec|*mock|*module).js': ['coverage']
 		},
 
 		coverageReporter: {
+			includeAllSources: true,
 			type: 'html',
 			dir: 'karma_html/',
 			subdir : 'coverage'
