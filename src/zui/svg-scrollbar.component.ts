@@ -28,7 +28,7 @@ import {
 	ChangeDetectionStrategy
 } from '@angular/core';
 
-import { ZUITransformService } from './zui.service';
+import { ZUIService } from './zui.service';
 import { Border, Coordinate, Padding } from './types.model';
 
 @Component({
@@ -92,7 +92,7 @@ export class SVGScrollbarComponent implements OnChanges {
 	size: number = 0;
 	position: number = 0;
 
-	constructor(private tr: ZUITransformService) {}
+	constructor(private tr: ZUIService) {}
 
 	@HostListener('mousedown', ['$event']) onMouseDown(e: MouseEvent) {
 		if (e.button != 0) {

@@ -34,7 +34,7 @@ import {
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 
 import { ZoomGridService } from './zoomgrid.service';
-import { ZUITransformService } from './zui.service';
+import { ZUIService } from './zui.service';
 import { Coordinate, Border, Padding } from './types.model';
 import { cursorPoint } from './svg.functions';
 
@@ -160,7 +160,7 @@ export class ZUIComponent implements OnInit, OnDestroy {
 	}
 
 	constructor(
-		private tr: ZUITransformService,
+		private tr: ZUIService,
 		private er: ElementRef,
 		private cd: ChangeDetectorRef,
 		private zg: ZoomGridService

@@ -29,7 +29,7 @@ import {
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
 import { ContextHandlerInterface } from './zui/contextmenu/contexthandler.interface';
 
-import { ZUITransformService } from './zui/zui.service';
+import { ZUIService } from './zui/zui.service';
 import { ZUIComponent } from './zui/zui.component';
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';
@@ -161,7 +161,7 @@ export class RailroadComponent implements OnInit {
 
 	constructor(
 		private rs: RailroadService,
-		private tr: ZUITransformService,
+		private tr: ZUIService,
 		private zg: ZoomGridService,
 		private er: ElementRef,
 		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>,

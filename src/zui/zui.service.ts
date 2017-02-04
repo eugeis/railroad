@@ -54,7 +54,7 @@ import { frame } from './svg.functions';
 import { Coordinate, Border } from './types.model';
 
 @Injectable()
-export class ZUITransformService {
+export class ZUIService {
 	/**
 	 * Calculates the new translate after zooming
 	 *
