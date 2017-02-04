@@ -78,8 +78,8 @@ export class SVGTimeAxisComponent implements OnChanges {
 			return;
 		}
 
-		let lower = 24 * 60 * 60 * (this.translate.y + this.zoom * this.border.min.y) / (this.zoom * (this.border.min.y - this.border.max.y));
-		let upper = 24 * 60 * 60 * (this.translate.y - this.contentSize.y + this.zoom * this.border.min.y) / (this.zoom * (this.border.min.y - this.border.max.y));
+		let lower = 24 * 60 * 60 * (-this.translate.y - this.zoom * this.border.min.y) / (this.zoom * (this.border.max.y - this.border.min.y));
+		let upper = 24 * 60 * 60 * (-this.translate.y + this.contentSize.y - this.zoom * this.border.min.y) / (this.zoom * (this.border.max.y - this.border.min.y));
 
 		let timeOffset = new Date().getTimezoneOffset() * 60;
 		lower = lower + timeOffset;
