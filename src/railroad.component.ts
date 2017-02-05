@@ -57,19 +57,6 @@ var svgNS = "http://www.w3.org/2000/svg";
 			fill: white;
 		}
 
-		line {
-			stroke: black;
-		}
-
-		line:hover {
-			cursor: pointer;
-		}
-
-		text {
-			user-select: none;
-			fill: black;
-		}
-
 		context-menu {
 			position: absolute;
 			top: 0px;
@@ -105,20 +92,11 @@ var svgNS = "http://www.w3.org/2000/svg";
 				</svg:g>
 
 				<svg:g *ngIf="timetable && showX" class="svg-content-y-stationary">
-					<svg:g *ngFor="let station of timetable.stations; let i = index">
-						<svg:text
-							[attr.x]="coord.getX(station)"
-							[attr.y]="24 / zoom"
-							[attr.font-size]="20 / zoom">
-							{{station}}
-						</svg:text>
-						<svg:line
-							[attr.x1]="coord.getX(station)"
-							[attr.y1]="padding.up / zoom"
-							[attr.x2]="coord.getX(station)"
-							[attr.y2]="svgSize.y / zoom"
-							vector-effect="non-scaling-stroke">
-						</svg:line>
+					<svg:g svg-station-axis
+						[zoom]="zoom"
+						[stations]="timetable.stations"
+						[padding]="padding"
+						[svgSize]="svgSize">
 					</svg:g>
 				</svg:g>
 
