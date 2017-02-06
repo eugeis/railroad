@@ -66,7 +66,7 @@ export class RailroadService {
 		});
 		dat.partialTrips.all = dat.partialTrips.all.filter((pt) => { return !!pt.trip; });
 
-		//asign partial trip
+		//assign partial trip
 		dat.stopOrPasss.all.forEach((sop) => {
 			sop.partialTrip = dat.partialTrips.all.find((pt) => {
 				return pt.id === sop.partialTripId;
