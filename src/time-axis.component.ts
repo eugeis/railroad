@@ -28,6 +28,7 @@ import {
 
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';
+import { findGreatestSmallerThanOrGreatest, floorToGrid, ceilToGrid } from './time-axis.functions';
 
 @Component({
 	selector: '[svg-time-axis]',
@@ -86,30 +87,11 @@ export class SVGTimeAxisComponent implements OnChanges {
 		upper = upper + timeOffset;
 
 		let rawStep = (upper - lower + 1) / 4;
-		let step: number;
-		if (rawStep > 3600) {
-			step = 3600;
-		} else if (rawStep > 1800) {
-			step = 1800;
-		} else if (rawStep > 900) {
-			step = 900;
-		} else if (rawStep > 300) {
-			step = 300;
-		} else if (rawStep > 60) {
-			step = 60;
-		} else if (rawStep > 30) {
-			step = 30;
-		} else if (rawStep > 15) {
-			step = 15;
-		} else if (rawStep > 5) {
-			step = 5;
-		} else {
-			step = 1;
-		}
+		let step: number = findGreatestSmallerThanOrGreatest([3600,1800,900,300,60,30,15,5,1], rawStep);
 		this.times = [];
 
-		let realLower = lower - lower % step;
-		let realUpper = upper - upper % step + step;
+		let realLower = floorToGrid(lower, step);
+		let realUpper = ceilToGrid(upper, step);
 
 		for (let i = realLower; i < realUpper; i += step) {
 			this.times.push([
