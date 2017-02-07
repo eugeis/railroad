@@ -25,7 +25,7 @@ import { Border } from './zui/types.model';
 
 @Injectable()
 export class AxisService implements AxisServiceInterface<string, Date> {
-	topology = {
+	topology: any = {
 		"SYJ": 0 + 100,
 		"1011": 100 + 100,
 		"HXXJ": 200 + 100,

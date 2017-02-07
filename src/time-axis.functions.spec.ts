@@ -29,7 +29,7 @@ describe("FindGreatestSmallerThanOrGreatest", () => {
 	});
 
 	it("should find value in sorted array", () => {
-		let array = [-4,-2,0,1,2,3,4,5,6,7,8,9,10];
+		let array: number[] = [-4,-2,0,1,2,3,4,5,6,7,8,9,10];
 
 		let io: [number, number][] = [[-5,-4],[-4,-4],[-3,-4],[-1,-2],[0,0],
 		[1,1],[2,2],[2.5,2],[3,3], [4,4],[4.2,4],[4.4,4],[4.7,4],[8,8],[8.4,8],
@@ -45,7 +45,7 @@ describe("FindGreatestSmallerThanOrGreatest", () => {
 			[1,1],[2,2],[2.5,2],[3,3], [4,4],[4.2,4],[4.4,4],[4.7,4],[8,8],
 			[8.4,8],[11.4,10],[12,10],[13,10],[14,10]];
 
-		function shuffle(array) {
+		function shuffle(array: number[]) {
 			for (let i = array.length - 1; i >= 0; i--) {
 				let ptr = Math.floor(Math.random() * (i + 1));
 				let t = array[i];
@@ -57,7 +57,7 @@ describe("FindGreatestSmallerThanOrGreatest", () => {
 		}
 
 		for (let i = 0; i < 10; i++) {
-			let array = shuffle([-4,-2,0,1,2,3,4,5,6,7,8,9,10]);
+			let array: number[] = shuffle([-4,-2,0,1,2,3,4,5,6,7,8,9,10]);
 			console.log(array);
 
 			io.forEach((d: [number, number]) => {
