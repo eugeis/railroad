@@ -22,14 +22,12 @@ import {
 	Component,
 	OnInit,
 	HostListener,
-	Inject,
-	ElementRef
+	Inject
 } from '@angular/core';
 
 import { ContextMenuStatus } from './zui/contextmenu/contextmenu.interface';
 import { ContextHandlerInterface } from './zui/contextmenu/contexthandler.interface';
 
-import { ZUIService } from './zui/zui.service';
 import { ZUIComponent } from './zui/zui.component';
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';
@@ -139,9 +137,7 @@ export class RailroadComponent implements OnInit {
 
 	constructor(
 		private rs: RailroadService,
-		private tr: ZUIService,
 		private zg: ZoomGridService,
-		private er: ElementRef,
 		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>,
 		@Inject('ContextHandlerInterface') private ctxHandler: ContextHandlerInterface
 	) { }
