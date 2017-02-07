@@ -25,41 +25,29 @@ type TrainTypeName = string;
 type TrainName = string;
 
 export interface PartialTrip {
-//	activated: boolean;
-//	arrivalTimeAtDestination: Date;
-//	cancelled: boolean;
-//	creationTimestamp: Date;
-//	daysRun: null;
-//	deepCopied: boolean;
-//	deleted: boolean;
-//	destinationStation: Station;
-//	entryStation: Station;
-//	exitStation: Station;
-//	externTtsTrainUid: null;
+//	"destinationId": null,
+//	"drivingMode": null,
 	id: number;
-//	lastChanged: Date;
-//	lockedBy: null;
-//	marketingName: null;
-//	nominalTrainName: TrainName;
-//	nominalTrainNameWithDate: Object;
-//	offline: boolean;
-//	optional: boolean;
-//	originStation: Station;
-//	partialCancelationType: "NONE";
-//	planned: boolean;
-//	prevType: null;
-//	runTimeToDestination: null;
-//	serialId: "";
-//	sortOrder: null;
-//	startDate: Date;
-//	startTimeAtOrigin: Date;
+//	"lastChanged": Date,
+//	"lineDirection": string
+//	"lineName": string,
+//	"minimumTurnTime": null,
+//	"operatingChacteristic": null,
+//	"partialTripNaturalKey": Object
+//	"partialTripType": string,
+//	"priority": null,
+//	"sortOrder": number,
 	stopOrPasss: StopOrPass[];
-//	timetableId: number;
-//	trainTypeName: TrainTypeName;
+//	"timeSlack": null,
+//	"trainIdToc": string,
+//	"trainNumber": null,
+//	"trainCategory": null,
+//	"trainCharacteristicId": null,
+//	"trainTypeName": string,
 	trip: Trip;
 	tripId: number;
-//	type: "ACTIVATED";
-//	valid: boolean;
+	tripNumber: string,
+//	"turningAllowed": null,
 }
 
 export interface StopOrPass {
@@ -129,7 +117,7 @@ export interface Trip {
 //	lastChanged: Date
 //	lockedBy: null
 //	marketingName: null
-//	nominalTrainName: TrainName
+	nominalTrainName: TrainName
 //	nominalTrainNameWithDate: Object
 //	offline: boolean
 //	optional: boolean
