@@ -79,6 +79,13 @@ var svgNS = "http://www.w3.org/2000/svg";
 					partialTrips>
 				</svg:g>
 
+				<svg:g *ngIf="timetable" class="tripNumbers"
+					[pts]="timetable.partialTrips.all"
+					[border]="border"
+					[zoom]="zoom"
+					tripNumbers>
+				</svg:g>
+
 				<svg:g *ngIf="timetable" class="stopOrPasss"
 					[sop]="timetable.stopOrPasss.all"
 					[border]="border"

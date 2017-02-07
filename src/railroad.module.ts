@@ -26,6 +26,7 @@ import { ZUIModule } from './zui/zui.module';
 
 import { StopOrPasssComponent } from './railroad-content/stoporpasss.component';
 import { PartialTripsComponent } from './railroad-content/partialtrips.component';
+import { TripNumbersComponent } from './railroad-content/tripnumbers.component';
 
 import { ContextHandlerService } from './contexthandler.service';
 import { SVGStationAxisComponent } from './station-axis.component';
@@ -38,7 +39,8 @@ import { AxisService } from './axis.service';
 @NgModule({
 	imports: [CommonModule, HttpModule, JsonpModule, ZUIModule],
 	declarations: [RailroadComponent, SVGTimeAxisComponent, SVGTimeIndicator,
-		StopOrPasssComponent, PartialTripsComponent, SVGStationAxisComponent],
+		StopOrPasssComponent, PartialTripsComponent, SVGStationAxisComponent,
+		TripNumbersComponent],
 	providers: [RailroadService,
 		{provide: 'ContextHandlerInterface', useClass: ContextHandlerService},
 		{provide: 'AxisServiceInterface', useClass: AxisService}],
