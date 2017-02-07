@@ -30,6 +30,7 @@ import {
 
 import { ZUIService } from './zui.service';
 import { Border, Coordinate, Padding } from './types.model';
+import { calcBarPosition, calcBarSize, calcMovementPosition } from './svg-scrollbar.functions';
 
 @Component({
 	selector: '[ee-svg-scrollbar]',
@@ -109,13 +110,31 @@ export class SVGScrollbarComponent implements OnChanges {
 
 		if (this.horizontal) {
 			let movement = e.movementX;
-			let translate = -((this.position + movement) / (this.contentSize.x - this.size) * (this.zoom * (this.border.max.x - this.border.min.x) - this.contentSize.x) + this.zoom * this.border.min.x);
+			let translate = calcMovementPosition(
+				this.position,
+				movement,
+				this.contentSize.x,
+				this.contentSize.x,
+				this.size,
+				this.translate.x,
+				this.zoom,
+				[this.border.min.x, this.border.max.x]
+			);
 			translate = this.tr._limitTranslate(translate, this.zoom, this.contentSize.x, [this.border.min.x, this.border.max.x]);
 			this.translate = new Coordinate(translate, this.translate.y);
 			this.translateChange.emit(this.translate);
 		} else {
 			let movement = e.movementY;
-			let translate = -((this.position + movement) / (this.contentSize.y - this.size) * (this.zoom * (this.border.max.y - this.border.min.y) - this.contentSize.y) + this.zoom * this.border.min.y);
+			let translate = calcMovementPosition(
+				this.position,
+				movement,
+				this.contentSize.y,
+				this.contentSize.y,
+				this.size,
+				this.translate.y,
+				this.zoom,
+				[this.border.min.y, this.border.max.y]
+			);
 			translate = this.tr._limitTranslate(translate, this.zoom, this.contentSize.y, [this.border.min.y, this.border.max.y]);
 			this.translate = new Coordinate(this.translate.x, translate);
 			this.translateChange.emit(this.translate);
@@ -132,19 +151,35 @@ export class SVGScrollbarComponent implements OnChanges {
 
 	ngOnChanges() {
 		if (this.horizontal) {
-			let borderSize = (this.border.max.x - this.border.min.x) * this.zoom;
-			this.size = (this.contentSize.x / borderSize) * this.contentSize.x;
-			this.position = (this.translate.x + this.zoom * this.border.min.x)
-			this.position = this.position / (this.zoom * (this.border.min.x - this.border.max.x) + this.contentSize.x);
-			this.position = this.position * (this.contentSize.x - this.size);
-			this.position = this.position || 0;
+			this.size = calcBarSize(
+				this.contentSize.x,
+				this.contentSize.x,
+				this.zoom,
+				[this.border.min.x, this.border.max.x]
+			);
+			this.position = calcBarPosition(
+				this.contentSize.x,
+				this.contentSize.x,
+				this.size,
+				this.translate.x,
+				this.zoom,
+				[this.border.min.x, this.border.max.x]
+			) || 0;
 		} else {
-			let borderSize = (this.border.max.y - this.border.min.y) * this.zoom;
-			this.size = (this.contentSize.y / borderSize) * this.contentSize.y;
-			this.position = (this.translate.y + this.zoom * this.border.min.y)
-			this.position = this.position / (this.zoom * (this.border.min.y - this.border.max.y) + this.contentSize.y);
-			this.position = this.position * (this.contentSize.y - this.size);
-			this.position = this.position || 0;
+			this.size = calcBarSize(
+				this.contentSize.y,
+				this.contentSize.y,
+				this.zoom,
+				[this.border.min.y, this.border.max.y]
+			);
+			this.position = calcBarPosition(
+				this.contentSize.y,
+				this.contentSize.y,
+				this.size,
+				this.translate.y,
+				this.zoom,
+				[this.border.min.y, this.border.max.y]
+			) || 0;
 		}
 	}
 }
