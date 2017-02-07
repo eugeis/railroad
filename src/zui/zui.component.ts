@@ -135,7 +135,7 @@ export class ZUIComponent implements OnInit, OnDestroy {
 
 	eventFunctions: [string, Function][] = [
 		["mousewheel", this.onMouseWheel.bind(this)],
-		["dbclick", this.onDoubleClick.bind(this)],
+		["dblclick", this.onDoubleClick.bind(this)],
 		["contextmenu", this.onContextMenu.bind(this)],
 		["keydown", this.onKeyDown.bind(this)],
 		["mousedown", this.onMouseDown.bind(this)],
