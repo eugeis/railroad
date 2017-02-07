@@ -19,20 +19,20 @@
  * @author Jonas Möller
  */
 export function calcBarSize(
+	zoom: number,
 	svgSize: number,
 	scrollSize: number,
-	zoom: number,
 	border: [number, number])
 {
 	return svgSize * scrollSize / (zoom * (border[1] - border[0]));
 }
 
 export function calcBarPosition(
+	translate: number,
+	zoom: number,
 	svgSize: number,
 	scrollSize: number,
 	barSize: number,
-	translate: number,
-	zoom: number,
 	border: [number, number])
 {
 	return ((translate + zoom * border[0]) * (scrollSize - barSize)) / (zoom * (border[0] - border[1]) + svgSize);
@@ -40,13 +40,11 @@ export function calcBarPosition(
 
 export function calcMovementPosition(
 	position: number,
-	movement: number,
+	zoom: number,
 	svgSize: number,
 	scrollSize: number,
 	barSize: number,
-	translate: number,
-	zoom: number,
 	border: [number, number])
 {
-	return (position + movement) * (zoom * (border[0] - border[1]) + svgSize) / (scrollSize - barSize) - (zoom * border[0]);
+	return position * (zoom * (border[0] - border[1]) + svgSize) / (scrollSize - barSize) - (zoom * border[0]);
 }

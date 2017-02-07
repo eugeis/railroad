@@ -111,13 +111,11 @@ export class SVGScrollbarComponent implements OnChanges {
 		if (this.horizontal) {
 			let movement = e.movementX;
 			let translate = calcMovementPosition(
-				this.position,
-				movement,
+				this.position + movement,
+				this.zoom,
 				this.contentSize.x,
 				this.contentSize.x,
 				this.size,
-				this.translate.x,
-				this.zoom,
 				[this.border.min.x, this.border.max.x]
 			);
 			translate = this.tr._limitTranslate(translate, this.zoom, this.contentSize.x, [this.border.min.x, this.border.max.x]);
@@ -126,13 +124,11 @@ export class SVGScrollbarComponent implements OnChanges {
 		} else {
 			let movement = e.movementY;
 			let translate = calcMovementPosition(
-				this.position,
-				movement,
+				this.position + movement,
+				this.zoom,
 				this.contentSize.y,
 				this.contentSize.y,
 				this.size,
-				this.translate.y,
-				this.zoom,
 				[this.border.min.y, this.border.max.y]
 			);
 			translate = this.tr._limitTranslate(translate, this.zoom, this.contentSize.y, [this.border.min.y, this.border.max.y]);
@@ -152,32 +148,32 @@ export class SVGScrollbarComponent implements OnChanges {
 	ngOnChanges() {
 		if (this.horizontal) {
 			this.size = calcBarSize(
-				this.contentSize.x,
-				this.contentSize.x,
 				this.zoom,
+				this.contentSize.x,
+				this.contentSize.x,
 				[this.border.min.x, this.border.max.x]
 			);
 			this.position = calcBarPosition(
+				this.translate.x,
+				this.zoom,
 				this.contentSize.x,
 				this.contentSize.x,
 				this.size,
-				this.translate.x,
-				this.zoom,
 				[this.border.min.x, this.border.max.x]
 			) || 0;
 		} else {
 			this.size = calcBarSize(
-				this.contentSize.y,
-				this.contentSize.y,
 				this.zoom,
+				this.contentSize.y,
+				this.contentSize.y,
 				[this.border.min.y, this.border.max.y]
 			);
 			this.position = calcBarPosition(
+				this.translate.y,
+				this.zoom,
 				this.contentSize.y,
 				this.contentSize.y,
 				this.size,
-				this.translate.y,
-				this.zoom,
 				[this.border.min.y, this.border.max.y]
 			) || 0;
 		}
