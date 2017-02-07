@@ -34,7 +34,6 @@ import { Coordinate, Border, Padding } from './zui/types.model';
 
 import { Timetable } from './timetable.interface';
 import { RailroadService } from './railroad.service';
-import { ZoomGridService, GridResponse } from './zui/zoomgrid.service';
 
 //Relevant for ./railroad.service
 import 'rxjs/add/operator/map';
@@ -115,9 +114,10 @@ var svgNS = "http://www.w3.org/2000/svg";
 						[contentSize]="contentSize">
 					</svg:g>
 				</svg:g>
-
+<!--
 				<svg:rect *ngIf="show1" x="500" y="400" width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
 				<svg:rect *ngIf="show2" x="300" y="550" width="200" height="240" style="fill:rgb(255,0,0);stroke-width:3;stroke:rgb(0,0,0)" />
+-->
 			</ee-zui>
 		</div>
 	`
@@ -144,7 +144,6 @@ export class RailroadComponent implements OnInit {
 
 	constructor(
 		private rs: RailroadService,
-		private zg: ZoomGridService,
 		@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>,
 		@Inject('ContextHandlerInterface') private ctxHandler: ContextHandlerInterface
 	) { }
@@ -158,14 +157,6 @@ export class RailroadComponent implements OnInit {
 					return this.coord.getX(a.stationName) - this.coord.getX(b.stationName);
 				});
 			});
-		});
-
-		this.zg.notifyOn([1,4]).subscribe((resp: GridResponse) => {
-			this.show1 = (1 <= resp.zoom && resp.zoom <= 4);
-		});
-
-		this.zg.notifyOn([1,5]).subscribe((resp: GridResponse) => {
-			this.show2 = (1 <= resp.zoom && resp.zoom <= 5)
 		});
 	}
 
