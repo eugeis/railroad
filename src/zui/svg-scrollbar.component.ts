@@ -60,13 +60,13 @@ import { calcBarPosition, calcBarSize, calcMovementPosition } from './svg-scroll
 	`],
 	template: `
 		<svg:g *ngIf="border">
-			<svg:rect *ngIf="horizontal && size != contentSize.x" class="scrollbar horizontal"
+			<svg:rect *ngIf="horizontal && size < contentSize.x" class="scrollbar horizontal"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="position + padding.left"
 				[attr.y]="positionOffset"
 				[attr.width]="size"
 			/>
-			<svg:rect *ngIf="!horizontal && size != contentSize.y" class="scrollbar vertical"
+			<svg:rect *ngIf="!horizontal && size < contentSize.y" class="scrollbar vertical"
 				[ngClass]="{'dragging': dragging}"
 				[attr.x]="positionOffset"
 				[attr.y]="position + padding.up"
