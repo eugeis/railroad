@@ -73,11 +73,11 @@ interface EventInterface<T> {
 				<ng-content select=".svg-content-stationary"></ng-content>
 			</g>
 
-			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate.y + padding.up) + ')scale(' + zoom + ')'">
+			<g class="x-stationary" [attr.transform]="'translate(0,' + (translate.y + padding.up) + ')'">
 				<ng-content select=".svg-content-x-stationary"></ng-content>
 			</g>
 
-			<g class="y-stationary" [attr.transform]="'translate(' + (translate.x + padding.left) + ',0)scale(' + zoom + ')'">
+			<g class="y-stationary" [attr.transform]="'translate(' + (translate.x + padding.left) + ',0)'">
 				<ng-content select=".svg-content-y-stationary"></ng-content>
 			</g>
 

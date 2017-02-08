@@ -65,7 +65,6 @@ var svgNS = "http://www.w3.org/2000/svg";
 				[(zoom)]="zoom"
 				[(translate)]="translate"
 				[(contextMenu)]="contextMenu"
-				[maxZoom]="1000"
 				[padding]="padding"
 				[border]="border"
 				(onContextSelect)="handleCtx($event)"
@@ -110,7 +109,6 @@ var svgNS = "http://www.w3.org/2000/svg";
 						[padding]="padding"
 						[translate]="translate"
 						[zoom]="zoom"
-						[svgSize]="svgSize"
 						[contentSize]="contentSize">
 					</svg:g>
 				</svg:g>

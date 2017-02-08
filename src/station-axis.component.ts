@@ -47,16 +47,16 @@ import { Padding, Coordinate } from './zui/types.model';
 	template: `
 		<svg:g *ngFor="let station of stations; let i = index">
 			<svg:text
-				[attr.x]="coord.getX(station)"
-				[attr.y]="24 / zoom"
-				[attr.font-size]="20 / zoom">
+				[attr.x]="coord.getX(station) * zoom"
+				[attr.y]="24"
+				[attr.font-size]="20">
 				{{station}}
 			</svg:text>
 			<svg:line
-				[attr.x1]="coord.getX(station)"
-				[attr.y1]="padding.up / zoom"
-				[attr.x2]="coord.getX(station)"
-				[attr.y2]="svgSize.y / zoom"
+				[attr.x1]="coord.getX(station) * zoom"
+				[attr.y1]="padding.up"
+				[attr.x2]="coord.getX(station) * zoom"
+				[attr.y2]="svgSize.y"
 				vector-effect="non-scaling-stroke">
 			</svg:line>
 		</svg:g>

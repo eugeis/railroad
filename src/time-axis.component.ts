@@ -44,15 +44,15 @@ import { findGreatestSmallerThanOrGreatest, floorToGrid, ceilToGrid, getPosition
 	template: `
 		<svg:g class="time-axis" *ngFor="let time of times; let i = index">
 			<svg:text
-				[attr.x]="2 / zoom"
+				[attr.x]="0"
 				[attr.y]="time[1]"
-				[attr.font-size]="16 / zoom">
+				[attr.font-size]="16">
 				{{time[0] | date:'HH:mm:ss'}}
 			</svg:text>
 			<svg:line
-				[attr.x1]="padding.left / zoom"
+				[attr.x1]="padding.left"
 				[attr.y1]="time[1]"
-				[attr.x2]="svgSize.x / zoom"
+				[attr.x2]="padding.left + contentSize.x"
 				[attr.y2]="time[1]"
 				vector-effect="non-scaling-stroke">
 			</svg:line>
@@ -67,7 +67,6 @@ export class SVGTimeAxisComponent implements OnChanges {
 	@Input() translate: Coordinate;
 	@Input() zoom: number = 1;
 
-	@Input() svgSize: Coordinate;
 	@Input() contentSize: Coordinate;
 
 	times: [Date, number][] = [];
@@ -75,7 +74,7 @@ export class SVGTimeAxisComponent implements OnChanges {
 	constructor(@Inject('AxisServiceInterface') private coord: AxisServiceInterface<string, Date>) { }
 
 	ngOnChanges() {
-		if (!this.svgSize || !this.translate || !this.padding || !this.border) {
+		if (!this.translate || !this.padding || !this.border) {
 			return;
 		}
 
@@ -96,7 +95,7 @@ export class SVGTimeAxisComponent implements OnChanges {
 		for (let i = realLower; i < realUpper; i += step) {
 			this.times.push([
 				new Date(i * 1000),
-				this.coord.getY(new Date(i * 1000), this.border)
+				this.coord.getY(new Date(i * 1000), this.border) * this.zoom
 			]);
 		}
 	}
