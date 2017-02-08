@@ -28,7 +28,7 @@ import {
 
 import { AxisServiceInterface } from './zui/axis.interface';
 import { Coordinate, Border, Padding } from './zui/types.model';
-import { findGreatestSmallerThanOrGreatest, floorToGrid, ceilToGrid } from './time-axis.functions';
+import { findGreatestSmallerThanOrGreatest, floorToGrid, ceilToGrid, getPositionProportion } from './time-axis.functions';
 
 @Component({
 	selector: '[svg-time-axis]',
@@ -79,8 +79,8 @@ export class SVGTimeAxisComponent implements OnChanges {
 			return;
 		}
 
-		let lower = 24 * 60 * 60 * (-this.translate.y - this.zoom * this.border.min.y) / (this.zoom * (this.border.max.y - this.border.min.y));
-		let upper = 24 * 60 * 60 * (-this.translate.y + this.contentSize.y - this.zoom * this.border.min.y) / (this.zoom * (this.border.max.y - this.border.min.y));
+		let lower = 24 * 60 * 60 * getPositionProportion(0, this.translate.y, this.zoom, [this.border.min.y, this.border.max.y]);
+		let upper = 24 * 60 * 60 * getPositionProportion(this.contentSize.y, this.translate.y, this.zoom, [this.border.min.y, this.border.max.y]);
 
 		let timeOffset = new Date().getTimezoneOffset() * 60;
 		lower = lower + timeOffset;

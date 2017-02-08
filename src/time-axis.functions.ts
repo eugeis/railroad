@@ -19,6 +19,10 @@
  * @author Jonas Möller
  */
 
+export function getPositionProportion(p: number, t: number, z: number, b: [number, number]): number {
+	return (p - t - z * b[0]) / (z * (b[1] - b[0]));
+}
+
 export function findGreatestSmallerThanOrGreatest(arr: number[], value: number): number {
 	if (!arr) throw "Array is undefined";
 	if (value == undefined) throw "Value is undefined";
