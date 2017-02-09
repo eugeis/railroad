@@ -28,6 +28,8 @@ import {
 	Inject
 } from '@angular/core';
 
+import { Subscription } from 'rxjs';
+
 import { ContextMenuStatus } from '../zui/contextmenu/contextmenu.interface';
 
 import { AxisServiceInterface } from '../zui/axis.interface';
@@ -63,6 +65,7 @@ export class TripNumbersComponent implements OnInit {
 	@Input() zoom: number;
 
 	show: boolean;
+	subscription: Subscription;
 
 	constructor (
 		private zg: ZoomGridService,
@@ -70,8 +73,12 @@ export class TripNumbersComponent implements OnInit {
 	) { }
 
 	ngOnInit() {
-		this.zg.notifyOn([2]).subscribe((response: GridResponse) => {
+		this.subscription = this.zg.notifyOn([2]).subscribe((response: GridResponse) => {
 			this.show = (response.zoom > 2);
 		});
+	}
+
+	ngOnDestroy() {
+		this.subscription.unsubscribe();
 	}
 }

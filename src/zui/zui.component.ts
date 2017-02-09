@@ -31,6 +31,8 @@ import {
 	ChangeDetectionStrategy
 } from '@angular/core';
 
+import { Subscription } from 'rxjs';
+
 import { ContextMenuStatus } from './contextmenu/contextmenu.interface';
 
 import { ZoomGridService } from './zoomgrid.service';
@@ -133,6 +135,8 @@ export class ZUIComponent implements OnInit, OnDestroy {
 	svgSize: Coordinate;
 	contentSize: Coordinate;
 
+	subscriptions: Subscription[] = [];
+
 	eventFunctions: [string, Function][] = [
 		["mousewheel", this.onMouseWheel.bind(this)],
 		["dblclick", this.onDoubleClick.bind(this)],
@@ -177,18 +181,18 @@ export class ZUIComponent implements OnInit, OnDestroy {
 			this.svg.addEventListener(d[0], d[1]);
 		});
 
-		this.zoomEmitter.subscribe((zoom: number) => {
+		this.subscriptions.push(this.zoomEmitter.subscribe((zoom: number) => {
 			this.zg.zoomChange(zoom);
 			this.cd.markForCheck();
-		});
+		}));
 
-		this.translateEmitter.subscribe((zoom: number) => {
+		this.subscriptions.push(this.translateEmitter.subscribe((zoom: number) => {
 			this.cd.markForCheck();
-		});
+		}));
 
-		this.resizeEmitter.subscribe((zoom: number) => {
+		this.subscriptions.push(this.resizeEmitter.subscribe((zoom: number) => {
 			this.cd.markForCheck();
-		});
+		}));
 
 		this.onResize();
 	}
@@ -196,6 +200,10 @@ export class ZUIComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this.eventFunctions.forEach((d: [string, Function]) => {
 			this.svg.removeEventListener(d[0], d[1]);
+		});
+
+		this.subscriptions.forEach((d: Subscription) => {
+			d.unsubscribe();
 		});
 	}
 
