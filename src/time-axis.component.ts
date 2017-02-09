@@ -42,7 +42,7 @@ import { findGreatestSmallerThanOrGreatest, floorToGrid, ceilToGrid, getPosition
 		}
 	`],
 	template: `
-		<svg:g class="time-axis" *ngFor="let time of times; let i = index">
+		<svg:g class="time-axis" *ngFor="let time of times">
 			<svg:text
 				[attr.x]="0"
 				[attr.y]="time[1]"
@@ -53,8 +53,7 @@ import { findGreatestSmallerThanOrGreatest, floorToGrid, ceilToGrid, getPosition
 				[attr.x1]="padding.left"
 				[attr.y1]="time[1]"
 				[attr.x2]="padding.left + contentSize.x"
-				[attr.y2]="time[1]"
-				vector-effect="non-scaling-stroke">
+				[attr.y2]="time[1]">
 			</svg:line>
 		</svg:g>
 	`,

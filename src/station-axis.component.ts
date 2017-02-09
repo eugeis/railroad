@@ -45,7 +45,7 @@ import { Padding, Coordinate } from './zui/types.model';
 		}
 	`],
 	template: `
-		<svg:g *ngFor="let station of stations; let i = index">
+		<svg:g *ngFor="let station of stations">
 			<svg:text
 				[attr.x]="coord.getX(station) * zoom"
 				[attr.y]="24"
@@ -56,8 +56,7 @@ import { Padding, Coordinate } from './zui/types.model';
 				[attr.x1]="coord.getX(station) * zoom"
 				[attr.y1]="padding.up"
 				[attr.x2]="coord.getX(station) * zoom"
-				[attr.y2]="svgSize.y"
-				vector-effect="non-scaling-stroke">
+				[attr.y2]="svgSize.y">
 			</svg:line>
 		</svg:g>
 	`,
