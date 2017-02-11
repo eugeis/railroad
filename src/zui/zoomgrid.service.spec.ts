@@ -18,16 +18,25 @@
  *
  * @author Jonas Möller
  */
+import { TestBed, inject } from '@angular/core/testing';
+
 import { ZoomGridService, GridResponse, Side } from './zoomgrid.service';
 
 describe('ZoomGridService', () => {
-	let zoomGridService: ZoomGridService;
-
 	beforeEach(() => {
-		zoomGridService = new ZoomGridService();
+		TestBed.configureTestingModule({
+			imports: [],
+			providers: [{provide: ZoomGridService, useClass: ZoomGridService}]
+		});
 	});
 
-	it('should trigger single subscription', () => {
+	it('should have a defined service', inject([ZoomGridService], (service: ZoomGridService) => {
+		expect(service).toBeDefined();
+	}));
+
+	it('should trigger single subscription', inject([ZoomGridService], (zoomGridService: ZoomGridService) => {
+		zoomGridService.gridLevel.forEach(console.log);
+
 		let sequence: number[] = [
 /*^2*/		1.8,2.2,
 /*^3*/		2.8,3.1,
@@ -58,9 +67,9 @@ describe('ZoomGridService', () => {
 		});
 
 		expect(ptr).toBe(expectedLevel.length);
-	});
+	}));
 
-	it('should trigger double subscription', () => {
+	it('should trigger double subscription', inject([ZoomGridService], (zoomGridService: ZoomGridService) => {
 		let sequence: number[] = [
 /*^2*/		1.1,1.4,1.8,2.1,
 /*^3*/		2.3,2.6,2.9,3.2,
@@ -111,5 +120,5 @@ describe('ZoomGridService', () => {
 		});
 
 		expect(calls).toBe(expectedLevel1.length + expectedLevel2.length);
-	});
+	}));
 });
