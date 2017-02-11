@@ -198,12 +198,16 @@ export class ZUIComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {
-		this.eventFunctions.forEach((d: [string, Function]) => {
-			this.svg.removeEventListener(d[0], d[1]);
-		});
+		if (this.svg) {
+			this.eventFunctions.forEach((d: [string, Function]) => {
+				this.svg.removeEventListener(d[0], d[1]);
+			});
+		}
 
 		this.subscriptions.forEach((d: Subscription) => {
-			d.unsubscribe();
+			if (d.unsubscribe) {
+				d.unsubscribe();
+			}
 		});
 	}
 
