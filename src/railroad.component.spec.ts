@@ -37,7 +37,7 @@ class MockupRailroadService extends RailroadService {
 describe("RailroadComponent", () => {
 	let component: RailroadComponent;
 
-	beforeEach(async() => {
+	beforeEach(async(() => {
 		TestBed.configureTestingModule({
 			imports: [RailroadModule],
 			providers: [{provide: RailroadService, useClass: MockupRailroadService}],
@@ -45,7 +45,7 @@ describe("RailroadComponent", () => {
 
 		const fixture = TestBed.createComponent(RailroadComponent);
 		component = fixture.componentInstance;
-	});
+	}));
 
 	it("should be defined", fakeAsync(() => {
 		expect(component).toBeDefined();
